@@ -1,17 +1,21 @@
 import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import { Config } from "./config.js";
+import cors from "cors";
 
 //#region Routes imports
 import { home_route } from "./routes/home.js";
-import { quest_route } from "./routes/quest.js";
+// import { quest_route } from "./routes/quest.js";
+import { monster_route } from "./routes/monster.js";
 //#endregion
 
 const app = express();
 
+app.use(cors());
 // Initialize all routes.
 app.use(home_route);
-app.use(quest_route);
+// app.use(quest_route);
+app.use(monster_route);
 
 dotenv.config();
 
