@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
+import useCountdown from '../hooks/Countdown'
+import {ServerTimer} from '../../../backend/src/timer/timer'
 import axios from 'axios'
 import {Config} from '../../../backend/src/config'
+import dayjs from "dayjs"
 
 // Define the Monster interface
 interface Monster {
@@ -27,6 +30,7 @@ const Monster = () => {
    */
   const [monsters, setMonsters] = useState<Monster[]>([]);
   const [isLoading, setIsLoading] = useState(false)
+  const {timeoutSeconds, start} = useCountdown();
 
   /**
    * Use the useEffect hook to make an API call to the backend
@@ -38,6 +42,7 @@ const Monster = () => {
       .get(`http://localhost:${Config.PORT}/monster`)
       .then((response) => {
 
+        start(ServerTimer.instance().getCurrentTime());
         // Update the monsters array with the data that was returned
         setMonsters(response.data);
         // Set isLoading to false since the data is no longer loading
@@ -49,6 +54,11 @@ const Monster = () => {
       });
   }, [])
 
+  /** 
+   * @arg monsters: A Monster object
+   * @arg isLoading
+   * @arg timeoutSeconds
+  */
   return (
     <>
       <h1>Monster</h1>
@@ -61,6 +71,13 @@ const Monster = () => {
 
         // If the data is done loading, display the data in a list.
         <div>
+
+          {dayjs()
+            .set("hour", 0)
+            .set("minute", 0)
+            .set("second", timeoutSeconds)
+            .format("hh:mm:ss")}
+
           {monsters.map((monster) => (
             <div key={monster.id}>
               <h2>{monster.name}</h2>
