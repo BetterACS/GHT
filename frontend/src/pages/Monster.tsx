@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import useCountdown from '../hooks/Countdown'
-import {ServerTimer} from '../../../backend/src/timer/timer'
+import {Scheduler} from '../../../backend/src/utils/scheduler'
 import axios from 'axios'
 import {Config} from '../../../backend/src/config'
 import dayjs from "dayjs"
@@ -32,7 +32,7 @@ const Monster = () => {
       .get(`http://localhost:${Config.PORT}/monster`)
       .then((response) => {
 
-        start(ServerTimer.instance().getCurrentTime());
+        start(Scheduler.instance().getCurrentTime());
         // Update the monsters array with the data that was returned
         setMonsters(response.data);
         // Set isLoading to false since the data is no longer loading
@@ -69,14 +69,11 @@ const Monster = () => {
             .format("hh:mm:ss")}
 
           {monsters.map((monster) => (
-            <div key={monster.id}>
-              <h2>{monster.name}</h2>
+            <div key={monster.monster_id}>
+              <img src={monster.image_url} alt="" />
+              <h2>{monster.monster_name}</h2>
               <p>Element: {monster.element}</p>
               <p>Rarity: {monster.rarity}</p>
-              <p>Tameable: {monster.tameable ? "Yes" : "No"}</p>
-              <p>Tame Rate: {monster.tameRate}</p>
-              <p>Favorite Foods: {monster.favoriteFoods.join(', ')}</p>
-              <p>Dislikes: {monster.dislikes.join(', ')}</p>
             </div>
           ))}
         </div>

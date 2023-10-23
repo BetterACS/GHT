@@ -2,7 +2,7 @@ import express, { Request, Response } from "express";
 import dotenv from "dotenv";
 import { Config } from "./config.js";
 import cors from "cors";
-import cron from "node-cron";
+import { Scheduler } from "./utils/scheduler.js";
 
 //#region Routes imports
 import { home_route } from "./routes/home.js";
@@ -19,9 +19,7 @@ app.use(home_route);
 // app.use(quest_route);
 app.use(monster_route);
 
-cron.schedule("*/10 * * * * *", function () {
-  console.log("running a task every 10 second");
-});
+Scheduler.instance();
 
 dotenv.config();
 

@@ -8,7 +8,10 @@ interface MonsterInterface {
   element: string;
   rarity: number;
   tame_rate: number;
-  foods: FavoriteFoodInterface[];
+  image_url: string;
+  foods: {
+    [key: string]: number;
+  };
 }
 
 interface ItemInterface {
