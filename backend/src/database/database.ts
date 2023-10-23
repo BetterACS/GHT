@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
-import mysql from "mysql2";
+// import mysql from "mysql2";
 import mongoose from "mongoose";
 
 dotenv.config();
 
 export class Database {
   private static INSTANCE: Database;
-  private static mySQLConnection: mysql.Connection;
+  // private static mySQLConnection: mysql.Connection;
   private static mongoDBConnection: unknown;
 
   private constructor() {
@@ -14,17 +14,17 @@ export class Database {
     this.mongoDBConnect();
   }
 
-  private mySQLConnect() {
-    Database.mySQLConnection = mysql.createConnection(process.env.MYSQL_URI!);
-    Database.mySQLConnection.connect((error: any) => {
-      if (error) {
-        console.log("[Server] Failed to connect to database");
-        console.log(error);
-        return;
-      }
-      console.log("[Server] Connected to database");
-    });
-  }
+  // private mySQLConnect() {
+  //   Database.mySQLConnection = mysql.createConnection(process.env.MYSQL_URI!);
+  //   Database.mySQLConnection.connect((error: any) => {
+  //     if (error) {
+  //       console.log("[Server] Failed to connect to database");
+  //       console.log(error);
+  //       return;
+  //     }
+  //     console.log("[Server] Connected to database");
+  //   });
+  // }
 
   private mongoDBConnect() {
     Database.mongoDBConnection = mongoose
@@ -38,9 +38,9 @@ export class Database {
       });
   }
 
-  public mySQL() {
-    return Database.mySQLConnection;
-  }
+  // public mySQL() {
+  //   return Database.mySQLConnection;
+  // }
 
   public mongoDB() {
     return Database.mongoDBConnection;

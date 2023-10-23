@@ -10,7 +10,7 @@ router.get("/monster", (request: Request, response: Response) => {
    * This route will random json data for a monster.
    */
 
-  response.send(Controller.instance().getCurrentMonster());
+  response.send([Controller.instance().getCurrentMonster()]);
 });
 
 router.post("/monster", async (request: Request, response: Response) => {

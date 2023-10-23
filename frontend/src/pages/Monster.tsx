@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import useCountdown from '../hooks/Countdown'
-import {Scheduler} from '../../../backend/src/utils/scheduler'
+// import {Scheduler} from '../../../backend/src/utils/scheduler'
 import axios from 'axios'
 import {Config} from '../../../backend/src/config'
 import dayjs from "dayjs"
@@ -20,7 +20,7 @@ const Monster = () => {
    */
   const [monsters, setMonsters] = useState<MonsterInterface[]>([]);
   const [isLoading, setIsLoading] = useState(false)
-  const {timeoutSeconds, start} = useCountdown();
+  // const {timeoutSeconds, start} = useCountdown();
 
   /**
    * Use the useEffect hook to make an API call to the backend
@@ -32,7 +32,7 @@ const Monster = () => {
       .get(`http://localhost:${Config.PORT}/monster`)
       .then((response) => {
 
-        start(Scheduler.instance().getCurrentTime());
+        // start(Scheduler.instance().getCurrentTime());
         // Update the monsters array with the data that was returned
         setMonsters(response.data);
         // Set isLoading to false since the data is no longer loading
@@ -61,16 +61,16 @@ const Monster = () => {
 
         // If the data is done loading, display the data in a list.
         <div>
-
+{/* 
           {dayjs()
             .set("hour", 0)
             .set("minute", 0)
             .set("second", timeoutSeconds)
-            .format("hh:mm:ss")}
+            .format("hh:mm:ss")} */}
 
           {monsters.map((monster) => (
             <div key={monster.monster_id}>
-              <img src={monster.image_url} alt="" />
+              <img src={monster.image_url} alt={monster.monster_name}/>
               <h2>{monster.monster_name}</h2>
               <p>Element: {monster.element}</p>
               <p>Rarity: {monster.rarity}</p>
