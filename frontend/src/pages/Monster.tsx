@@ -4,18 +4,8 @@ import {ServerTimer} from '../../../backend/src/timer/timer'
 import axios from 'axios'
 import {Config} from '../../../backend/src/config'
 import dayjs from "dayjs"
+import { MonsterInterface } from "../../../backend/src/utils/interface"
 
-// Define the Monster interface
-interface Monster {
-  id: number;
-  name: string;
-  element: string;
-  rarity: string;
-  tameable: boolean;
-  tameRate: number;
-  favoriteFoods: string[];
-  dislikes: string[];
-}
 
 /**
  * The Monster component displays a list of monsters.
@@ -28,7 +18,7 @@ const Monster = () => {
    * @Args isLoading: A boolean that indicates whether the data is still loading
    * @Args setIsLoading: A function that updates the isLoading boolean
    */
-  const [monsters, setMonsters] = useState<Monster[]>([]);
+  const [monsters, setMonsters] = useState<MonsterInterface[]>([]);
   const [isLoading, setIsLoading] = useState(false)
   const {timeoutSeconds, start} = useCountdown();
 

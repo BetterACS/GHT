@@ -15,8 +15,8 @@ export class ServerTimer {
   }
 
   public getCurrentTime() {
-    let currentHours = dayjs().hour();
-    let nHours = Math.floor(currentHours / Config.RESET_EVERY_N_HOURS);
+    let currentHours: number = dayjs().hour();
+    let nHours: number = Math.floor(currentHours / Config.RESET_EVERY_N_HOURS);
 
     let nextTime = dayjs()
       .set("hour", (nHours + 1) * Config.RESET_EVERY_N_HOURS)
@@ -25,7 +25,7 @@ export class ServerTimer {
 
     console.log(nextTime, dayjs());
 
-    let differenceSeconds = nextTime.diff(dayjs(), "second");
+    let differenceSeconds: number = nextTime.diff(dayjs(), "second");
     return differenceSeconds;
   }
 }

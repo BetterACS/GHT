@@ -12,6 +12,7 @@ import { monster_route } from "./routes/monster.js";
 
 const app = express();
 
+app.use(express.json());
 app.use(cors());
 // Initialize all routes.
 app.use(home_route);
