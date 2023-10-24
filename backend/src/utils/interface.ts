@@ -1,6 +1,7 @@
-interface FavoriteFoodInterface {
-  food_id: number;
-}
+/**
+ * @fileoverview This file contains all the interfaces used in the application.
+ * @description This file contains all the interfaces used in the application.
+ */
 
 interface MonsterInterface {
   monster_id: number;

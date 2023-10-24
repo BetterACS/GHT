@@ -1,4 +1,7 @@
-import exp from "constants";
+/**
+ * @file home.ts
+ * @description This file contains all the routes for the home route.
+ */
 import express, { Request, Response } from "express";
 
 const router = express.Router();
@@ -10,4 +13,4 @@ router.get("/", (request: Request, response: Response) => {
   response.json({ message: "Hello World" });
 });
 
-export { router as home_route };
+export default router;

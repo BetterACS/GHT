@@ -1,7 +1,11 @@
+/**
+ * @file monster.ts
+ * @description This file contains all the routes for the monster.
+ */
 import express, { Request, Response } from "express";
-import { Database } from "../database/database.js";
+import Database from "../database/database.js";
 import MonsterModel from "../database/model/monster.js";
-import { Controller } from "./controller.js";
+import Controller from "./controller.js";
 
 const router = express.Router();
 
@@ -25,4 +29,4 @@ router.post("/monster", async (request: Request, response: Response) => {
   response.json({ count: 1, data: results });
 });
 
-export { router as monster_route };
+export default router;

@@ -1,10 +1,14 @@
+/**
+ * @fileoverview Database class.
+ * @description This file is the database class that connects to the database.
+ */
 import dotenv from "dotenv";
-// import mysql from "mysql2";
 import mongoose from "mongoose";
+// import mysql from "mysql2";
 
 dotenv.config();
 
-export class Database {
+export default class Database {
   private static INSTANCE: Database;
   // private static mySQLConnection: mysql.Connection;
   private static mongoDBConnection: unknown;

@@ -1,5 +1,9 @@
+/**
+ * @file monster.ts
+ * @description This file is the model for the monster table.
+ */
 import mongoose from "mongoose";
-
+import { MonsterInterface } from "../../utils/interface.js";
 const Schema = mongoose.Schema;
 
 // Create a schema for the Monster table.
@@ -17,5 +21,5 @@ const MonsterSchema = new Schema({
   },
 });
 
-const MonsterModel = mongoose.model("Monster", MonsterSchema);
+const MonsterModel = mongoose.model<MonsterInterface>("Monster", MonsterSchema);
 export default MonsterModel;
