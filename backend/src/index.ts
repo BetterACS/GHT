@@ -1,16 +1,7 @@
-/**
- * @file index.ts
- * @description The main entry point of the application.
- * This file is responsible for initializing all the singletons and routes.
- * @workflow
- * 1. Initialize all routes from ./routes folder.
- * 2. Initialize all singletons.
- * 3. Start the server. (Listening on port on Config.PORT)
- */
-
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import Logger from "./utils/logger.js";
 
 import Config from "./config.js";
 import Scheduler from "./utils/scheduler.js";
@@ -36,7 +27,14 @@ Database.instance();
 
 dotenv.config();
 
-app.listen(Config.PORT, () => {
-  console.log(`[Server] Listening on port ${Config.PORT}`);
-  console.log(`[Server] Running on http://localhost:${Config.PORT}`);
-});
+const logger = Logger.instance().logger();
+
+// Start the Express.js server and log the listening message
+app
+  .listen(Config.PORT, () => {
+    logger.info(`[Server] Listening on port ${Config.PORT}`);
+    logger.info(`[Server] Running on http://localhost:${Config.PORT}`);
+  })
+  .on("error", (error: Error) => {
+    logger.error(`[Server] Error: ${error.message}`);
+  });

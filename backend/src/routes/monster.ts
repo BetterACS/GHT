@@ -3,9 +3,8 @@
  * @description This file contains all the routes for the monster.
  */
 import express, { Request, Response } from "express";
-import Database from "../database/database.js";
 import MonsterModel from "../database/model/monster.js";
-import Controller from "./controller.js";
+import Controller from "./deliver.js";
 
 const router = express.Router();
 
@@ -23,7 +22,6 @@ router.post("/monster", async (request: Request, response: Response) => {
    */
 
   let json = request.body;
-  let database = Database.instance().mongoDB();
   let monster = new MonsterModel(json);
   const results = await monster.save();
   response.json({ count: 1, data: results });

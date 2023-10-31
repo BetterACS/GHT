@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react"
-import useCountdown from '../hooks/Countdown'
-// import {Scheduler} from '../../../backend/src/utils/scheduler'
 import axios from 'axios'
 import Config from '../../../backend/src/config'
-import dayjs from "dayjs"
 import { MonsterInterface } from "../../../backend/src/utils/interface"
 
 
@@ -47,7 +44,7 @@ const Monster = () => {
   /** 
    * @arg monsters: A Monster object
    * @arg isLoading
-   * @arg timeoutSeconds
+   * @arg timeoutSecondsSS
   */
   return (
     <>
