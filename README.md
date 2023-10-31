@@ -17,6 +17,7 @@ git clone https://github.com/BetterACS/GHT.git
 
 Example:
 ```
+PORT = 5000
 MYSQL_HOST = "localhost"
 MYSQL_USER = "root"
 MYSQL_PASSWORD = "password"
