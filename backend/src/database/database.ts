@@ -32,11 +32,13 @@ export default class Database {
     });
     Database.mySQLConnection.connect((error: any) => {
       if (error) {
-        logger.error("[Server] Failed to connect to mysql database");
+        logger.error(
+          "[database]:mySQLConnect - Failed to connect to mysql database"
+        );
         logger.error(error);
         return;
       }
-      logger.info("[Server] Connected to database");
+      logger.info("[database]:mySQLConnect - Connected to database");
     });
   }
 
@@ -45,15 +47,21 @@ export default class Database {
     Database.mongoDBConnection = mongoose
       .connect(process.env.MONGODB_URI!)
       .then(() => {
-        logger.info("[Server] Connected to MongoDB");
+        logger.info("[database]:mongoDBConnect - Connected to MongoDB");
       })
       .catch((error) => {
-        logger.error("[Server] Failed to connect to MongoDB");
+        logger.error(
+          "[database]:mongoDBConnect - Failed to connect to MongoDB"
+        );
         logger.error(error);
       });
   }
 
   public mongoDB() {
     return Database.mongoDBConnection;
+  }
+
+  public mySQL() {
+    return Database.mySQLConnection;
   }
 }

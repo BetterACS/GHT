@@ -32,9 +32,9 @@ const logger = Logger.instance().logger();
 // Start the Express.js server and log the listening message
 app
   .listen(Config.PORT, () => {
-    logger.info(`[Server] Listening on port ${Config.PORT}`);
-    logger.info(`[Server] Running on http://localhost:${Config.PORT}`);
+    logger.info(`[index]:listen - Listening on port ${Config.PORT}`);
+    logger.info(`[index]:listen - Running on http://localhost:${Config.PORT}`);
   })
   .on("error", (error: Error) => {
-    logger.error(`[Server] Error: ${error.message}`);
+    logger.error(`[index]:listen - Error: ${error.message}`);
   });

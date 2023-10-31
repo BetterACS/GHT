@@ -1,4 +1,4 @@
-interface MonsterInterface {
+interface monsterInterface {
   monster_id: number;
   monster_name: string;
   element: string;
@@ -10,7 +10,7 @@ interface MonsterInterface {
   };
 }
 
-interface ItemInterface {
+interface itemInterface {
   item_id: number;
   item_name: string;
   item_description: string;
@@ -18,4 +18,4 @@ interface ItemInterface {
   item_rarity: number;
 }
 
-export { MonsterInterface, ItemInterface };
+export { monsterInterface, itemInterface };

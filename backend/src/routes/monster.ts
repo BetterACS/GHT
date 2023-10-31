@@ -3,7 +3,7 @@
  * @description This file contains all the routes for the monster.
  */
 import express, { Request, Response } from "express";
-import MonsterModel from "../database/model/monster.js";
+import { monsterModel } from "../database/models.js";
 import Controller from "./deliver.js";
 
 const router = express.Router();
@@ -22,9 +22,7 @@ router.post("/monster", async (request: Request, response: Response) => {
    */
 
   let json = request.body;
-  let monster = new MonsterModel(json);
+  let monster = new monsterModel(json);
   const results = await monster.save();
   response.json({ count: 1, data: results });
 });
-
-export default router;

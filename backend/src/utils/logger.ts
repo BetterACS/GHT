@@ -23,6 +23,7 @@ export default class Logger {
       ],
     });
     Logger.LOGGER = logger;
+    logger.info("[logger]:constructor - Logger initialized");
   }
 
   public static instance() {

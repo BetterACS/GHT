@@ -1,13 +1,11 @@
 import Config from "../config.js";
 import Controller from "../routes/deliver.js";
-import MonsterModel from "../database/model/monster.js";
-import dayjs from "dayjs";
-import winston from "winston";
+import { monsterModel } from "../database/models.js";
 import cron from "node-cron";
+import Logger from "./logger.js";
 
 export default class Scheduler {
   private static INSTANCE: Scheduler;
-  public static logger: winston.Logger;
 
   private constructor() {
     this.startMonsterSchedule();
@@ -23,6 +21,8 @@ export default class Scheduler {
 
   ///#region Monster Schedule
   public startMonsterSchedule() {
+    const logger = Logger.instance().logger();
+    logger.info("[scheduler]:startMonsterSchedule - Updating random monster");
     cron.schedule(
       `*/${Config.RESET_EVERY_N_SECONDS} * * * * *`,
       this.updateRandomMonster
@@ -30,7 +30,7 @@ export default class Scheduler {
   }
 
   private async updateRandomMonster() {
-    const randomMonster = await MonsterModel.aggregate([
+    const randomMonster = await monsterModel.aggregate([
       { $sample: { size: 1 } },
     ]);
 
