@@ -1,3 +1,6 @@
+/**
+ * @fileoverview Logger class. Used to log messages to the console and a file.
+ */
 import winston from "winston";
 
 export default class Logger {
@@ -6,9 +9,9 @@ export default class Logger {
 
   private constructor() {
     const logger = winston.createLogger({
-      // Log only if level is less than (meaning more severe) or equal to this
+      // Log only if level is less than (meaning more severe) or equal to this.
       level: "info",
-      // Use timestamp and printf to create a standard log format
+      // Use timestamp and printf to create a standard log format.
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.printf(
@@ -16,9 +19,10 @@ export default class Logger {
             `${info.timestamp} ${info.level}: ${info.message}`
         )
       ),
-      // Log to the console and a file
       transports: [
+        // Log to the console.
         new winston.transports.Console(),
+        // Add log to a file.
         new winston.transports.File({ filename: "logs/app.log" }),
       ],
     });

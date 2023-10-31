@@ -1,3 +1,6 @@
+/**
+ * @fileoverview Scheduler class. Used to schedule tasks and provide code for time-based events.
+ */
 import Config from "../config.js";
 import Controller from "../routes/deliver.js";
 import { monsterModel } from "../database/models.js";

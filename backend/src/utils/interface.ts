@@ -1,3 +1,6 @@
+/**
+ * @fileoverview Interface for monster data from the nosql database.
+ */
 interface monsterInterface {
   monster_id: number;
   monster_name: string;
@@ -10,12 +13,4 @@ interface monsterInterface {
   };
 }
 
-interface itemInterface {
-  item_id: number;
-  item_name: string;
-  item_description: string;
-  item_type: string;
-  item_rarity: number;
-}
-
-export { monsterInterface, itemInterface };
+export { monsterInterface };
