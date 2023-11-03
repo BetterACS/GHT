@@ -6,7 +6,8 @@ const Log_in = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-
+  const [accessToken,setAccessToken] = useState('');
+  const [refreshToken,setRefreshToken] = useState('');
   const navigate = useNavigate()
   // Handle form submission
   const handleSubmit = (e:any) => {
@@ -22,8 +23,12 @@ const Log_in = () => {
         setEmail('')
         setPassword('')
       }
-      else if (result.data==="Login Successful"){
+      else if (result.data.accessToken){
         navigate('/')
+        localStorage.setItem('access_token', result.data.accessToken)
+        localStorage.setItem('refresh_token', result.data.accessToken)
+        setAccessToken(result.data.accessToken)
+        setRefreshToken(result.data.refreshToken)
       }
       else if (result.data==="Incorrect password"){
         setError("Incorrect password")

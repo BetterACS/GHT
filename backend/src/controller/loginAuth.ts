@@ -2,6 +2,14 @@ import bcrypt from 'bcrypt';
 import { Request, Response } from 'express'; // Assuming you are using Express
 import db from "../database/sqlDatabase.js"
 import mysql, { PoolConnection } from 'mysql';
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  continueToken,
+  logout
+} from './tokenController.js';
+
+
 
 export default (req: Request, res: Response): void => {
   const { email, password } = req.body;
@@ -45,7 +53,9 @@ export default (req: Request, res: Response): void => {
           // console.log(token);
           // res.json({ accessToken: token });
         //   return res.redirect('/');
-        res.json("Login Successful")
+        const accessToken = generateAccessToken({ user: req.body.email })
+        const refreshToken = generateRefreshToken({ user: req.body.email })
+        res.json({ accessToken: accessToken, refreshToken: refreshToken })
         } else {
           connection?.release();
           console.log('--------Incorrect password---------');

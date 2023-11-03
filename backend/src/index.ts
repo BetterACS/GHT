@@ -3,9 +3,7 @@ import dotenv from "dotenv";
 import { Config } from "./config.js";
 import cors from "cors";
 import bodyParser from 'body-parser';
-//ไว้ทีหลัง
-// import session from 'express-session';
-// import flash from 'connect-flash';
+
 
 
 //#region Routes imports
@@ -19,19 +17,24 @@ import bodyParser from 'body-parser';
 //controller zone
 import storeUser from "./controller/storeUser.js"
 import loginAuth from "./controller/loginAuth.js"
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  continueToken,
+  logout
+} from './controller/tokenController.js';
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 dotenv.config();
-//database
-import db from "./database/sqlDatabase.js"
 
 
-//connect post and get
+//connect
 app.post("/register",storeUser)
 app.post("/login",loginAuth)
+app.delete("logout",logout)
 
 
 
