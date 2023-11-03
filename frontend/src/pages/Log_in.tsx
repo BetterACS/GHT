@@ -5,6 +5,7 @@ const Log_in = () => {
   // Define state variables for form fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   const navigate = useNavigate()
   // Handle form submission
@@ -16,7 +17,7 @@ const Log_in = () => {
     .then(result=>{
       console.log(result)
       if (result.data==="This email does not exist in the database."){
-        console.log("This email does not exist in the database.")
+        setError("This email does not exist in the database.")
         navigate('/Log_in')
         setEmail('')
         setPassword('')
@@ -25,10 +26,12 @@ const Log_in = () => {
         navigate('/')
       }
       else if (result.data==="Incorrect password"){
+        setError("Incorrect password")
         navigate('/Log_in')
         setPassword('')
       }
       else{
+        setError("Unusual Error")
         navigate('/Log_in')
       }
     })
@@ -38,6 +41,7 @@ const Log_in = () => {
   return (
     <div className="container mx-auto mt-8">
       <h1 className="text-3xl font-bold text-center">Log In</h1>
+      {error && <div className="text-red-500">{error}</div>}
       <form className="mt-4" onSubmit={handleSubmit}>
         {/* Email Input */}
         <div className="mb-4">
@@ -52,7 +56,7 @@ const Log_in = () => {
             required
           />
         </div>
-
+        
         {/* Password Input */}
         <div className="mb-4">
           <label htmlFor="password" className="block text-sm font-semibold">Password</label>

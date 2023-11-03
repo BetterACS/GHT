@@ -6,6 +6,7 @@ const Sign_up = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error,setError] = useState('');
   const navigate = useNavigate()
   // Handle form submission
   const handleSubmit = (e:any) => {
@@ -15,14 +16,36 @@ const Sign_up = () => {
     axios.post("http://localhost:5000/register",{username,email,password})
     .then(result=>{
       console.log(result)
+      if (result.data === "Datadase has down"){
+        setError("Database has down")
+        setUsername("")
+        setEmail("")
+        setPassword("")
+      }
+      else if (result.data === "This email has been used"){
+        setError("This email has been used")
+        setUsername("")
+        setEmail("")
+        setPassword("")
+      }
+      else if (result.data === "Success"){
+        navigate('/Log_in')
+      }
+      else{
+        setError("Unusual Error")
+        setUsername("")
+        setEmail("")
+        setPassword("")
+      }
     })
     .catch(err=> console.log(err))
-    navigate('/Log_in')
+    
   };
 
   return (
     <div className="container mx-auto mt-8">
       <h1 className="text-3xl font-bold text-center">Sign Up</h1>
+      {error && <div className="text-red-500">{error}</div>}
       <form className="mt-4" onSubmit={handleSubmit}>
         {/* Username Input */}
         <div className="mb-4">

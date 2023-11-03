@@ -26,12 +26,14 @@ export default async (req: Request, res: Response): Promise<void> => {
             connection?.release();
         //   return res.redirect('/register');
             console.log(searchErr)
+            res.json("Datadase has down")
         }
         console.log('--------Search---------');
         console.log(result.length);
   
         if (result.length !== 0) {
           connection?.release();
+          res.json("This email has been used")
           console.log('--------This email has been used---------');
         //   req.flash('error', 'This email has been used.');
         //   return res.redirect('/register');
@@ -42,12 +44,14 @@ export default async (req: Request, res: Response): Promise<void> => {
             //   req.flash('data', req.body);
               connection?.release();
               console.log('Error inserting the user.')
+              res.json("Datadase has down")
             //   return res.redirect('/register');
             }
             console.log('--------Inserting---------');
             connection?.release();
             console.log(insertResult.insertId);
             // return res.redirect('/login');
+            res.json("Success")
           });
         }
       });
