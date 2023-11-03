@@ -1,15 +1,38 @@
 import React, { useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 const Log_in = () => {
   // Define state variables for form fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const navigate = useNavigate()
   // Handle form submission
   const handleSubmit = (e:any) => {
     e.preventDefault();
     // You can add your logic for handling the form submission here
-    // Typically, this is where you'd make an API request to authenticate the user.
+    // Typically, this is where you'd make an API request to register the user.
+    axios.post("http://localhost:5000/login",{email,password})
+    .then(result=>{
+      console.log(result)
+      if (result.data==="This email does not exist in the database."){
+        console.log("This email does not exist in the database.")
+        navigate('/Log_in')
+        setEmail('')
+        setPassword('')
+      }
+      else if (result.data==="Login Successful"){
+        navigate('/')
+      }
+      else if (result.data==="Incorrect password"){
+        navigate('/Log_in')
+        setPassword('')
+      }
+      else{
+        navigate('/Log_in')
+      }
+    })
+    .catch(err=> console.log(err))
   };
 
   return (

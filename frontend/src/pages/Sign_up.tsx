@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
-
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 const Sign_up = () => {
   // Define state variables for form fields
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  const navigate = useNavigate()
   // Handle form submission
   const handleSubmit = (e:any) => {
     e.preventDefault();
     // You can add your logic for handling the form submission here
     // Typically, this is where you'd make an API request to register the user.
+    axios.post("http://localhost:5000/register",{username,email,password})
+    .then(result=>{
+      console.log(result)
+    })
+    .catch(err=> console.log(err))
+    navigate('/Log_in')
   };
 
   return (
