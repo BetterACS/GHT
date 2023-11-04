@@ -1,10 +1,14 @@
-import mongoose from "mongoose";
-import { monsterInterface } from "../utils/interface.js";
+import mongoose, { Document } from "mongoose";
+import {
+  MonsterInterface,
+  UserStoragesInterface,
+  FieldInterface,
+} from "../utils/interface.js";
 const Schema = mongoose.Schema;
 
 // Create a schema for the Monster table.
 // This is the structure of the table.
-const monsterSchema = new Schema({
+const monsterSchema = new Schema<MonsterInterface>({
   monster_id: Number,
   monster_name: String,
   element: String,
@@ -17,8 +21,16 @@ const monsterSchema = new Schema({
   },
 });
 
-const monsterModel = mongoose.model<monsterInterface>("monster", monsterSchema);
+const monsterModel = mongoose.model<MonsterInterface>("monster", monsterSchema);
 
-// Another schema here.
+const userStoragesSchema = new Schema<UserStoragesInterface>({
+  email: { type: String, required: true, unique: true },
+  field: { type: Object, default: {} },
+});
 
-export { monsterModel };
+const userStoragesModel = mongoose.model<UserStoragesInterface>(
+  "user_storages",
+  userStoragesSchema
+);
+
+export { monsterModel, userStoragesModel };

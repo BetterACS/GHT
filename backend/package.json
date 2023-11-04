@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "npx ts-node-dev src/index.ts",
+    "dev": "nodemon -x ts-node --esm src/index.ts",
     "build": "npx tsc",
     "start": "npm run build && node dist/index.js"
   },
@@ -17,7 +17,8 @@
     "@types/mysql2": "github:types/mysql2",
     "@types/node": "^20.8.6",
     "dotenv": "^16.3.1",
-    "ts-node-dev": "^2.0.0",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
     "winston": "^3.11.0"
   },

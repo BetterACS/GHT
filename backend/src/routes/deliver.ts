@@ -1,6 +1,8 @@
+import { MonsterInterface } from "../utils/interface.js";
+
 export default class Deliver {
   private static INSTANCE: Deliver;
-  private static currentMonster: unknown = null;
+  private static currentMonster: MonsterInterface;
 
   private constructor() {}
 
@@ -15,7 +17,7 @@ export default class Deliver {
     return Deliver.currentMonster;
   }
 
-  public setCurrentMonster(monster: unknown) {
+  public setCurrentMonster(monster: MonsterInterface) {
     Deliver.currentMonster = monster;
   }
 }

@@ -30,6 +30,8 @@ export default class Scheduler {
       `*/${Config.RESET_EVERY_N_SECONDS} * * * * *`,
       this.updateRandomMonster
     );
+
+    this.updateRandomMonster();
   }
 
   private async updateRandomMonster() {
