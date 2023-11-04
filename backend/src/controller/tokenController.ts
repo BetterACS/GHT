@@ -9,13 +9,16 @@ export function generateAccessToken(user: { user: string }) {
     return jwt.sign(user, access_token, { expiresIn: "15s" })
 }
 
-let refreshTokens: string[] = [];
+
 
 export function generateRefreshToken(user: { user: string }) {
     const refreshToken = jwt.sign(user, refresh_token, { expiresIn: "20m" })
     refreshTokens.push(refreshToken)
     return refreshToken
 }
+
+
+let refreshTokens: string[] = [];
 //อาจจะไม่ได้ใช้ ถ้าจะใช้ต้องทำ database ของ refresh token ใหม่ด้วย
 export function continueToken(req:Request,res:Response){
     
@@ -27,7 +30,7 @@ export function continueToken(req:Request,res:Response){
         //generate new accessToken and refreshTokens
     res.json({ accessToken: accessToken, refreshToken: refreshToken })
 }
-
+//อาจจะเขียนใหม่
 export function logout(req:Request,res:Response){
     refreshTokens = refreshTokens.filter((c) => c != req.body.token)
         //remove the old refreshToken from the refreshTokens list
