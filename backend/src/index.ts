@@ -4,8 +4,6 @@ import { Config } from "./config.js";
 import cors from "cors";
 import bodyParser from 'body-parser';
 
-
-
 //#region Routes imports
 // import { home_route } from "./routes/home.js";
 // import { monster_route } from "./routes/monster.js";
