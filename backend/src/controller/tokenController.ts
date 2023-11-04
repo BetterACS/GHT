@@ -6,7 +6,7 @@ const access_token:string = "itShouldBeSecret"
 let refresh_token:string = "thisAlso"
 
 export function generateAccessToken(user: { user: string }) {
-    return jwt.sign(user, access_token, { expiresIn: "15m" })
+    return jwt.sign(user, access_token, { expiresIn: "15s" })
 }
 
 let refreshTokens: string[] = [];
@@ -16,7 +16,7 @@ export function generateRefreshToken(user: { user: string }) {
     refreshTokens.push(refreshToken)
     return refreshToken
 }
-
+//อาจจะไม่ได้ใช้ ถ้าจะใช้ต้องทำ database ของ refresh token ใหม่ด้วย
 export function continueToken(req:Request,res:Response){
     
     if (!refreshTokens.includes(req.body.token)) res.status(400).send("Refresh Token Invalid")

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 const Sign_up = () => {
@@ -8,7 +8,43 @@ const Sign_up = () => {
   const [password, setPassword] = useState('');
   const [error,setError] = useState('');
   const navigate = useNavigate()
+
   // Handle form submission
+  const headers = {
+    'authorization': `Bearer ${localStorage.getItem("access_token")}`,
+    'refreshToken':`Bearer ${localStorage.getItem("refresh_token")}`,
+    'email':`${localStorage.getItem("email")}`
+  };
+
+  useEffect(()=>{
+    axios.post("http://localhost:5001/validator",{headers})
+    .then(result=>{
+      console.log(result)
+      
+      if (result.data === "Token not present"){
+        // alert("Token not present")
+        
+      }
+      else if (result.data === "Token invalid"){
+        // alert("Token in invalid")
+      
+      }
+      else if (result.data === "Token valid"){
+        console.log("token valid")
+        navigate("/")
+      }
+      else if (result.data.accessToken){
+        localStorage.setItem('access_token', result.data.accessToken)
+        localStorage.setItem('refresh_token', result.data.refreshToken)
+        navigate("/")
+      }
+      else{
+        alert("unusual error")
+      }
+    })
+    .catch(err=> console.log(err))
+    
+  })
   const handleSubmit = (e:any) => {
     e.preventDefault();
     // You can add your logic for handling the form submission here

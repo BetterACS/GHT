@@ -1,18 +1,42 @@
+import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 const Home = () => {
   const [showWelcome, setShowWelcome] = useState(false);
+  const navigate = useNavigate()
+  const headers = {
+    'authorization': `Bearer ${localStorage.getItem("access_token")}`,
+    'refreshToken':`Bearer ${localStorage.getItem("refresh_token")}`,
+    'email':`${localStorage.getItem("email")}`
+  };
 
-  useEffect(() => {
-    // Delay showing the animation by a few seconds
-    const delay = setTimeout(() => {
-      setShowWelcome(true);
-    }, 0); // Adjust the delay as needed (2000 milliseconds = 2 seconds)
-
-    // Clear the delay when the component unmounts
-    return () => clearTimeout(delay);
-  }, []);
-
+  useEffect(()=>{
+    axios.post("http://localhost:5001/validator",{headers})
+    .then(result=>{
+      console.log(result)
+      
+      if (result.data === "Token not present"){
+        // alert("Token not present")
+        
+      }
+      else if (result.data === "Token invalid"){
+        // alert("Token in invalid")
+      
+      }
+      else if (result.data === "Token valid"){
+        console.log("token valid")
+      }
+      else if (result.data.accessToken){
+        localStorage.setItem('access_token', result.data.accessToken)
+        localStorage.setItem('refresh_token', result.data.refreshToken)
+      }
+      else{
+        alert("unusual error")
+      }
+    })
+    .catch(err=> console.log(err))
+    
+  })
 
   return (
     <>

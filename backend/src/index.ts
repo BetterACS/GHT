@@ -17,12 +17,7 @@ import bodyParser from 'body-parser';
 //controller zone
 import storeUser from "./controller/storeUser.js"
 import loginAuth from "./controller/loginAuth.js"
-import {
-  generateAccessToken,
-  generateRefreshToken,
-  continueToken,
-  logout
-} from './controller/tokenController.js';
+import { logout } from './controller/tokenController.js';
 
 const app = express();
 app.use(cors());
