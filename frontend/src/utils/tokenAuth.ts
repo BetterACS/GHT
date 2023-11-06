@@ -1,11 +1,21 @@
+import axios from 'axios';
 import { returnInterface } from '../../../backend/src/utils/interfaces';
-export default function tokenAuth(
-	result: returnInterface,
+
+export default async function tokenAuth(
 	navigateFunction: any,
 	tokenSuccessFunction = () => {},
 	tokenFailureFunction = () => {},
 	tokenNullFunction = () => {}
 ) {
+	const headers = {
+		authorization: `Bearer ${localStorage.getItem('access_token')}`,
+		refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
+		email: `${localStorage.getItem('email')}`,
+	};
+
+	const results = await axios.post('http://localhost:5001/validator', { headers });
+	const result = results.data as returnInterface;
+
 	try {
 		switch (result.return) {
 			// If the token is valid, redirect to the home page

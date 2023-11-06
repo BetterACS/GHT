@@ -1,26 +1,18 @@
-import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { returnInterface } from '../../../backend/src/utils/interfaces.ts';
 import tokenAuth from '../utils/tokenAuth.ts';
 
 const Home = () => {
+	const [loaded, setLoaded] = useState(false);
 	const [showWelcome, setShowWelcome] = useState(false);
 	const navigate = useNavigate();
-	const headers = {
-		authorization: `Bearer ${localStorage.getItem('access_token')}`,
-		refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
-		email: `${localStorage.getItem('email')}`,
-	};
 
 	useEffect(() => {
-		axios
-			.post('http://localhost:5001/validator', { headers })
-			.then((results) => {
-				const result = results.data as returnInterface;
-				tokenAuth(result, navigate);
-			})
-			.catch((err) => console.log(err));
+		if (loaded) {
+			return;
+		}
+		tokenAuth(navigate);
+		setLoaded(true);
 	});
 
 	return (

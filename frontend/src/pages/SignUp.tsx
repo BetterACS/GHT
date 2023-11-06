@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { returnInterface } from '../../../backend/src/utils/interfaces.ts';
 import tokenAuth from '../utils/tokenAuth.ts';
-const Sign_up = () => {
+const SignUp = () => {
 	// Define state variables for form fields
 	const [loaded, setLoaded] = useState(false);
 
@@ -14,25 +14,13 @@ const Sign_up = () => {
 	const navigate = useNavigate();
 
 	// Handle form submission
-	const headers = {
-		authorization: `Bearer ${localStorage.getItem('access_token')}`,
-		refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
-		email: `${localStorage.getItem('email')}`,
-	};
 
 	useEffect(() => {
 		if (loaded) {
 			return;
 		}
-		axios
-			.post('http://localhost:5001/validator', { headers })
-			.then((results) => {
-				const result = results.data as returnInterface;
-
-				tokenAuth(result, navigate);
-				setLoaded(true);
-			})
-			.catch((err) => console.log(err));
+		tokenAuth(navigate);
+		setLoaded(true);
 	});
 
 	const handleSubmit = async (e: any) => {
@@ -118,4 +106,4 @@ const Sign_up = () => {
 	);
 };
 
-export default Sign_up;
+export default SignUp;

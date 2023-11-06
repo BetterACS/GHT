@@ -4,7 +4,7 @@ import { returnInterface } from '../../../backend/src/utils/interfaces.ts';
 import tokenAuth from '../utils/tokenAuth.ts';
 import axios from 'axios';
 
-const Log_in = () => {
+const Login = () => {
 	// Define state variables for form fields
 	const [loaded, setLoaded] = useState(false);
 	const [email, setEmail] = useState('');
@@ -13,28 +13,13 @@ const Log_in = () => {
 
 	const navigate = useNavigate();
 	// Handle form submission
-	const headers = {
-		authorization: `Bearer ${localStorage.getItem('access_token')}`,
-		refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
-		email: `${localStorage.getItem('email')}`,
-	};
 
 	useEffect(() => {
 		if (loaded) {
 			return;
 		}
-		axios
-			.post('http://localhost:5001/validator', { headers })
-			.then((results) => {
-				if (loaded) {
-					return;
-				}
-				const result = results.data as returnInterface;
-
-				tokenAuth(result, navigate);
-				setLoaded(true);
-			})
-			.catch((err) => console.log(err));
+		tokenAuth(navigate);
+		setLoaded(true);
 	});
 	const handleSubmit = (e: any) => {
 		e.preventDefault();
@@ -109,4 +94,4 @@ const Log_in = () => {
 	);
 };
 
-export default Log_in;
+export default Login;
