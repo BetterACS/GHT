@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import tokenAuth from '../utils/tokenAuth.ts';
 
 const Home = () => {
-  const [showWelcome, setShowWelcome] = useState(false);
-
-  useEffect(() => {
-    const delay = setTimeout(() => {
-      setShowWelcome(true);
-    }, 0);
-
-    return () => clearTimeout(delay);
-  }, []);
-
+	const [loaded, setLoaded] = useState(false);
+	const [showWelcome, setShowWelcome] = useState(false);
+	const navigate = useNavigate();
+  
+	useEffect(() => {
+		if (loaded) {
+			return;
+		}
+		tokenAuth(navigate);
+		setLoaded(true);
+	});
   return (
     <>
       {/* Navbar */}
