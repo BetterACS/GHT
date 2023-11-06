@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import axios from 'axios'
-
+import Config from "../../../backend/src/config"
+import { monsterInterface } from "../../../backend/src/utils/interfaces";
 /**
  * The Monster component displays a list of monsters.
  */
@@ -13,7 +14,7 @@ const Monster = () => {
    * @Args setIsLoading: A function that updates the isLoading boolean
    */
 
-  const [monsters, setMonsters] = useState<MonsterInterface[]>([]);
+  const [monsters, setMonsters] = useState<monsterInterface[]>([]);
   const [isLoading, setIsLoading] = useState(false)
   // const {timeoutSeconds, start} = useCountdown();
 
@@ -24,7 +25,7 @@ const Monster = () => {
   useEffect(() => {
     setIsLoading(true);
     axios
-      .get(`http://localhost:${Config.PORT}/monster`)
+      .get(`http://localhost:${Config.BACKEND_PORT}/monster`)
       .then((response) => {
 
         // start(Scheduler.instance().getCurrentTime());
