@@ -28,9 +28,18 @@ const Monster = () => {
 	 * when the component is first rendered.
 	 */
 	useEffect(() => {
-		tokenAuth(navigate);
+		// if (loaded) {
+		// 	return;
+		// }
+		// setLoaded(true);
+		tokenAuth(navigate, '/monster');
+		const headers = {
+			authorization: `Bearer ${localStorage.getItem('access_token')}`,
+			refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
+			email: `${localStorage.getItem('email')}`,
+		};
 		axios
-			.get(`http://localhost:${Config.BACKEND_PORT}/monster`)
+			.get(`http://localhost:${Config.BACKEND_PORT}/monster`, { headers: headers })
 			.then((response) => {
 				setMonsters(response.data);
 			})

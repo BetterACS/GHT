@@ -22,7 +22,7 @@ export default (req: Request, res: Response): void => {
 		let user = results as userInterface[];
 
 		if (user.length === 0) {
-			logger.warning('--------This email not exist in the database---------');
+			logger.error('--------This email not exist in the database---------');
 
 			res.json({ status: 'error', message: 'This email not exist in the database.', return: 3 });
 		} else {
