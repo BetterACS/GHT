@@ -20,6 +20,19 @@ interface userInterface {
 	created_time: Date;
 }
 
+interface inventoryInterface {
+	[item_id: string]: number;
+}
+
+interface fieldInterface {
+	[monster_id: string]: number;
+}
+
+interface userStoragesInterface {
+	email: string;
+	field: fieldInterface;
+}
+
 interface returnInterface {
 	status: string;
 	message: string;
@@ -29,4 +42,4 @@ interface returnInterface {
 	};
 }
 
-export { monsterInterface, returnInterface, userInterface };
+export { fieldInterface, inventoryInterface, monsterInterface, returnInterface, userInterface, userStoragesInterface };

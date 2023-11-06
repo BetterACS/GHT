@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Config from '../../../backend/src/config';
+import { useNavigate } from 'react-router-dom';
 import { monsterInterface } from '../../../backend/src/utils/interfaces';
+import background from '../assets/sample_scene.png';
+import tokenAuth from '../utils/tokenAuth';
+
 /**
  * The Monster component displays a list of monsters.
  */
@@ -14,8 +18,9 @@ const Monster = () => {
 	 * @Args setIsLoading: A function that updates the isLoading boolean
 	 */
 
+	const [loaded, setLoaded] = useState<boolean>(false);
 	const [monsters, setMonsters] = useState<monsterInterface[]>([]);
-	const [isLoading, setIsLoading] = useState(false);
+	const navigate = useNavigate();
 	// const {timeoutSeconds, start} = useCountdown();
 
 	/**
@@ -23,6 +28,7 @@ const Monster = () => {
 	 * when the component is first rendered.
 	 */
 	useEffect(() => {
+		tokenAuth(navigate);
 		axios
 			.get(`http://localhost:${Config.BACKEND_PORT}/monster`)
 			.then((response) => {
@@ -35,7 +41,7 @@ const Monster = () => {
 
 	const tameMonster = (item_id: number) => {
 		axios
-			.post(`http://localhost:${Config.PORT}/monster/tame/${item_id}`)
+			.post(`http://localhost:${Config.BACKEND_PORT}/monster/tame/${item_id}`)
 			.then((response) => {
 				console.log(response.data);
 			})

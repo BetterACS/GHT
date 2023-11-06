@@ -1,15 +1,15 @@
 import express, { Request, Response } from 'express';
-import { monsterModel } from '../database/models.js';
-import Controller from './deliver.js';
-
+import { monsterModel, userStoragesModel } from '../database/models.js';
+import Logger from '../utils/logger.js';
+// import { validateTokenWithLocalStorage } from '../validate.js';
+import Deliver from './deliver.js';
 const router = express.Router();
 
-router.get('/monster', (request: Request, response: Response) => {
+router.get('/monster', async (request: Request, response: Response) => {
 	/**
 	 * This route will random json data for a monster.
 	 */
-
-	response.send([Controller.instance().getCurrentMonster()]);
+	response.send([Deliver.instance().getCurrentMonster()]);
 });
 
 router.post('/monster', async (request: Request, response: Response) => {
@@ -40,6 +40,7 @@ router.post('/monster/tame/:id', async (request: Request, response: Response) =>
 
 	// Get the current user storage.
 	let userStorage = await userStoragesModel.findOne({ email: email });
+
 	// If the user storage does not exist, create one.
 	if (!userStorage) {
 		userStorage = new userStoragesModel({

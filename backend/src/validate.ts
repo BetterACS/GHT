@@ -5,7 +5,6 @@ import express, { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { generateAccessToken, generateRefreshToken } from './auth/tokenController.js';
 import Config from './config.js';
-
 dotenv.config();
 const app = express();
 
@@ -21,7 +20,7 @@ const access_token: string = process.env.ACCESS_TOKEN!;
 let refresh_token: string = process.env.REFRESH_TOKEN!;
 
 // Middleware function to validate the access token in the request
-function validateToken(req: Request, res: Response, next: NextFunction) {
+function validateToken(req: Request, res: Response, next: NextFunction = () => {}): void {
 	// Get the token from the request header
 	const authHeader = req.body.headers['authorization'];
 	if (typeof authHeader === 'string') {
@@ -93,3 +92,5 @@ function validateToken(req: Request, res: Response, next: NextFunction) {
 }
 
 app.post('/validator', validateToken); // Handle POST requests to '/validator'
+
+// export { validateTokenWithLocalStorage };

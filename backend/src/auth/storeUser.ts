@@ -1,4 +1,4 @@
-import bcryptjs from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import Database from '../database/database.js';
 import { userInterface } from '../utils/interfaces.js';
@@ -12,7 +12,7 @@ export default async (req: Request, res: Response): Promise<void> => {
 	const sqlSearch = 'SELECT * FROM user WHERE email = ?';
 	const sqlInsert = `INSERT INTO user (email, username, password) VALUES (?, ?, ?)`;
 
-	const hashedPassword: string = await bcryptjs.hash(req.body.password, 10);
+	const hashedPassword: string = await bcrypt.hash(req.body.password, 10);
 	const logger = Logger.instance().logger();
 
 	database.query(sqlSearch, [email, username, hashedPassword], async (searchError, results, fields) => {

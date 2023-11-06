@@ -7,6 +7,8 @@ import Config from './config.js';
 import Database from './database/database.js';
 import Logger from './utils/logger.js';
 import Scheduler from './utils/scheduler.js';
+// import { validateTokenWithLocalStorage } from './validate.js';
+
 //#endregion
 
 //#region Routes imports
@@ -36,6 +38,7 @@ app.use(bodyParser.json());
 app.post('/register', storeUser);
 app.post('/login', loginAuth);
 app.delete('logout', logout);
+
 // app.use(home_route);
 // app.use(monster_route);
 
