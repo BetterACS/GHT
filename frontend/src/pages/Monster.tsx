@@ -2,36 +2,15 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Config from '../../../backend/src/config';
 import { useNavigate } from 'react-router-dom';
-import { monsterInterface } from '../../../backend/src/utils/interfaces';
+import { monsterInterface, returnInterface } from '../../../backend/src/utils/interfaces';
 import background from '../assets/sample_scene.png';
 import tokenAuth from '../utils/tokenAuth';
 
-/**
- * The Monster component displays a list of monsters.
- */
 const Monster = () => {
-	/**
-	 * @Args monsters: An array of Monster objects
-	 * @Args setMonsters: A function that updates the monsters array
-	 *
-	 * @Args isLoading: A boolean that indicates whether the data is still loading
-	 * @Args setIsLoading: A function that updates the isLoading boolean
-	 */
-
-	const [loaded, setLoaded] = useState<boolean>(false);
 	const [monsters, setMonsters] = useState<monsterInterface[]>([]);
 	const navigate = useNavigate();
-	// const {timeoutSeconds, start} = useCountdown();
 
-	/**
-	 * Use the useEffect hook to make an API call to the backend
-	 * when the component is first rendered.
-	 */
 	useEffect(() => {
-		// if (loaded) {
-		// 	return;
-		// }
-		// setLoaded(true);
 		tokenAuth(navigate, '/monster');
 		const headers = {
 			authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -41,7 +20,10 @@ const Monster = () => {
 		axios
 			.get(`http://localhost:${Config.BACKEND_PORT}/monster`, { headers: headers })
 			.then((response) => {
-				setMonsters(response.data);
+				const result = response.data as returnInterface;
+				const monsterResult = result.data['monsters'] as monsterInterface[];
+
+				setMonsters(monsterResult);
 			})
 			.catch((err) => {
 				console.log(err);

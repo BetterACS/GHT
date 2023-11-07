@@ -1,6 +1,7 @@
 import axios from 'axios';
 import express, { Request, Response } from 'express';
 
+import Config from '../config.js';
 import Deliver from './deliver.js';
 const router = express.Router();
 
@@ -8,19 +9,17 @@ router.get('/monster', async (request: Request, response: Response) => {
 	/**
 	 * This route will random json data for a monster.
 	 */
-	console.log('headers: ', request.body);
-	console.log('authorization: ', request.headers);
 	const headers = {
-		authorization: request.body['authorization'],
-		refreshToken: request.body['refreshToken'],
-		email: request.body['email'],
+		authorization: request.headers['authorization'],
+		refreshToken: request.headers['refreshtoken'],
+		email: request.headers['email'],
 	};
 
-	const result = await axios.post('http://localhost:5001/validator', { headers });
-	if (result.data.return == 1) {
-		response.send([Deliver.instance().getCurrentMonster()]);
+	const result = await axios.post(`http://localhost:${Config.VALIDATE_PORT}/validator`, {}, { headers: headers });
+	if (result.data.return == 0) {
+		const monsters = [Deliver.instance().getCurrentMonster()];
+		response.json({ status: 'success', message: 'Monster appeared', return: 0, data: { monsters: monsters } });
 	}
-	response.send({ status: 'error', message: 'Fuck u bitch' });
 });
 
 // router.post('/monster', async (request: Request, response: Response) => {

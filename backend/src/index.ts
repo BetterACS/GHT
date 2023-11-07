@@ -2,11 +2,9 @@
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import express, { Request, Response } from 'express';
-import { validateTokenMiddleware } from './auth/validateToken.js';
+import express from 'express';
 import Config from './config.js';
 import Database from './database/database.js';
-import Deliver from './routes/deliver.js';
 import Logger from './utils/logger.js';
 import Scheduler from './utils/scheduler.js';
 
@@ -14,7 +12,7 @@ import Scheduler from './utils/scheduler.js';
 
 //#region Routes imports
 // import home_route from './routes/home.js';
-// import monster_route from './routes/monster.js';
+import monster_route from './routes/monster.js';
 //#endregion
 
 dotenv.config();
@@ -41,37 +39,7 @@ app.post('/login', loginAuth);
 app.delete('logout', logout);
 
 // app.use(home_route);
-// app.use(monster_route);
-app.get('/monster', validateTokenMiddleware, async (request: Request, response: Response) => {
-	/**
-	 * This route will random json data for a monster.
-	 */
-	// const headers = {
-	// authorization: request.body.headers['authorization'],
-	// refreshToken: request.body.headers['refreshToken'],
-	// email: request.headers['email'],
-	// };
-	// console.log('headers: ', request.body);
-
-	// // if (headers.refreshToken === undefined) {
-	// // 	console.log('No refresh token in here.');
-	// // 	response.send({ status: 'error', message: 'Token not present.', return: 1 });
-	// // }
-	// const headers = {};
-	// try {
-	// 	const results = await axios.post('http://localhost:5001/validator', { headers });
-	// 	const result = results.data as returnInterface;
-
-	// 	if (result.return == 1) {
-	// 	}
-	// 	response.send({ status: 'error', message: 'Fuck u bitch' });
-	// } catch (error) {
-	// 	console.log(error);
-	// }
-
-	console.log('pass');
-	response.json([Deliver.instance().getCurrentMonster()]);
-});
+app.use(monster_route);
 
 const logger = Logger.instance().logger();
 

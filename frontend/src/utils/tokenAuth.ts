@@ -14,7 +14,7 @@ export default async function tokenAuth(
 		email: `${localStorage.getItem('email')}`,
 	};
 
-	const results = await axios.post('http://localhost:5001/validator', { headers });
+	const results = await axios.post('http://localhost:5001/validator', {}, { headers: headers });
 	const result = results.data as returnInterface;
 
 	try {
