@@ -23,6 +23,12 @@ Database.instance();
 import loginAuth from './auth/loginAuth.js';
 import storeUser from './auth/storeUser.js';
 import { logout } from './auth/tokenController.js';
+// import adjustQuest from './questFunc/adjustQuest.js';
+// import adjustTag from './questFunc/adjustTag.js';
+import createQuest from './questFunc/createQuest.js';
+// import createTag from './questFunc/createTag.js';
+// import queryQuest from './questFunc/queryQuest.js';
+// import queryTag from './questFunc/queryTag.js';
 //#endregion
 
 const app = express();
@@ -36,6 +42,14 @@ app.use(bodyParser.json());
 app.post('/register', storeUser);
 app.post('/login', loginAuth);
 app.delete('logout', logout);
+//questZone
+// app.post('/createTag', createTag);
+app.post('/createQuest', createQuest);
+// app.get('/getQuest', queryQuest);
+// app.get('/getTag', queryTag);
+// app.put('/adjustQuest', adjustQuest);
+// app.put('/adjustTag', adjustTag);
+
 // app.use(home_route);
 // app.use(monster_route);
 
