@@ -5,32 +5,31 @@ import mysql, { PoolConnection } from 'mysql';
 import { Request, Response } from 'express';
 
 export default async (req: Request, res: Response): Promise<void> => {
-	const { quest_name, description, due_date, item_id, email } = req.body;
+	//การจะใส่ได้ต้องมีข้อมูลอยู่ใน table tag & table quest ก่อน
+	const { tag_id, quest_id } = req.body;
 
 	db.getConnection(async (err: Error, connection: PoolConnection | undefined) => {
 		if (err) {
 			console.log(err);
 			res.json('Error connecting to database');
 		} else {
-			//ตอนสร้าง quest ตัว id มัน auto increment ให้เอง ไม่ต้องใส่ เลยคิดว่าไม่รู้จะเก็บ quest_id ออกมายังไง
-			const sqlInsert =
-				'INSERT INTO quest (qeust_name, description, due_date, item_id, email) VALUES (?, ?, ?, ?, ?)';
+			const sqlInsert = 'INSERT INTO contain (tag_id,quest_id) VALUES (?, ?)';
 
-			const insertQuery = mysql.format(sqlInsert, [quest_name, description, due_date, item_id, email]);
+			const insertQuery = mysql.format(sqlInsert, [tag_id, quest_id]);
 
 			await connection?.query(insertQuery, async (insertErr: Error, insertResult: any) => {
 				if (insertErr) {
 					connection?.release();
 
 					console.log(insertErr);
-					res.json('Error inserting the quest');
+					res.json('Error inserting the quest. Perhap the tag name or quest id is not exist');
 				} else {
 					console.log('--------Inserting---------');
 
 					connection?.release();
-					const quest_id = insertResult.insertId;
-					console.log(quest_id);
-					res.json({ message: 'quest created', quest_id: quest_id });
+					const contain_id = insertResult.insertId;
+					console.log(contain_id);
+					res.json({ message: 'labelQuest success', contain_id: contain_id });
 				}
 				// return res.redirect('/login');
 			});

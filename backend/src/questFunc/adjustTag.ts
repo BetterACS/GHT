@@ -1,35 +1,52 @@
-// import { Request, Response } from 'express';
-// import mysql, { PoolConnection } from 'mysql2';
-// import db from '../database/tempDatabase.js';
+import { Request, Response } from 'express';
+import mysql, { PoolConnection } from 'mysql';
+import db from '../database/tempDatabase.js';
 
-// export default async (req: Request, res: Response): Promise<void> => {
-// 	//old_tag_name อาจจะได้จากการใช้ queryTag.js ก่อนหน้านี้ แล้วให้ frontend ส่งมาใน body
-// 	//ส่วน tag_color อาจจะใช้ทับจาก <form> ได้เลย
-// 	const { old_tag_name, new_tag_name, tag_color } = req.body;
+export default async (req: Request, res: Response): Promise<void> => {
+	const { tag_id, tag_name, tag_color } = req.body;
 
-// 	db.getConnection(async (err: NodeJS.ErrnoException | null, connection: PoolConnection) => {
-// 		if (err) {
-// 			console.log(err);
-// 			res.json('Error connecting to the database');
-// 		}
+	db.getConnection(async (err: NodeJS.ErrnoException | null, connection: PoolConnection) => {
+		if (err) {
+			console.log(err);
+			res.json('Error connecting to the database');
+		}
+		const sqlSearch = 'SELECT * FROM tag WHERE tag_id = ?';
 
-// 		const sqlUpdate = 'UPDATE tag SET tag_name=?,tag_color=? WHERE tag_name=?';
+		const checkQuery = mysql.format(sqlSearch, [tag_id]);
 
-// 		const updateQuery = mysql.format(sqlUpdate, [new_tag_name, tag_color, old_tag_name]);
+		const sqlUpdate = 'UPDATE tag SET tag_name=?, tag_color=? WHERE tag_id=?';
 
-// 		await connection?.query(updateQuery, async (updateErr: Error, updateResult: any) => {
-// 			if (updateErr) {
-// 				connection?.release();
-// 				console.log('Error updating the tag.');
-// 				res.json('Error updating the tag');
-// 			}
+		const updateQuery = mysql.format(sqlUpdate, [tag_name, tag_color, tag_id]);
+		connection?.query(checkQuery, async (searchErr: Error, result: any) => {
+			if (searchErr) {
+				connection?.release();
+				console.log(searchErr);
+				res.json('Error connecting to database');
+			} else {
+				console.log('--------Search---------');
+				console.log(result.length);
 
-// 			console.log('--------Updating---------');
+				if (result.length === 0) {
+					connection?.release();
+					console.log('--------This tag name not exist---------');
+					res.json('This tag name not exist');
+				} else {
+					await connection?.query(updateQuery, async (updateErr: Error, updateResult: any) => {
+						if (updateErr) {
+							connection?.release();
+							console.log('Error updating the tag perhap email does not exist.');
+							res.json('Error updating the tag perhap email does not exist');
+						} else {
+							console.log('--------Updating---------');
 
-// 			connection?.release();
+							connection?.release();
 
-// 			console.log(updateResult.affectedRows);
-// 			res.json('Tag adjusted');
-// 		});
-// 	});
-// };
+							console.log(updateResult.affectedRows);
+							res.json('Tag adjusted');
+						}
+					});
+				}
+			}
+		});
+	});
+};
