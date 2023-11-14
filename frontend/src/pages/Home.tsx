@@ -8,6 +8,7 @@ const Home = () => {
 	const navigate = useNavigate();
   
 	useEffect(() => {
+    setShowWelcome(true);
 		if (loaded) {
 			return;
 		}
