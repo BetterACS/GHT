@@ -3,6 +3,7 @@ import { returnInterface } from '../../../backend/src/utils/interfaces';
 
 export default async function tokenAuth(
 	navigateFunction: any,
+	redirect: string = '/',
 	tokenSuccessFunction = () => {},
 	tokenFailureFunction = () => {},
 	tokenNullFunction = () => {}
@@ -13,7 +14,7 @@ export default async function tokenAuth(
 		email: `${localStorage.getItem('email')}`,
 	};
 
-	const results = await axios.post('http://localhost:5001/validator', { headers });
+	const results = await axios.post('http://localhost:5001/validator', {}, { headers: headers });
 	const result = results.data as returnInterface;
 
 	try {
@@ -21,7 +22,7 @@ export default async function tokenAuth(
 			// If the token is valid, redirect to the home page
 			case 0:
 				tokenSuccessFunction();
-				navigateFunction('/');
+				navigateFunction(redirect);
 				return;
 			// If the token is not present, return to the login page
 			case 1:
@@ -31,12 +32,12 @@ export default async function tokenAuth(
 			case 2:
 				tokenFailureFunction();
 				return;
+			case -1:
+				localStorage.setItem('access_token', result.data.accessToken);
+				localStorage.setItem('refresh_token', result.data.refreshToken);
+				navigateFunction(redirect);
+				return;
 		}
-
-		// If the token is refreshed, save the new tokens
-		localStorage.setItem('access_token', result.data.accessToken);
-		localStorage.setItem('refresh_token', result.data.refreshToken);
-		navigateFunction('/');
 	} catch (error) {
 		alert(error + '\n return code' + result.return);
 	}

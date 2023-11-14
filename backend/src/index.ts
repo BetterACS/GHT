@@ -7,11 +7,12 @@ import Config from './config.js';
 import Database from './database/database.js';
 import Logger from './utils/logger.js';
 import Scheduler from './utils/scheduler.js';
+
 //#endregion
 
 //#region Routes imports
 // import home_route from './routes/home.js';
-// import monster_route from './routes/monster.js';
+import monster_route from './routes/monster.js';
 //#endregion
 
 dotenv.config();
@@ -36,8 +37,9 @@ app.use(bodyParser.json());
 app.post('/register', storeUser);
 app.post('/login', loginAuth);
 app.delete('logout', logout);
+
 // app.use(home_route);
-// app.use(monster_route);
+app.use(monster_route);
 
 const logger = Logger.instance().logger();
 

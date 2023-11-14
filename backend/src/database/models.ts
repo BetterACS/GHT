@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { monsterInterface } from '../utils/interfaces.js';
+import { monsterInterface, userStoragesInterface } from '../utils/interfaces.js';
 const Schema = mongoose.Schema;
 
 // Create a schema for the Monster table.
@@ -19,6 +19,11 @@ const monsterSchema = new Schema({
 
 const monsterModel = mongoose.model<monsterInterface>('monster', monsterSchema);
 
-// Another schema here.
+const userStoragesSchema = new Schema<userStoragesInterface>({
+	email: { type: String, required: true, unique: true },
+	field: { type: Object, default: {} },
+});
 
-export { monsterModel };
+const userStoragesModel = mongoose.model<userStoragesInterface>('user_storages', userStoragesSchema);
+
+export { monsterModel, userStoragesModel };

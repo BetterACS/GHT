@@ -1,4 +1,4 @@
-import bcryptjs from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import Database from '../database/database.js';
 import { userInterface } from '../utils/interfaces.js';
@@ -22,13 +22,13 @@ export default (req: Request, res: Response): void => {
 		let user = results as userInterface[];
 
 		if (user.length === 0) {
-			logger.warning('--------This email not exist in the database---------');
+			logger.error('--------This email not exist in the database---------');
 
 			res.json({ status: 'error', message: 'This email not exist in the database.', return: 3 });
 		} else {
 			const hashedPassword = user[0].password;
 
-			if (await bcryptjs.compare(password, hashedPassword)) {
+			if (await bcrypt.compare(password, hashedPassword)) {
 				logger.info('---------> Login Successful');
 				const accessToken = generateAccessToken({ user: req.body.email });
 				const refreshToken = generateRefreshToken({ user: req.body.email });
