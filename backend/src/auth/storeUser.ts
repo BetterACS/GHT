@@ -24,6 +24,7 @@ export default async (req: Request, res: Response): Promise<void> => {
 				message: 'Error searching for the email.',
 				return: 1,
 			});
+			return;
 		}
 		let user = results as userInterface[];
 
@@ -34,6 +35,7 @@ export default async (req: Request, res: Response): Promise<void> => {
 				message: 'This email has been used',
 				return: 2,
 			});
+			return;
 		}
 		logger.info('Inserting the user');
 	});
@@ -42,10 +44,14 @@ export default async (req: Request, res: Response): Promise<void> => {
 		.mySQL()
 		.query(sqlInsert, [email, username, hashedPassword], function (err, results, fields) {
 			if (err) {
-				console.log(err);
+				logger.error(err);
+				res.json({
+					status: 'error',
+					message: 'Error inserting the user.',
+					return: 3,
+				});
+				return;
 			}
-			console.log(results); // results contains rows returned by server
-			console.log(fields); // fields contains extra meta data about results, if available
 		});
 	res.json({ status: 'ok', message: 'Register successful', return: 0 });
 };
