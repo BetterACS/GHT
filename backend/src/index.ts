@@ -23,13 +23,20 @@ Database.instance();
 import loginAuth from './auth/loginAuth.js';
 import storeUser from './auth/storeUser.js';
 import { logout } from './auth/tokenController.js';
+import adjustHabit from './questFunc/adjustHabit.js';
 import adjustQuest from './questFunc/adjustQuest.js';
 import adjustTag from './questFunc/adjustTag.js';
+import createHabit from './questFunc/createHabit.js';
 import createQuest from './questFunc/createQuest.js';
 import createTag from './questFunc/createTag.js';
+import deleteHabit from './questFunc/deleteHabit.js';
 import deleteLabel from './questFunc/deleteLabel.js';
+import deleteQuest from './questFunc/deleteQuest.js';
 import deleteTag from './questFunc/deleteTag.js';
+import filterByDueDateASC from './questFunc/filterByDueDateASC.js';
+import filterLabelbyTag from './questFunc/filterLabelbyTag.js';
 import labelQuest from './questFunc/labelQuest.js';
+import queryHabit from './questFunc/queryHabit.js';
 import queryQuest from './questFunc/queryQuest.js';
 import queryTag from './questFunc/queryTag.js';
 //#endregion
@@ -55,7 +62,13 @@ app.put('/adjustTag', adjustTag);
 app.post('/labelQuest', labelQuest);
 app.delete('/deleteLabel', deleteLabel);
 app.delete('/deleteTag', deleteTag);
-
+app.delete('/deleteQuest', deleteQuest);
+app.get('/filterLabelbyTag', filterLabelbyTag);
+app.get('/filterByDueDateASC', filterByDueDateASC);
+app.get('/queryHabit', queryHabit);
+app.post('/createHabit', createHabit);
+app.put('/adjustHabit', adjustHabit);
+app.delete('/deleteHabit', deleteHabit);
 // app.use(home_route);
 // app.use(monster_route);
 

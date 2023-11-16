@@ -22,7 +22,7 @@ export default async (req: Request, res: Response): Promise<void> => {
 					connection?.release();
 
 					console.log(insertErr);
-					res.json('Error inserting the quest. Perhap the tag name or quest id is not exist');
+					res.json('Error inserting the quest. Perhap the tag id or quest id is not exist');
 				} else {
 					console.log('--------Inserting---------');
 

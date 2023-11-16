@@ -13,8 +13,8 @@ export default async (req: Request, res: Response): Promise<void> => {
 			console.log(err);
 			res.json('Error connecting to database');
 		}
-		const sqlSearch = 'SELECT * FROM tag WHERE tag_name = ?';
-		const searchQuery = mysql.format(sqlSearch, [tag_name]);
+		const sqlSearch = 'SELECT * FROM tag WHERE tag_name = ? and email = ?';
+		const searchQuery = mysql.format(sqlSearch, [tag_name, email]);
 		const sqlInsert = 'INSERT INTO tag (tag_name,tag_color,email) VALUES (?, ?, ?)';
 		const insertQuery = mysql.format(sqlInsert, [tag_name, tag_color, email]);
 		connection?.query(searchQuery, async (searchErr: Error, result: any) => {
