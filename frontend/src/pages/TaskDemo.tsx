@@ -1,11 +1,17 @@
+import clsx from 'clsx';
+import React from 'react';
+import FocusTrap from 'focus-trap-react';
+import { useCallback, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Dispatch, SetStateAction } from 'react';
+import { CSS } from '@dnd-kit/utilities';
+import { useSortable } from '@dnd-kit/sortable';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowPointer, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { Slot } from '@radix-ui/react-slot';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-
-import QuestContainer from '../components/QuestContainer';
-import Button from '../components/Button';
-import Modal from '../components/Modals';
-import Quests from '../components/Quests';
-import Input from '../components/Inputs';
 
 // DnD
 import {
@@ -32,7 +38,219 @@ type DNDType = {
 	}[];
 };
 
-export default function Home() {
+interface QuestContainerProps {
+	id: UniqueIdentifier;
+	children: React.ReactNode;
+	title?: string;
+	description?: string;
+	onAddItem?: () => void;
+}
+interface ModalProps {
+	children: React.ReactNode;
+	showModal: boolean;
+	setShowModal: Dispatch<SetStateAction<boolean>>;
+	containerClasses?: string;
+}
+interface InputProps {
+	type: string;
+	name: string;
+	placeholder?: string;
+	value?: string;
+	onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
+	asChild?: boolean;
+}
+type QuestType = {
+	id: UniqueIdentifier;
+	title: string;
+};
+
+const QuestContainer = ({ id, children, title, description, onAddItem }: QuestContainerProps) => {
+	const { attributes, setNodeRef, listeners, transform, transition, isDragging } = useSortable({
+		id: id,
+		data: {
+			type: 'container',
+		},
+	});
+	return (
+		<div
+			{...attributes}
+			ref={setNodeRef}
+			style={{
+				transition,
+				transform: CSS.Translate.toString(transform),
+			}}
+			className={clsx(
+				'w-full h-full p-4 bg-gray-50 rounded-xl flex flex-col gap-y-4',
+				isDragging && 'opacity-50'
+			)}
+		>
+			<div className="flex items-center justify-between" {...listeners}>
+				<div className="flex flex-col gap-y-1">
+					<h1 className="text-gray-800 text-xl">{title}</h1>
+					<p className="text-gray-400 text-sm">{description}</p>
+				</div>
+				{/* <button className="border p-2 text-xs rounded-xl shadow-lg hover:shadow-xl">Drag Handle</button> */}
+			</div>
+
+			{children}
+			<Button variant="ghost" onClick={onAddItem}>
+				Add Item
+			</Button>
+		</div>
+	);
+};
+
+const buttonVariants = cva(
+	'flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+	{
+		variants: {
+			variant: {
+				default: 'bg-gray-900 text-white hover:bg-gray-800',
+				destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+				outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+				secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+				ghost: 'hover:bg-gray-100',
+				link: 'text-primary underline-offset-4 hover:underline',
+			},
+			size: {
+				default: 'h-10 px-4 py-2',
+				sm: 'h-9 rounded-md px-3',
+				lg: 'h-11 rounded-md px-8',
+				icon: 'h-10 w-10',
+			},
+		},
+		defaultVariants: {
+			variant: 'default',
+			size: 'default',
+		},
+	}
+);
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+	({ className, variant, size, asChild = false, ...props }, ref) => {
+		const Comp = asChild ? Slot : 'button';
+		return <Comp className={clsx(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
+	}
+);
+Button.displayName = 'Button';
+
+const Input = ({ name, value, placeholder, onChange }: InputProps) => {
+	return (
+		<input
+			name={name}
+			value={value}
+			placeholder={placeholder}
+			onChange={onChange}
+			className="border p-2 w-full rounded-lg shadow-lg hover:shadow-xl"
+		></input>
+	);
+};
+
+const Quests = ({ id, title }: QuestType) => {
+	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+		id: id,
+		data: {
+			type: 'item',
+		},
+	});
+	const editButtonClick = () => {
+		console.log('Quest clicked:', title); // Add your desired click effect here
+		// You can perform any action you want when the Quest is clicked
+	};
+	return (
+		<div
+			ref={setNodeRef}
+			{...attributes}
+			style={{
+				transition,
+				transform: CSS.Translate.toString(transform),
+			}}
+			className={clsx(
+				'px-2 py-4 bg-white shadow-md rounded-xl w-full border border-transparent hover:border-gray-200 cursor-pointer',
+				isDragging && 'opacity-50'
+			)}
+		>
+			<div className="flex items-center justify-between ">
+				<div>{title}</div>
+				<div>
+					<button
+						className="border text-xs rounded-xl shadow-lg hover:shadow-xl px-50"
+						onClick={editButtonClick}
+					>
+						<FontAwesomeIcon icon={faPenToSquare} size="lg" />
+					</button>
+					<button className="border text-xs rounded-xl shadow-lg hover:shadow-xl px-50" {...listeners}>
+						<FontAwesomeIcon icon={faArrowPointer} size="lg" />
+					</button>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+function Modal({ children, showModal, setShowModal, containerClasses }: ModalProps) {
+	const desktopModalRef = useRef(null);
+
+	const onKeyDown = useCallback(
+		(e: KeyboardEvent) => {
+			if (e.key === 'Escape') {
+				setShowModal(false);
+			}
+		},
+		[setShowModal]
+	);
+
+	useEffect(() => {
+		document.addEventListener('keydown', onKeyDown);
+		return () => document.removeEventListener('keydown', onKeyDown);
+	}, [onKeyDown]);
+
+	return (
+		<AnimatePresence>
+			{showModal && (
+				<>
+					<FocusTrap focusTrapOptions={{ initialFocus: false }}>
+						<motion.div
+							ref={desktopModalRef}
+							key="desktop-modal"
+							className="fixed inset-0 z-40 hidden min-h-screen items-center justify-center md:flex"
+							initial={{ scale: 0.95, opacity: 0 }}
+							animate={{ scale: 1, opacity: 1 }}
+							exit={{ scale: 0.95, opacity: 0 }}
+							onMouseDown={(e) => {
+								if (desktopModalRef.current === e.target) {
+									setShowModal(false);
+								}
+							}}
+						>
+							<div
+								className={clsx(
+									`overflow relative w-full max-w-lg transform rounded-xl border border-gray-200 bg-white p-6 text-left shadow-2xl transition-all`,
+									containerClasses
+								)}
+							>
+								{children}
+							</div>
+						</motion.div>
+					</FocusTrap>
+					<motion.div
+						key="desktop-backdrop"
+						className="fixed inset-0 z-30 bg-gray-100 bg-opacity-10 backdrop-blur overlay"
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						onClick={() => setShowModal(false)}
+					/>
+				</>
+			)}
+		</AnimatePresence>
+	);
+}
+
+export default function TaskDemo() {
 	const [containers, setContainers] = useState<DNDType[]>([]);
 	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 	const [currentContainerId, setCurrentContainerId] = useState<UniqueIdentifier>();
