@@ -8,15 +8,13 @@ const ToDo = () => {
     };
 
     return (
-        <header className="bg-gray-800 text-white fixed top-0 left-0 w-full">
-            <nav className="container mx-auto flex items-center justify-between p-4 z-10 relative">
+        <header className="bg-white text-white fixed top-0 left-0 w-full">
+            <nav className="bg-gray-800 container mx-auto flex items-center justify-between p-4 z-10 relative">
                 {/* Hamburger Icon (left side) */}
                 <div className="hamburger">
                     <button
                         onClick={toggleMenu}
-                        className={`bg-transparent text-white border-none focus:outline-none transition-all duration-300 ${
-                            isMenuOpen ? 'rotate-180' : ''
-                        }`}
+                        className={`bg-transparent text-white border-none focus:outline-none transition-all duration-300 ${isMenuOpen ? 'rotate-180' : ''}`}
                     >
                         {isMenuOpen ? (
                             // X Icon
@@ -51,6 +49,16 @@ const ToDo = () => {
                         )}
                     </button>
                 </div>
+                
+                {/* Home */}
+                <div>
+
+                </div>
+                
+                {/* Sword */}
+                <div>
+                    
+                </div>
 
                 {/* User Authentication or Profile Section */}
                 <div className="hidden lg:flex items-center">
@@ -62,18 +70,25 @@ const ToDo = () => {
             </nav>
 
             {/* Responsive Hamburger Menu */}
-            {isMenuOpen && (
-                <div className="top-0 left-0 h-full w-1/4 bg-red-100 text-black">
-                    <ul className="p-4">
-                        <li className="p-2">Home</li>
-                        <li className="p-2">Tasks</li>
-                        <li className="p-2">About</li>
-                        {/* Add more links as needed */}
-                    </ul>
-                </div>
-            )}
+            <div className={`min-h-screen top-0 left-0 h-full w-1/6 bg-gray-800 text-black menu-animation ${isMenuOpen ? 'slide-in' : 'slide-out'}`}>
+                <img src='https://assets.pokemon.com/assets/cms2/img/pokedex/full/658_f2.png'></img>
+                <div className="w-1/2 sm:w-1/8 lg:w-1/2 mx-auto border-t-2 border-white my-2 sm:mb-3 lg:mb-2"></div>
+                <ul className="p-4">
+                    <button className="my-5 p-2 block text-center text-white w-full bg-transparent border-2 border-white focus:outline-none hover:bg-white hover:text-black hover:border-cyan-300 transition-all duration-300">
+                        Quest
+                    </button>
+                    <button className="my-5 p-2 block text-center text-white w-full bg-transparent border-2 border-white focus:outline-none hover:bg-white hover:text-black hover:border-cyan-300 transition-all duration-300">
+                        Tasks
+                    </button>
+                    <button className="my-5 p-2 block text-center text-white w-full bg-transparent border-2 border-white focus:outline-none hover:bg-white hover:text-black hover:border-cyan-300 transition-all duration-300">
+                        Achievement
+                    </button>
+                    {/* Add more buttons as needed */}
+                </ul>
+            </div>
         </header>
     );
 };
 
 export default ToDo;
+
