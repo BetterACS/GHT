@@ -1,39 +1,47 @@
-import db from '../database/tempDatabase.js';
-
-import mysql, { PoolConnection } from 'mysql';
-
 import { Request, Response } from 'express';
+import { OkPacket } from 'mysql';
+import Database from '../database/database.js';
+import { returnInterface } from '../utils/interfaces.js';
+import Logger from '../utils/logger.js';
+
+let returnJson: returnInterface = {
+	status: 'warning',
+	message: 'Nothing change returnJson variable',
+	return: 5,
+	data: {},
+};
 
 export default async (req: Request, res: Response): Promise<void> => {
-	const { quest_name, description, due_date, item_id, email } = req.body;
+	const { quest_name, description, due_date, item_id, email, status } = req.body;
 
-	db.getConnection(async (err: Error, connection: PoolConnection | undefined) => {
-		if (err) {
-			console.log(err);
-			res.json('Error connecting to database');
-		} else {
-			//ตอนสร้าง quest ตัว id มัน auto increment ให้เอง ไม่ต้องใส่ เลยคิดว่าไม่รู้จะเก็บ quest_id ออกมายังไง
-			const sqlInsert =
-				'INSERT INTO quest (qeust_name, description, due_date, item_id, email) VALUES (?, ?, ?, ?, ?)';
-
-			const insertQuery = mysql.format(sqlInsert, [quest_name, description, due_date, item_id, email]);
-
-			await connection?.query(insertQuery, async (insertErr: Error, insertResult: any) => {
-				if (insertErr) {
-					connection?.release();
-
-					console.log(insertErr);
-					res.json('Error inserting the quest');
-				} else {
-					console.log('--------Inserting---------');
-
-					connection?.release();
-					const quest_id = insertResult.insertId;
-					console.log(quest_id);
-					res.json({ message: 'quest created', quest_id: quest_id });
-				}
-				// return res.redirect('/login');
-			});
+	const logger = Logger.instance().logger();
+	let connection;
+	try {
+		const database = Database.instance().mySQL();
+		connection = await database.promise().getConnection();
+		const sqlInsert =
+			'INSERT INTO quest (quest_name, description, due_date, item_id, email,status) VALUES (?, ?, ?, ?, ?,?)';
+		const [insertResult] = await connection.query(sqlInsert, [
+			quest_name,
+			description,
+			due_date,
+			item_id,
+			email,
+			status,
+		]);
+		const quest_id = (insertResult as OkPacket).insertId;
+		returnJson = { status: 'success', message: 'quest created', return: 0, data: { quest_id: quest_id } };
+	} catch (error) {
+		returnJson = {
+			status: 'error',
+			message: "Error searching for the quest. perhap email doesn't not exist",
+			return: 2,
+			data: { error: error },
+		};
+	} finally {
+		if (connection) {
+			connection.release();
 		}
-	});
+		res.json(returnJson);
+	}
 };

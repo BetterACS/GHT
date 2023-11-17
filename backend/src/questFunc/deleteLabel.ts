@@ -1,53 +1,44 @@
-import db from '../database/tempDatabase.js';
-
-import mysql, { PoolConnection } from 'mysql';
-
 import { Request, Response } from 'express';
+import Database from '../database/database.js';
+import { containInterface, returnInterface } from '../utils/interfaces.js';
+import Logger from '../utils/logger.js';
+let returnJson: returnInterface = {
+	status: 'warning',
+	message: 'Nothing change returnJson variable',
+	return: 5,
+	data: {},
+};
 
 export default async (req: Request, res: Response): Promise<void> => {
 	const { contain_id } = req.body;
-
-	db.getConnection(async (err: Error, connection: PoolConnection | undefined) => {
-		if (err) {
-			console.log(err);
-			res.json('Error connecting to database');
-		} else {
-			const sqlQuery = 'SELECT * FROM contain WHERE contain_id = ?';
-			const searchQuery = mysql.format(sqlQuery, [contain_id]);
-			const sqlDelete = 'delete from contain where contain_id = ?';
-			const Delete = mysql.format(sqlDelete, [contain_id]);
-			connection?.query(searchQuery, async (searchErr: Error, result: any) => {
-				if (searchErr) {
-					connection?.release();
-					console.log(searchErr);
-					res.json('Error connecting to database');
-				} else {
-					console.log('--------Search---------');
-					console.log(result.length);
-
-					if (result.length === 0) {
-						connection?.release();
-						console.log("--------This contain id doesn't exist---------");
-						res.json("This contain id doesn't exist");
-					} else {
-						await connection?.query(Delete, async (deleteERR: Error, deleteResult: any) => {
-							if (deleteERR) {
-								connection?.release();
-
-								console.log(deleteERR);
-								res.json('Error delete the quest');
-							} else {
-								console.log('--------delete successful---------');
-
-								connection?.release();
-
-								res.json('delete label success');
-							}
-							// return res.redirect('/login');
-						});
-					}
-				}
-			});
+	const logger = Logger.instance().logger();
+	let connection;
+	try {
+		const database = Database.instance().mySQL();
+		connection = await database.promise().getConnection();
+		const sqlSearch = 'SELECT * FROM contain WHERE contain_id = ?';
+		const [rows] = await connection.query(sqlSearch, [contain_id]);
+		let contain = rows as containInterface[];
+		if (contain.length === 0) {
+			logger.error('--------This contain not exist---------');
+			returnJson = { status: 'error', message: 'This contain not exist.', return: 1, data: {} };
+			return;
 		}
-	});
+		const sqlDelete = 'delete from contain where contain_id = ?';
+		const [deleteResult] = await connection.query(sqlDelete, [contain_id]);
+
+		returnJson = { status: 'success', message: 'contain deleted', return: 0, data: {} };
+	} catch (error) {
+		returnJson = {
+			status: 'error',
+			message: 'Error deleting for the contain.',
+			return: 2,
+			data: { error: error },
+		};
+	} finally {
+		if (connection) {
+			connection.release();
+		}
+		res.json(returnJson);
+	}
 };
