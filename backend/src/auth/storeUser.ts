@@ -23,7 +23,7 @@ export default async (req: Request, res: Response): Promise<void> => {
 		const hashedPassword: string = await bcrypt.hash(req.body.password, 10);
 
 		connection = await database.promise().getConnection();
-		const [rows] = await database.promise().query(sqlSearch, [email, username, hashedPassword]);
+		const [rows] = await connection.query(sqlSearch, [email, username, hashedPassword]);
 
 		let user = rows as userInterface[];
 		if (user.length !== 0) {
@@ -32,7 +32,7 @@ export default async (req: Request, res: Response): Promise<void> => {
 			return;
 		}
 
-		await database.promise().query(sqlInsert, [email, username, hashedPassword]);
+		await connection.query(sqlInsert, [email, username, hashedPassword]);
 		returnJson = { status: 'success', message: 'Register Successful', return: 0, data: {} };
 	} catch (error) {
 		returnJson = { status: 'error', message: 'Error searching for the email.', return: 2, data: { error: error } };

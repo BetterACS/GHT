@@ -29,7 +29,7 @@ export default async (req: Request, res: Response) => {
 
 		connection = await database.promise().getConnection();
 		const sqlSearch = 'SELECT * FROM user WHERE email = ?';
-		const [rows] = await database.promise().query(sqlSearch, [email]);
+		const [rows] = await connection.query(sqlSearch, [email]);
 
 		let user = rows as userInterface[];
 		if (user.length === 0) {
