@@ -7,7 +7,7 @@ dotenv.config();
 
 export default class Database {
 	private static INSTANCE: Database;
-	private static mySQLConnection: mysql.Connection;
+	private static mySQLConnection: mysql.Pool;
 	private static mongoDBConnection: unknown;
 
 	private constructor() {
@@ -23,22 +23,15 @@ export default class Database {
 	}
 
 	private mySQLConnect() {
-		const logger = Logger.instance().logger();
 		// Create a connection to the database
-		Database.mySQLConnection = mysql.createConnection({
+		Database.mySQLConnection = mysql.createPool({
 			host: process.env.MYSQL_HOST,
 			user: process.env.MYSQL_USER,
 			password: process.env.MYSQL_PASSWORD,
 			database: process.env.MYSQL_DATABASE,
-		});
-		// Attempt to connect to the database
-		Database.mySQLConnection.connect((error: any) => {
-			if (error) {
-				logger.error('[database]:mySQLConnect - Failed to connect to mysql database');
-				logger.error(error);
-				return;
-			}
-			logger.info('[database]:mySQLConnect - Connected to database');
+			waitForConnections: true,
+			connectionLimit: 10,
+			queueLimit: 0,
 		});
 	}
 
@@ -57,6 +50,10 @@ export default class Database {
 
 	public mongoDB() {
 		return Database.mongoDBConnection;
+	}
+
+	public mongoDBDisconnect() {
+		return mongoose.disconnect();
 	}
 
 	public mySQL() {
