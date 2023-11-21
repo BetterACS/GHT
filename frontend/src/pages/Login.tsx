@@ -33,7 +33,7 @@ const Login = () => {
 				if (result.return !== 0 || result.data === undefined) {
 					setEmail('');
 					setPassword('');
-					navigate('/Login');
+					navigate('/Log_in');
 					setError(result.message);
 				}
 

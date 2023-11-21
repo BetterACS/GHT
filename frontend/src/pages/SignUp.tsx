@@ -20,7 +20,7 @@ const SignUp = () => {
 		if (loaded) {
 			return;
 		}
-		tokenAuth(navigate);
+		tokenAuth(navigate, '/');
 		setLoaded(true);
 	});
 

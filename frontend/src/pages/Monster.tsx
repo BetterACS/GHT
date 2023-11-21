@@ -1,81 +1,98 @@
-import { useEffect, useState } from "react"
-import axios from 'axios'
-import Config from "../../../backend/src/config"
-import { monsterInterface } from "../../../backend/src/utils/interfaces";
-/**
- * The Monster component displays a list of monsters.
- */
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import Config from '../../../backend/src/config';
+import { useNavigate } from 'react-router-dom';
+import { monsterInterface, returnInterface } from '../../../backend/src/utils/interfaces';
+import background from '../assets/sample_scene.png';
+import tokenAuth from '../utils/tokenAuth';
+
 const Monster = () => {
-  /**
-   * @Args monsters: An array of Monster objects
-   * @Args setMonsters: A function that updates the monsters array
-   * 
-   * @Args isLoading: A boolean that indicates whether the data is still loading
-   * @Args setIsLoading: A function that updates the isLoading boolean
-   */
+	const [monsters, setMonsters] = useState<monsterInterface[]>([]);
+	const navigate = useNavigate();
 
-  const [monsters, setMonsters] = useState<monsterInterface[]>([]);
-  const [isLoading, setIsLoading] = useState(false)
-  // const {timeoutSeconds, start} = useCountdown();
+	useEffect(() => {
+		tokenAuth(navigate, '/monster');
+		const headers = {
+			authorization: `Bearer ${localStorage.getItem('access_token')}`,
+			refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
+			email: `${localStorage.getItem('email')}`,
+		};
+		axios
+			.get(`http://localhost:${Config.BACKEND_PORT}/monster`, { headers: headers })
+			.then((response) => {
+				const result = response.data as returnInterface;
+				const monsterResult = result.data['monsters'] as monsterInterface[];
 
-  /**
-   * Use the useEffect hook to make an API call to the backend
-   * when the component is first rendered.
-   */
-  useEffect(() => {
-    setIsLoading(true);
-    axios
-      .get(`http://localhost:${Config.BACKEND_PORT}/monster`)
-      .then((response) => {
+				setMonsters(monsterResult);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, []);
 
-        // start(Scheduler.instance().getCurrentTime());
-        // Update the monsters array with the data that was returned
-        setMonsters(response.data);
-        // Set isLoading to false since the data is no longer loading
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsLoading(false);
-      });
-  }, [])
+	const tameMonster = (item_id: number) => {
+		axios
+			.post(`http://localhost:${Config.BACKEND_PORT}/monster/tame/${item_id}`)
+			.then((response) => {
+				console.log(response.data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
 
-  /** 
-   * @arg monsters: A Monster object
-   * @arg isLoading
-   * @arg timeoutSecondsSS
-  */
-  return (
-    <>
-      <h1>Monster</h1>
-     
-      {isLoading ? (
+	return (
+		<>
+			<div className="grid grid-rows-2 ">
+				<div className="row-span-1">
+					<img src={background} alt="" />
+					{monsters.map((monster) => (
+						<div className="absolute top-0 middle-0 content-" key={monster.monster_id}>
+							<img src={monster.image_url} alt={monster.monster_name} />
+							<h2>{monster.monster_name}</h2>
+						</div>
+					))}
+				</div>
 
-        // If the data is still loading, display a loading message.
-        <p>Loading...</p>
-      ) : (
+				<div className="row-span-1 bg-black ">
+					<button
+						className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4"
+						onClick={() => tameMonster(1)}
+					>
+						1
+					</button>
 
-        // If the data is done loading, display the data in a list.
-        <div>
-{/* 
-          {dayjs()
-            .set("hour", 0)
-            .set("minute", 0)
-            .set("second", timeoutSeconds)
-            .format("hh:mm:ss")} */}
+					<button
+						className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4"
+						onClick={() => tameMonster(2)}
+					>
+						2
+					</button>
 
-          {monsters.map((monster) => (
-            <div key={monster.monster_id}>
-              <img src={monster.image_url} alt={monster.monster_name}/>
-              <h2>{monster.monster_name}</h2>
-              <p>Element: {monster.element}</p>
-              <p>Rarity: {monster.rarity}</p>
-            </div>
-          ))}
-        </div>
-      )}
-    </>
-  )
+					<button
+						className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4"
+						onClick={() => tameMonster(3)}
+					>
+						3
+					</button>
+
+					<button
+						className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4"
+						onClick={() => tameMonster(4)}
+					>
+						4
+					</button>
+
+					<button
+						className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4"
+						onClick={() => tameMonster(5)}
+					>
+						5
+					</button>
+				</div>
+			</div>
+		</>
+	);
 };
 
 export default Monster;
