@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef } from 'react';
 import FocusTrap from 'focus-trap-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, delay, motion } from 'framer-motion';
 import clsx from 'clsx';
 import { Dispatch, SetStateAction } from 'react';
 
@@ -11,16 +11,23 @@ interface ModalProps {
 	children: React.ReactNode;
 	showModal: boolean;
 	setShowModal: Dispatch<SetStateAction<boolean>>;
+	setItemName: Dispatch<SetStateAction<string>>;
+	setItemDescription: Dispatch<SetStateAction<string>>;
 	containerClasses?: string;
 }
 
-export default function Modal({ children, showModal, setShowModal, containerClasses }: ModalProps) {
+export default function Modal({ children, showModal, setShowModal, setItemName, setItemDescription, containerClasses }: ModalProps) {
 	const desktopModalRef = useRef(null);
 
 	const onKeyDown = useCallback(
 		(e: KeyboardEvent) => {
 			if (e.key === 'Escape') {
 				setShowModal(false);
+
+				setTimeout(() => {
+					setItemName('');
+					setItemDescription('');
+				  }, 100);
 			}
 		},
 		[setShowModal]
@@ -46,6 +53,8 @@ export default function Modal({ children, showModal, setShowModal, containerClas
 							onMouseDown={(e) => {
 								if (desktopModalRef.current === e.target) {
 									setShowModal(false);
+									setItemName('');
+									setItemDescription('');
 								}
 							}}
 						>

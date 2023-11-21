@@ -12,7 +12,7 @@ const SideBar = () => {
 
     return (
         <>
-            <nav className="fixed top-0 left-0 bg-gray-800 container mx-auto flex items-center justify-between p-4 z-10">
+            <nav className="fixed w-full top-0 left-0 bg-gray-800 mx-auto flex items-center justify-between p-4 z-10">
                 {/* Hamburger Icon (left side) */}
                 <div className='flex items-center'>
                     <div className="hamburger">

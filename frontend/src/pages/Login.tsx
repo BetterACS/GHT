@@ -50,10 +50,10 @@ const Login = () => {
 		<div className="container mx-auto mt-8">
 			<h1 className="text-3xl font-bold text-center">Log In</h1>
 			{error && <div className="text-red-500">{error}</div>}
-			<form className="mt-4" onSubmit={handleSubmit}>
+			<form className="mt-4 text-center" onSubmit={handleSubmit}>
 				{/* Email Input */}
 				<div className="mb-4">
-					<label htmlFor="email" className="block text-sm font-semibold">
+					<label htmlFor="email" className="block text-sm text-center font-semibold">
 						Email
 					</label>
 					<input
@@ -62,14 +62,14 @@ const Login = () => {
 						name="email"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
-						className="border rounded-md p-2 w-full"
+						className="border rounded-md p-2 w-1/2"
 						required
 					/>
 				</div>
 
 				{/* Password Input */}
 				<div className="mb-4">
-					<label htmlFor="password" className="block text-sm font-semibold">
+					<label htmlFor="password" className="block text-sm text-center font-semibold">
 						Password
 					</label>
 					<input
@@ -78,7 +78,7 @@ const Login = () => {
 						name="password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
-						className="border rounded-md p-2 w-full"
+						className="border rounded-md p-2 w-1/2"
 						required
 					/>
 				</div>

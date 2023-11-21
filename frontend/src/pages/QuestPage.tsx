@@ -47,6 +47,14 @@ export default function QuestPage() {
 	const [showAddItemModal, setShowAddItemModal] = useState(false);
 	const [showEditItemModal, setShowEditItemModal] = useState(false);
 
+	const resetItemState = (updatedContainers: DNDType[]) => {
+		setContainers(updatedContainers);
+		setItemName('');
+		setItemDescription('');
+		setShowAddItemModal(false);
+		setShowEditItemModal(false);
+	  };
+
 	const onAddItem = () => {
 		if (!itemName || !currentContainerId) return;
 
@@ -62,10 +70,7 @@ export default function QuestPage() {
 			return container;
 		});
 
-		setContainers(updatedContainers);
-		setItemName('');
-		setItemDescription('');
-		setShowAddItemModal(false);
+		resetItemState(updatedContainers);
 	};
 
 	const onEditItem = () => {
@@ -86,10 +91,7 @@ export default function QuestPage() {
 		  return container;
 		});
 	
-		setContainers(updatedContainers);
-		setItemName('');
-		setItemDescription('');
-		setShowEditItemModal(false);
+		resetItemState(updatedContainers);
 	  };
 
 	// Find the value of the items
@@ -148,7 +150,7 @@ export default function QuestPage() {
 		  <div className='flex'>
 			<div className="mx-auto w-full py-10">
 			  {/* Add Item Modal */}
-			  <Modal showModal={showAddItemModal} setShowModal={setShowAddItemModal}>
+			  <Modal showModal={showAddItemModal} setShowModal={setShowAddItemModal} setItemName={setItemName} setItemDescription={setItemDescription}>
 				<div className="flex flex-col w-full items-start gap-y-4">
 				  <h1 className="text-gray-800 text-3xl font-bold">Add Item</h1>
 				  <Input
@@ -170,7 +172,7 @@ export default function QuestPage() {
 			  </Modal>
 
 			  {/* Edit Item Modal */}
-			  <Modal showModal={showEditItemModal} setShowModal={setShowEditItemModal}>
+			  <Modal showModal={showEditItemModal} setShowModal={setShowEditItemModal} setItemName={setItemName} setItemDescription={setItemDescription}>
 				<div className="flex flex-col w-full items-start gap-y-4">
 				  <h1 className="text-gray-800 text-3xl font-bold">Edit Item</h1>
 				  <Input

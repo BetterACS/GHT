@@ -45,13 +45,13 @@ const SignUp = () => {
 
 	return (
 		<div className="h-screen bg-black top-0 left-0 flex items-center">
-			<div className='w-1/2 font-bold text-white tracking-[.75em]'>
+			<div className='w-1/2 font-bold text-center text-white tracking-[.75em]'>
 				<h1>HABITKUB</h1>
 			</div>
 			<div className="w-1/2 container mx-auto">
 				<h1 className="text-3xl font-bold text-center text-white">SIGN UP</h1>
 				{error && <div className="text-red-500">{error}</div>}
-				<form className="mt-4" onSubmit={handleSubmit}>
+				<form className="mt-4 text-center" onSubmit={handleSubmit}>
 					{/* Username Input */}
 					<div className="m-5">
 						<input

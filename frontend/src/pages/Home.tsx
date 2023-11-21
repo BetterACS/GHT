@@ -3,18 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import tokenAuth from '../utils/tokenAuth.ts';
 
 const Home = () => {
-	const [loaded, setLoaded] = useState(false);
-	const [showWelcome, setShowWelcome] = useState(false);
-	const navigate = useNavigate();
-  
-	useEffect(() => {
+  const [loaded, setLoaded] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
     setShowWelcome(true);
-		if (loaded) {
-			return;
-		}
-		tokenAuth(navigate);
-		setLoaded(true);
-	});
+    if (loaded) {
+      return;
+    }
+    tokenAuth(navigate);
+    setLoaded(true);
+  });
   return (
     <>
       {/* Navbar */}
@@ -90,7 +90,7 @@ const Home = () => {
           </div>
           <div className="lg:flex">
             <div className="sm:flex sm:space-x-5 lg:flex lg:space-x-12">
-              <div className="w-full mt-2 sm:w-1/2 sm:mr-0 sm:mt-0 lg:mr-6 lg:w-auto">
+              <div className="w-full text-center mt-2 sm:w-1/2 sm:mr-0 sm:mt-0 lg:mr-6 lg:w-auto">
                 <h2 className="text-2xl font-bold">Company</h2>
                 <ul className="mt-2 sm:mt-3">
                   <li>
@@ -104,7 +104,7 @@ const Home = () => {
                   </li>
                 </ul>
               </div>
-              <div className="w-full mt-2 sm:mt-0 sm:w-1/2 lg:w-auto">
+              <div className="w-full text-center mt-2 sm:mt-0 sm:w-1/2 lg:w-auto">
                 <h2 className="text-2xl font-bold">Resources</h2>
                 <ul className="mt-2 sm:mt-3">
                   <li>
