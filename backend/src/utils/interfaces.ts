@@ -19,6 +19,31 @@ interface userInterface {
 	password: string;
 	created_time: Date;
 }
+interface questInterface {
+	quest_id: number;
+	quest_name: string;
+	description: string;
+	start_date: Date;
+	due_date: Date;
+	status: string;
+	item_id: number;
+	email: string;
+}
+interface tagInterface {
+	tag_id: number;
+	tag_name: string;
+	tag_color: string;
+	email: string;
+}
+
+interface habitInterface {
+	habit_id: number;
+	habit_name: string;
+	description: string;
+	decrease_rate: number;
+	value: number;
+	email: string;
+}
 
 interface inventoryInterface {
 	[item_id: string]: number;
@@ -41,5 +66,20 @@ interface returnInterface {
 		[key: string]: any;
 	};
 }
-
-export { fieldInterface, inventoryInterface, monsterInterface, returnInterface, userInterface, userStoragesInterface };
+interface containInterface {
+	contain_id: number;
+	tag_id: number;
+	quest_id: number;
+}
+export {
+	containInterface,
+	fieldInterface,
+	habitInterface,
+	inventoryInterface,
+	monsterInterface,
+	questInterface,
+	returnInterface,
+	tagInterface,
+	userInterface,
+	userStoragesInterface,
+};
