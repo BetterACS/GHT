@@ -69,3 +69,23 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+@keyframes fade-in {
+  0% {
+    transform: translateY(-60px);
+    opacity: 0%;
+  }
+  70% {
+    transform: translateY(5px);
+    opacity: 70%;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 100%;
+  }
+}
+
+.welcome-animation {
+  animation: fade-in 0.7s ease-in-out;
+}
+
