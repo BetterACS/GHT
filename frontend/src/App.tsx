@@ -1,9 +1,9 @@
-import './App.css';
+import './index.css';
 import Home from './pages/Home';
 import Monster from './pages/Monster';
 import SignUp from './pages/SignUp';
 import Login from './pages/Login';
-
+import TaskDemo from './pages/TaskDemo';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
@@ -15,6 +15,7 @@ function App() {
 					<Route path="/monster" element={<Monster />} />
 					<Route path="/sign_up" element={<SignUp />} />
 					<Route path="/log_in" element={<Login />} />
+					<Route path="/task_demo" element={<TaskDemo />} />
 				</Routes>
 			</Router>
 		</>
