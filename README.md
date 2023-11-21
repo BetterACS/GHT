@@ -47,17 +47,23 @@ cd ..
 or you can install all dependencies separately.
 
 ## Usage
+To start the web application, you need to run these commands:
 
-To start the client, run the following commands:
+Start the validation server
+```node
+cd backend
+npm run valid
+```
 
+Start the backend server
+```node
+cd backend
+npm run start
+```
+
+Start the frontend server
 ```node
 cd frontend
 npm run dev
 ```
 
-To start the server, run the following commands:
-
-```node
-cd backend
-npm run start
-```
