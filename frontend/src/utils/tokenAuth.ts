@@ -5,7 +5,12 @@ export default async function tokenAuth(
 	navigateFunction: any,
 	redirect: string = '/',
 	tokenSuccessFunction = () => {},
-	tokenFailureFunction = () => {},
+	tokenFailureFunction = () => {
+		localStorage.removeItem('access_token');
+		localStorage.removeItem('refresh_token');
+		localStorage.removeItem('email');
+		navigateFunction('/Log_in');
+	},
 	tokenNullFunction = () => {}
 ) {
 	const headers = {

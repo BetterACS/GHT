@@ -109,6 +109,7 @@ function onDragEnd(
 		active.id !== over.id
 	) {
 		// Find the index of the active and over container
+		
 		const activeContainerIndex = containers.findIndex((container) => container.id === active.id);
 		const overContainerIndex = containers.findIndex((container) => container.id === over.id);
 		// Swap the active and over container
@@ -134,6 +135,7 @@ function onDragEnd(
 		// Find the index of the active and over container
 		const activeContainerIndex = containers.findIndex((container) => container.id === activeContainer.id);
 		const overContainerIndex = containers.findIndex((container) => container.id === overContainer.id);
+		
 		// Find the index of the active and over item
 		const activeitemIndex = activeContainer.items.findIndex((item: any) => item.id === active.id);
 		const overitemIndex = overContainer.items.findIndex((item: any) => item.id === over.id);

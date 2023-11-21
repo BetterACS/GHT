@@ -12,7 +12,7 @@ const Home = () => {
 		if (loaded) {
 			return;
 		}
-		tokenAuth(navigate);
+		tokenAuth(navigate,'/quest');
 		setLoaded(true);
 	});
   return (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import SideBar from '../components/SideBar';
 import Quest from '../components/Quest';
@@ -7,6 +7,7 @@ import Modal from '../components/Modal';
 import Button from '../components/Button';
 import QuestContainer from '../components/QuestContainer';
 import { DNDType } from '../utils/types';
+import { useNavigate } from 'react-router-dom';
 // DnD
 import {
 	DndContext,
@@ -23,17 +24,30 @@ import {
 } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { onDragStart, onDragMove, onDragEnd } from '../utils/dragController';
+import tokenAuth from '../utils/tokenAuth';
+import axios from 'axios';
+import { returnInterface } from '../../../backend/src/utils/interfaces';
 
 export default function QuestPage() {
+	const navigate = useNavigate();
+	const [loaded, setLoaded] = useState(false);
+	useEffect(() => {
+		if (loaded) {
+			return;
+		}
+		tokenAuth(navigate,'/quest');
+		setLoaded(true);
+	});
+
 	const [containers, setContainers] = useState<DNDType[]>([
 		{
-			id: `container-${uuidv4()}`,
+			id: `container-1`,
 			title: 'Task',
 			items: [
 			],
 		},
 		{
-			id: `container-${uuidv4()}`,
+			id: `container-2`,
 			title: 'In Progress',
 			items: [
 			],
@@ -46,51 +60,115 @@ export default function QuestPage() {
 	const [itemDescription, setItemDescription] = useState('');
 	const [showAddItemModal, setShowAddItemModal] = useState(false);
 	const [showEditItemModal, setShowEditItemModal] = useState(false);
-
-	const onAddItem = () => {
+	const [error, setError] = useState('');
+	//constant temp 
+	const [due_date,setDueDate] = useState('2022-01-01');
+	const [item_id,setItemID] = useState(1);
+	const email = localStorage.getItem('email') || '';
+	if (email === '') {
+		localStorage.removeItem('access_token');
+		localStorage.removeItem('refresh_token');
+		navigate('/Log_in');
+	}
+	const onAddItem = async (e:any) => {
+		e.preventDefault();
 		if (!itemName || !currentContainerId) return;
 
-		const id = `item-${uuidv4()}`;
-		const updatedContainers = containers.map((container) => {
-			if (container.id === currentContainerId) {
-				container.items.push({
-					id,
-					title: itemName,
+		// const id = `item-${uuidv4()}`;
+		const updatedContainers = await Promise.all(
+			containers.map(async (container) => {
+			  if (container.id === currentContainerId) {
+				console.log(container.id);
+				
+				const tempStatus = container.id === 'container-1' ? 'Task' : 'In Progress';
+		
+				try {
+				  const results = await axios.post('http://localhost:5000/createQuest', {
+					quest_name: itemName,
 					description: itemDescription,
-				});
-			}
-			return container;
-		});
-
+					due_date: due_date,
+					item_id: item_id,
+					email: email,
+					status: tempStatus,
+				  });
+		
+				  const result = results.data as returnInterface;
+		
+				  if (result.return !== 0 || result.data === undefined) {
+					setError(result.data.error);
+					console.log(error);
+				  } else {
+					console.log(result.data);
+					const id = "item-"+result.data.quest_id;
+					container.items.push({
+					  id : id,
+					  title: itemName,
+					  description: itemDescription,
+					});
+				  }
+				} catch (err) {
+				  console.log(err);
+				}
+			  }
+			  return container;
+			})
+		  );
 		setContainers(updatedContainers);
 		setItemName('');
 		setItemDescription('');
 		setShowAddItemModal(false);
 	};
-
-	const onEditItem = () => {
+	
+	const onEditItem = async (e:any) => {
+		
 		if (!currentContainerId || !currentItemId || !itemName) return;
 	
-		const updatedContainers = containers.map((container) => {
+		const updatedContainers = await Promise.all(containers.map(async (container) => {
 		  if (container.id === currentContainerId) {
-			const updatedItems = container.items.map((item) => {
+			const updatedItems = container.items.map(async (item) => {
 			  if (item.id === currentItemId) {
 				item.title = itemName;
 				item.description = itemDescription;
+				const tempStatus = container.id === 'container-1' ? 'Task' : 'In Progress';
+				const new_id = Number(currentItemId.toString().replace("item-", ""));
+				console.log(new_id);
+				try {
+					const results = axios.put('http://localhost:5000/adjustQuest', {
+					  quest_id : new_id,//change 
+					  quest_name: itemName,
+					  description: itemDescription,
+					  due_date: due_date,
+					  item_id: item_id,
+					  email: email,
+					  status: tempStatus,
+					});
+		  
+					const result = (await results).data as returnInterface;
+		  
+					if (result.return !== 0 || result.data === undefined) {
+					  setError(result.data.error);
+					  console.log(error);
+					} else {
+					  console.log(result.data);
+					}
+				  } catch (err) {
+					console.log(err);
+				  }
 			  }
 			  return item;
-			});
-	
-			container.items = updatedItems;
+			})
+			
+			container.items = await Promise.all(updatedItems);
 		  }
 		  return container;
-		});
+		}));
 	
 		setContainers(updatedContainers);
 		setItemName('');
 		setItemDescription('');
 		setShowEditItemModal(false);
-	  };
+		};
+	
 
 	// Find the value of the items
 	function findValueOfQuest(id: UniqueIdentifier | undefined, type: string) {
@@ -126,6 +204,8 @@ export default function QuestPage() {
 		})
 	);
 
+	
+
 	const handleDragStart = (event: DragStartEvent) => {
 		onDragStart(event, setActiveId);
 	};
@@ -136,6 +216,12 @@ export default function QuestPage() {
 
 	const handleDragEnd = (event: DragEndEvent) => {
 		onDragEnd(event, findValueOfQuest, setContainers, setActiveId, containers);
+
+		// Check if the end of the drag is not the same as the start point
+		if (activeId !== event.over) {
+			console.log("active_id is ",activeId,"event over is :",event.over);
+			onEditItem(event); // Call the onEditItem function
+		}
 	};
 
 	return (
@@ -201,6 +287,7 @@ export default function QuestPage() {
 					onDragEnd={handleDragEnd}
 				  >
 					<SortableContext items={containers.map((i) => i.id)}>
+						
 					  <div className="flex">
 						{containers.map((container) => (
 						  <div key={container.id} className="mr-4 w-full"> {/* Added margin */}
