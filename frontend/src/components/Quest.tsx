@@ -10,9 +10,10 @@ type QuestType = {
 	title: string;
 	description: string;
 	onEditItem: () => void;
+	onDeleteItem: () => void;
 };
 
-const Quest = ({ id, title, description, onEditItem }: QuestType) => {
+const Quest = ({ id, title, description, onEditItem ,onDeleteItem}: QuestType) => {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: id,
 		data: {
@@ -48,8 +49,9 @@ const Quest = ({ id, title, description, onEditItem }: QuestType) => {
 					<button className="border text-xs rounded-xl shadow-lg hover:shadow-xl px-50" {...listeners}>
 						<FontAwesomeIcon icon={faArrowPointer} size="lg" />
 					</button>
-					<button className="border text-xs rounded-xl shadow-lg hover:shadow-xl px-50" {...listeners}>
+					<button className="border text-xs rounded-xl shadow-lg hover:shadow-xl px-50" onClick={onDeleteItem}>
 						<FontAwesomeIcon icon={faTrash} size="lg" />
+
 					</button>
 				</div>
 			</div>

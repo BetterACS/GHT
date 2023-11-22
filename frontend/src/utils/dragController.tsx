@@ -4,11 +4,19 @@ import { DNDType } from './types';
 
 function onDragStart(
 	event: DragStartEvent,
-	setActiveId: React.Dispatch<React.SetStateAction<UniqueIdentifier | null>>
+	findValueOfQuest: Function,
+	setActiveId: React.Dispatch<React.SetStateAction<UniqueIdentifier | null>>,
+	setDragObjectOnContainerID:any
 ) {
 	const { active } = event;
 	const { id } = active;
 	setActiveId(id);
+	const BeforeContainer = findValueOfQuest(event.active.id, 'item');
+		
+		if (typeof BeforeContainer === 'undefined'){
+			return;
+		}
+	setDragObjectOnContainerID(BeforeContainer.id);
 }
 
 const onDragMove = (
@@ -30,14 +38,13 @@ const onDragMove = (
 		// Find the active container and over container
 		const activeContainer = findValueOfQuest(active.id, 'item');
 		const overContainer = findValueOfQuest(over.id, 'item');
-
 		// If the active or over container is not found, return
 		if (!activeContainer || !overContainer) return;
 
 		// Find the index of the active and over container
 		const activeContainerIndex = containers.findIndex((container) => container.id === activeContainer.id);
 		const overContainerIndex = containers.findIndex((container) => container.id === overContainer.id);
-
+		
 		// Find the index of the active and over item
 		const activeitemIndex = activeContainer.items.findIndex((item: any) => item.id === active.id);
 		const overitemIndex = overContainer.items.findIndex((item: any) => item.id === over.id);
@@ -71,7 +78,7 @@ const onDragMove = (
 		// Find the active and over container
 		const activeContainer = findValueOfQuest(active.id, 'item');
 		const overContainer = findValueOfQuest(over.id, 'container');
-
+		
 		// If the active or over container is not found, return
 		if (!activeContainer || !overContainer) return;
 
@@ -97,6 +104,7 @@ function onDragEnd(
 	setContainers: React.Dispatch<React.SetStateAction<DNDType[]>>,
 	setActiveId: React.Dispatch<React.SetStateAction<UniqueIdentifier | null>>,
 	containers: DNDType[]
+	
 ) {
 	const { active, over } = event;
 
