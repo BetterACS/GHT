@@ -5,45 +5,61 @@ import FocusTrap from 'focus-trap-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import clsx from 'clsx';
 import { Dispatch, SetStateAction } from 'react';
+import { TagType } from './Tag';
 
 // Types
 interface ModalProps {
 	children: React.ReactNode;
 	showModal: boolean;
 	setShowModal: Dispatch<SetStateAction<boolean>>;
-	setItemName: Dispatch<SetStateAction<string>>;
-	setItemDescription: Dispatch<SetStateAction<string>>;
+	setPreviewTags: Dispatch<SetStateAction<TagType[]>>;
+	setTagName: Dispatch<SetStateAction<string>>;
+	onAddTag: Function;
+	value: string;
 	containerClasses?: string;
 }
 
-export default function Modal({
+export default function TagModal({
 	children,
 	showModal,
 	setShowModal,
-	setItemName,
-	setItemDescription,
+	setPreviewTags,
+	setTagName,
+	onAddTag,
+	value,
 	containerClasses,
 }: ModalProps) {
 	const desktopModalRef = useRef(null);
 
-	const onKeyDown = useCallback(
+	const onKeyExit = useCallback(
 		(e: KeyboardEvent) => {
 			if (e.key === 'Escape') {
+				setTagName('');
 				setShowModal(false);
-
-				setTimeout(() => {
-					setItemName('');
-					setItemDescription('');
-				}, 100);
+				setPreviewTags([]);
 			}
 		},
-		[setShowModal]
+		[setShowModal, setTagName]
+	);
+
+	const onAddTagCallback = useCallback(
+		(e: KeyboardEvent) => {
+			if (e.key === 'Enter' && value != '') {
+				setTagName('');
+				onAddTag(value);
+			}
+		},
+		[onAddTag, value, setTagName]
 	);
 
 	useEffect(() => {
-		document.addEventListener('keydown', onKeyDown);
-		return () => document.removeEventListener('keydown', onKeyDown);
-	}, [onKeyDown]);
+		document.addEventListener('keydown', onKeyExit);
+		document.addEventListener('keydown', onAddTagCallback);
+		return () => {
+			document.removeEventListener('keydown', onKeyExit);
+			document.removeEventListener('keydown', onAddTagCallback);
+		};
+	}, [onKeyExit, onAddTagCallback]);
 
 	return (
 		<AnimatePresence>
@@ -59,15 +75,15 @@ export default function Modal({
 							exit={{ scale: 0.95, opacity: 0 }}
 							onMouseDown={(e) => {
 								if (desktopModalRef.current === e.target) {
+									setTagName('');
 									setShowModal(false);
-									setItemName('');
-									setItemDescription('');
+									setPreviewTags([]);
 								}
 							}}
 						>
 							<div
 								className={clsx(
-									`overflow relative w-full max-w-lg transform rounded-xl border border-gray-200 bg-white p-6 text-left shadow-2xl transition-all`,
+									`overflow relative w max-w-lg transform rounded-xl border border-gray-200 bg-white p-6 text-left shadow-2xl transition-all`,
 									containerClasses
 								)}
 							>
