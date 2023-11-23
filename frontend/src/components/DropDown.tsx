@@ -2,6 +2,7 @@ import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { TagType } from './Tag';
+import { UniqueIdentifier } from '@dnd-kit/core';
 
 function classNames(...classes: any) {
 	return classes.filter(Boolean).join(' ');
@@ -12,6 +13,9 @@ interface DropDownProps {
 }
 
 const DropDown = ({ tags }: DropDownProps) => {
+	const handleTagClick = (tagID: UniqueIdentifier) => {
+		console.log('You clicked: ', tagID);
+	};
 	return (
 		<Menu as="div" className="relative inline-block text-left">
 			<div>
@@ -30,7 +34,7 @@ const DropDown = ({ tags }: DropDownProps) => {
 				leaveFrom="transform opacity-100 scale-100"
 				leaveTo="transform opacity-0 scale-95"
 			>
-				<Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+				<Menu.Items className="absolute right-0 z-10 mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
 					<div className="py-1">
 						{tags.map((tag) => (
 							<Menu.Item key={tag.id}>
@@ -41,6 +45,7 @@ const DropDown = ({ tags }: DropDownProps) => {
 											active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
 											'block px-4 py-2 text-sm'
 										)}
+										onClick={() => handleTagClick(tag.id)}
 									>
 										{tag.name}
 									</a>
