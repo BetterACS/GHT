@@ -125,6 +125,9 @@ export default function QuestPage() {
 			color: tagColorList[Math.floor(Math.random() * tagColorList.length)],
 		};
 
+		if (getAllTagsFromContainers().find((tag) => tag.name === tagName)) {
+			return;
+		}
 		setPreviewTags([...previewTags, tag]);
 
 		const updatedContainers = containers.map((container) => {
@@ -333,7 +336,6 @@ export default function QuestPage() {
 									<div className="flex">
 										{containers.map((container) => (
 											<div key={container.id} className="mr-4 w-full">
-												{' '}
 												{/* Added margin */}
 												<QuestContainer
 													id={container.id}
