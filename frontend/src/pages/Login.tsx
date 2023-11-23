@@ -47,49 +47,50 @@ const Login = () => {
 	};
 
 	return (
-		<div className="container mx-auto mt-8">
-			<h1 className="text-3xl font-bold text-center">Log In</h1>
-			{error && <div className="text-red-500">{error}</div>}
-			<form className="mt-4 text-center" onSubmit={handleSubmit}>
-				{/* Email Input */}
-				<div className="mb-4">
-					<label htmlFor="email" className="block text-sm text-center font-semibold">
-						Email
-					</label>
-					<input
-						type="email"
-						id="email"
-						name="email"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-						className="border rounded-md p-2 w-1/2"
-						required
-					/>
-				</div>
+		<div className="h-screen bg-gray-900 flex flex-col justify-center items-center">
+			<div className='text-white mb-8 typewriter'>
+				<h1>HABITKUB</h1>
+			</div>
+			<div className="bg-gray-800 p-8 rounded-md shadow-sm shadow-white">
+				<h1 className="text-3xl font-bold text-white text-center">Log In</h1>
+				{error && <div className="text-red-500">{error}</div>}
+				<form className="mt-4 text-center" onSubmit={handleSubmit}>
+					{/* Email Input */}
+					<div className="mb-4">
+						<input
+							type="email"
+							id="email"
+							name="email"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+							className="border rounded-md p-2 w-64"
+							placeholder='Username'
+							required
+						/>
+					</div>
 
-				{/* Password Input */}
-				<div className="mb-4">
-					<label htmlFor="password" className="block text-sm text-center font-semibold">
-						Password
-					</label>
-					<input
-						type="password"
-						id="password"
-						name="password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						className="border rounded-md p-2 w-1/2"
-						required
-					/>
-				</div>
+					{/* Password Input */}
+					<div className="mb-4">
+						<input
+							type="password"
+							id="password"
+							name="password"
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
+							className="border rounded-md p-2 w-64"
+							placeholder='Password'
+							required
+						/>
+					</div>
 
-				{/* Submit Button */}
-				<div className="text-center">
-					<button type="submit" className="bg-purple-800 text-white py-2 px-4 rounded-md hover:bg-purple-600">
-						Log In
-					</button>
-				</div>
-			</form>
+					{/* Submit Button */}
+					<div className="text-center">
+						<button type="submit" className="bg-gray-900 border-2 border-gray-500 text-white px-5 py-3 rounded-md mt-3 hover-bg-gray-900 transform hover:scale-105 transition-transform text-xs sm:text-sm">
+							Log In
+						</button>
+					</div>
+				</form>
+			</div>
 		</div>
 	);
 };

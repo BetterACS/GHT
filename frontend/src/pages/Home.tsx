@@ -39,7 +39,7 @@ const Home = () => {
           <p className="text-lg text-white text-center mt-4 sm:mt-3 sm:text-xl lg:text-2xl lg:mt-5 lg:mb-2">
             to the birthplace of our dynasty
           </p>
-          <button className="bg-black border-2 border-gray-500 shadow-sm shadow-white text-white px-5 py-3 rounded-md mt-3 hover-bg-gray-900 transform hover:scale-105 transition-transform text-sm sm:text-base sm:mt-4">
+          <button className="bg-black border-2 border-gray-500 text-white px-5 py-3 rounded-md mt-3 hover-bg-gray-900 transform hover:scale-105 transition-transform text-sm sm:text-base sm:mt-4">
             Get Started
           </button>
         </div>
