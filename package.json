@@ -1,5 +1,12 @@
 {
+  "scripts": {
+    "install": "cd backend && npm install && cd ../frontend && npm install",
+    "validate": "cd backend && npm run valid",
+    "backend": "cd backend && npm run start",
+    "frontend": "cd frontend && npm run dev",
+    "all": "concurrently \"npm run validate\" \"npm run backend\" \"npm run frontend\""
+  },
   "dependencies": {
-    "bcrypt": "^5.1.1"
+    "concurrently": "^8.2.2"
   }
 }
