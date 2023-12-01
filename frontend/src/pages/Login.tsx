@@ -18,6 +18,7 @@ const Login = () => {
 		if (loaded) {
 			return;
 		}
+
 		tokenAuth(navigate,'/quest');
 		setLoaded(true);
 	});

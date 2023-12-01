@@ -37,11 +37,8 @@ REFRESH_TOKEN = "rEfReSh"
 3. Install dependencies, run the following commands:
 
 ```node
-cd frontend
-npm install
-cd ../backend
-npm install
-cd ..
+cd GHT
+npm run install
 ```
 
 or you can install all dependencies separately.
@@ -49,21 +46,25 @@ or you can install all dependencies separately.
 ## Usage
 To start the web application, you need to run these commands:
 
-Start the validation server
+Start all the servers at once
 ```node
-cd backend
-npm run valid
+npm run all
 ```
 
-Start the backend server
+or you can start each server separately.
+
+- Start the validation server
 ```node
-cd backend
-npm run start
+npm run validate
 ```
 
-Start the frontend server
+- Start the backend server
 ```node
-cd frontend
-npm run dev
+npm run backend
+```
+
+- Start the frontend server
+```node
+npm run frontend
 ```
 
