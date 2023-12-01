@@ -11,7 +11,9 @@ export default async function tokenAuth(
 		localStorage.removeItem('email');
 		navigateFunction('/Log_in');
 	},
-	tokenNullFunction = () => {}
+	tokenNullFunction = () => {
+		navigateFunction('/Log_in');
+	}
 ) {
 	const headers = {
 		authorization: `Bearer ${localStorage.getItem('access_token')}`,
