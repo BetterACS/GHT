@@ -7,7 +7,7 @@
     "scripts": {
         "dev": "nodemon -x ts-node --esm src/index.ts",
         "build": "npx tsc",
-        "start": "npm run build && node dist/index.js",
+        "start": "npm run build && nodemon dist/index.js",
         "valid": "npm run build && nodemon dist/validate.js"
     },
     "keywords": [],
