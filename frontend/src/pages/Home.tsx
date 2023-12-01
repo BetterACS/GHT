@@ -8,10 +8,11 @@ const Home = () => {
 	const navigate = useNavigate();
   
 	useEffect(() => {
+    setShowWelcome(true);
 		if (loaded) {
 			return;
 		}
-		tokenAuth(navigate);
+		tokenAuth(navigate,'/quest');
 		setLoaded(true);
 	});
   return (

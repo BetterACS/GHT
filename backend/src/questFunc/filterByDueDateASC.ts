@@ -9,7 +9,7 @@ let returnJson: returnInterface = {
 	data: {},
 };
 export default async (req: Request, res: Response): Promise<void> => {
-	const { email } = req.body;
+	const { email } = req.query;
 	const logger = Logger.instance().logger();
 	let connection;
 	try {

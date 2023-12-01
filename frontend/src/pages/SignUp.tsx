@@ -13,13 +13,14 @@ const SignUp = () => {
 	const [error, setError] = useState('');
 	const navigate = useNavigate();
 
+	
 	// Handle form submission
 
 	useEffect(() => {
 		if (loaded) {
 			return;
 		}
-		tokenAuth(navigate, '/');
+		tokenAuth(navigate, '/quest');
 		setLoaded(true);
 	});
 
@@ -43,65 +44,64 @@ const SignUp = () => {
 	};
 
 	return (
-		<div className="container mx-auto mt-8">
-			<h1 className="text-3xl font-bold text-center">Sign Up</h1>
-			{error && <div className="text-red-500">{error}</div>}
-			<form className="mt-4" onSubmit={handleSubmit}>
-				{/* Username Input */}
-				<div className="mb-4">
-					<label htmlFor="username" className="block text-sm font-semibold">
-						Username
-					</label>
-					<input
-						type="text"
-						id="username"
-						name="username"
-						value={username}
-						onChange={(e) => setUsername(e.target.value)}
-						className="border rounded-md p-2 w-full"
-						required
-					/>
-				</div>
+		<div className="h-screen bg-black top-0 left-0 flex items-center">
+			<div className='w-1/2 font-bold text-white tracking-[.75em]'>
+				<h1>HABITKUB</h1>
+			</div>
+			<div className="w-1/2 container mx-auto">
+				<h1 className="text-3xl font-bold text-center text-white">SIGN UP</h1>
+				{error && <div className="text-red-500">{error}</div>}
+				<form className="mt-4" onSubmit={handleSubmit}>
+					{/* Username Input */}
+					<div className="m-5">
+						<input
+							type="text"
+							id="username"
+							name="username"
+							value={username}
+							onChange={(e) => setUsername(e.target.value)}
+							className="border-2 border-red-500  shadow-sm shadow-white rounded-md p-2 w-1/2"
+							placeholder='Username'
+							required
+						/>
+					</div>
 
-				{/* Email Input */}
-				<div className="mb-4">
-					<label htmlFor="email" className="block text-sm font-semibold">
-						Email
-					</label>
-					<input
-						type="email"
-						id="email"
-						name="email"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-						className="border rounded-md p-2 w-full"
-						required
-					/>
-				</div>
+					{/* Email Input */}
+					<div className="m-5">
+						<input
+							type="email"
+							id="email"
+							name="email"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+							className="border-2 border-red-500  shadow-sm shadow-white rounded-md p-2 w-1/2"
+							placeholder='Email'
+							required
+						/>
+					</div>
 
-				{/* Password Input */}
-				<div className="mb-4">
-					<label htmlFor="password" className="block text-sm font-semibold">
-						Password
-					</label>
-					<input
-						type="password"
-						id="password"
-						name="password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						className="border rounded-md p-2 w-full"
-						required
-					/>
-				</div>
+					{/* Password Input */}
+					<div className="m-5">
+						<input
+							type="password"
+							id="password"
+							name="password"
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
+							className="border-2 border-red-500  shadow-sm shadow-white rounded-md p-2 w-1/2"
+							placeholder='Password'
+							required
+						/>
+					</div>
 
-				{/* Submit Button */}
-				<div className="text-center">
-					<button type="submit" className="bg-purple-800 text-white py-2 px-4 rounded-md hover:bg-purple-600">
-						Sign Up
-					</button>
-				</div>
-			</form>
+					{/* Submit Button */}
+					<div className="text-center">
+						<button type="submit" className="bg-black border-2 border-gray-500 shadow-sm shadow-white text-white px-5 py-3 rounded-md mt-3 hover-bg-gray-900 transform hover:scale-105 transition-transform text-xs sm:text-sm sm:mt-4">
+							Sign Up
+						</button>
+					</div>
+				</form>
+			</div>
 		</div>
 	);
 };

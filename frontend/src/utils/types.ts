@@ -6,6 +6,7 @@ type DNDType = {
 	items: {
 		id: UniqueIdentifier;
 		title: string;
+		description : string;
 	}[];
 };
 

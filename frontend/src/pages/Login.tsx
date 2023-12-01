@@ -18,7 +18,8 @@ const Login = () => {
 		if (loaded) {
 			return;
 		}
-		tokenAuth(navigate, 'quest');
+
+		tokenAuth(navigate,'/quest');
 		setLoaded(true);
 	});
 	const handleSubmit = (e: any) => {
