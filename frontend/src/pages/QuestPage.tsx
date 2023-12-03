@@ -77,52 +77,98 @@ export default function QuestPage() {
 	const [item_id, setItemID] = useState(1);
 
 	const email = localStorage.getItem('email') || '';
+	const [tags, setTags] = useState<TagType[]>([]);
 
+	
 	useEffect(() => {
 		tokenAuth(navigate, '/quest'); // Check if the user is logged in
-		const fetchData = async () => {
-			try {
-				const results = await axios.get('http://localhost:5000/filterByDueDateASC', {
-					params: {
-						email: email,
-					},
-				});
-
-				const result = results.data as returnInterface;
-
-				if (result.return !== 0 || result.data === undefined) {
-					// Handle error case
-					console.log(result.data.error);
-				}
-
-				result.data.map((item: any) => {
-					const id = 'item-' + item.quest_id;
-					const currentContainer = item.status === 'Task' ? 'container-1' : 'container-2';
-					containers.map((container) => {
-						if (container.id === currentContainer) {
-							container.items.push({
-								id: id,
-								title: item.quest_name,
-								description: item.description,
-								tags: [],
-							});
-							console.log(container);
-						}
-					});
-				});
-
-				// Once the Axios request is complete and data is processed, set loaded to true
-				setLoaded(true);
-			} catch (err) {
-				console.log(err);
-			}
-		};
+		
+		
 
 		fetchData(); // Call the asynchronous function to fetch data
 
+
+		//create and add the all tag state
+		
+		fetchTag();
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [email]); // Include 'email' in the dependency array if it's used inside the useEffect
+	const fetchData = async () => {
+		try {
+			const results = await axios.get('http://localhost:5000/filterByDueDateASC', {
+				params: {
+					email: email,
+				},
+			});
 
+			const result = results.data as returnInterface;
+
+			if (result.return !== 0 || result.data === undefined) {
+				// Handle error case
+				console.log(result.data.error);
+			}
+
+			const promises = result.data.map(async (item: any) => {
+				const id = 'item-' + item.quest_id;
+				const currentContainer = item.status === 'Task' ? 'container-1' : 'container-2';
+		  
+				for (const container of containers) {
+				  if (container.id === currentContainer) {
+					const tagOfContainer: TagType[] = [];
+		  
+					const query_tag = await axios.get('http://localhost:5000/queryContain', {
+					  params: {
+						quest_id: item.quest_id,
+					  },
+					});
+		  
+					const result_tag = query_tag.data as returnInterface;
+		  
+					await Promise.all(
+					  result_tag.data.map(async (tag: any) => {
+						const tag_id = `tag-${tag.tag_id}`;
+						const eachTag: TagType = {
+						  id: tag_id,
+						  name: tag.tag_name,
+						  color: tag.tag_color,
+						};
+						tagOfContainer.push(eachTag);
+					  })
+					);
+		  
+					container.items.push({
+					  id: id,
+					  title: item.quest_name,
+					  description: item.description,
+					  tags: tagOfContainer,
+					});
+					console.log(container);
+				  }
+				}
+			  });
+		  
+			  // Wait for all promises to resolve
+			  await Promise.all(promises);
+		  
+
+			// Once the Axios request is complete and data is processed, set loaded to true
+			setLoaded(true);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const fetchTag = async () => {
+		try {
+		  const allTags = await getAllTagsFromContainers();
+		  if (allTags.length > 0) {
+			setTags(allTags);
+		  }
+		} catch (error) {
+		  console.error('Error fetching tags:', error);
+		}
+	  };
 	const onAddItem = async (e: any) => {
 		e.preventDefault();
 		if (!itemName || !currentContainerId) return;
@@ -257,14 +303,36 @@ export default function QuestPage() {
 		setItemDescription('');
 		setShowEditItemModal(false);
 	};
-	function getAllTagsFromContainers(): TagType[] {
+	// Get all tags from all database that same user
+	async function getAllTagsFromContainers(): Promise<TagType[]> {
 		const allTags: TagType[] = [];
 
-		containers.forEach((container) => {
-			container.items.forEach((item) => {
-				allTags.push(...item.tags);
-			});
+		// containers.forEach((container) => {
+		// 	container.items.forEach((item) => {
+		// 		allTags.push(...item.tags);
+		// 	});
+		// });
+		try{
+		const result = await axios.get('http://localhost:5000/getTag', {
+			params: {
+				email: email,
+			},
 		});
+		const results = result.data as returnInterface;
+		console.log(results.data);
+		results.data.map((item: any) => {
+			const tag_id = `tag-${item.tag_id}`;
+			const tag:TagType = {
+			  id: tag_id,
+			  name: item.tag_name,
+			  color: item.tag_color,
+			};
+			allTags.push(tag);
+		  });
+		}catch(err){
+			console.error('Error fetching tags:', err);
+		}
+		
 
 		return allTags;
 	}
@@ -294,33 +362,61 @@ export default function QuestPage() {
 		if (!item) return '';
 		return item.description;
 	};
-	function onAddTag(tagName: string) {
-		const tag: TagType = {
-			id: `tag-${uuidv4()}`,
-			name: tagName,
-			color: tagColorList[Math.floor(Math.random() * tagColorList.length)],
-		};
+	async function onAddTag(tagName: string) {
+		// this function will create a tag and add to contain table
+		const randomColor = tagColorList[Math.floor(Math.random() * tagColorList.length)];
 
-		if (getAllTagsFromContainers().find((tag) => tag.name === tagName)) {
+		if ((tags).find((tag) => tag.name === tagName)) {
+			console.log('Tag already exists')
 			return;
 		}
-		setPreviewTags([...previewTags, tag]);
 
-		const updatedContainers = containers.map((container) => {
+		const results = await axios.post('http://localhost:5000/createTag', {
+							tag_name: tagName,
+							tag_color : randomColor,
+							email: email,
+						});
+
+
+		const result = results.data as returnInterface;
+		const tag: TagType = {
+			id: `tag-${result.data.tag_id}`,
+			name: tagName,
+			color: randomColor,
+		};
+		
+		setPreviewTags([...previewTags, tag]);
+		//add in frontend container
+		const updatedContainers = containers.map(async (container) => {
 			if (container.id === currentContainerId) {
-				const updatedItems = container.items.map((item) => {
-					if (item.id === currentItemId) {
-						item.tags.push(tag);
-					}
-					return item;
-				});
+				const updatedItems = await Promise.all(
+					container.items.map(async (item) => {
+						if (item.id === currentItemId) {
+							item.tags.push(tag);
+							//add in backend contain
+							const addTagToContainer = await axios
+								.post("http://localhost:5000/labelQuest", {
+									tag_id: result.data.tag_id,
+									quest_id: item.id?.toString().replace("item-", ""),
+								})
+								.catch((err) => console.log(err));
+						}
+						return item;
+					})
+				);
 
 				container.items = updatedItems;
 			}
 			return container;
 		});
 
-		setContainers(updatedContainers);
+		await Promise.all(updatedContainers).then((resolvedContainers) => {
+			setContainers(resolvedContainers);
+		});
+		fetchTag();
+
+		// contain_id is the id of the label table in database 
+		//const contain_id = result_contain.data.contain_id;
 	}
 	// DND Handlers
 	const sensors = useSensors(
@@ -461,8 +557,8 @@ export default function QuestPage() {
 								</Button>
 								{
 									// If there are no tags, don't show the dropdown
-									getAllTagsFromContainers().length > 0 && (
-										<DropDown tags={getAllTagsFromContainers()} />
+									tags.length > 0 && (
+										<DropDown tags={tags}  currentItemId={currentItemId} containers={containers} setContainers={setContainers} currentContainerId={currentContainerId}/>
 									)
 								}
 							</div>

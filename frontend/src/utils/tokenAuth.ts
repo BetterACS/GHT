@@ -12,7 +12,8 @@ export default async function tokenAuth(
 		navigateFunction('/Log_in');
 	},
 	tokenNullFunction = () => {
-		navigateFunction('/Log_in');
+		// หน้า  home redirect ไปหน้า login
+		// navigateFunction('/Log_in');
 	}
 ) {
 	const headers = {

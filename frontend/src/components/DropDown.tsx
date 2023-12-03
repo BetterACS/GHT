@@ -3,6 +3,8 @@ import { Menu, Transition } from '@headlessui/react';
 import { IoMdArrowDropdown } from 'react-icons/io';
 import { TagType } from './Tag';
 import { UniqueIdentifier } from '@dnd-kit/core';
+import axios from 'axios';
+import { DNDType } from '../utils/types';
 
 function classNames(...classes: any) {
 	return classes.filter(Boolean).join(' ');
@@ -10,11 +12,49 @@ function classNames(...classes: any) {
 
 interface DropDownProps {
 	tags: TagType[];
+	currentItemId?: UniqueIdentifier;
+	containers:DNDType[];
+	setContainers:any;
+	currentContainerId:any;
 }
 
-const DropDown = ({ tags }: DropDownProps) => {
-	const handleTagClick = (tagID: UniqueIdentifier) => {
-		console.log('You clicked: ', tagID);
+const DropDown = ({ tags ,currentItemId,containers,setContainers,currentContainerId}: DropDownProps) => {
+	const handleTagClick = async (tagID: UniqueIdentifier,tagName:string,tagColor:string) => {
+		const tag_id = tagID.toString().replace('tag-', '');
+		const item_id = currentItemId?.toString().replace('item-', '');
+		const tag: TagType = {
+			id: tagID,
+			name: tagName,
+			color: tagColor,
+		};
+		//add in backend contain
+		console.log('You clicked: ', tag_id,item_id);
+		const updatedContainers = containers.map(async (container) => {
+			if (container.id === currentContainerId) {
+				const updatedItems = await Promise.all(
+					container.items.map(async (item) => {
+						if (item.id === currentItemId) {
+							item.tags.push(tag);
+							//add in backend contain
+							const addTagToContainer = await axios
+							.post("http://localhost:5000/labelQuest", {
+								tag_id: tag_id,
+								quest_id: item_id,
+							})
+							.catch((err) => console.log(err));
+						}
+						return item;
+					})
+				);
+
+				container.items = updatedItems;
+			}
+			return container;
+		});
+
+		await Promise.all(updatedContainers).then((resolvedContainers) => {
+			setContainers(resolvedContainers);
+		});
 	};
 	return (
 		<Menu as="div" className="relative inline-block text-left">
@@ -45,7 +85,7 @@ const DropDown = ({ tags }: DropDownProps) => {
 											active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
 											'block px-4 py-2 text-sm'
 										)}
-										onClick={() => handleTagClick(tag.id)}
+										onClick={() => handleTagClick(tag.id,tag.name,tag.color)}
 									>
 										{tag.name}
 									</a>
