@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "install": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
     "validate": "cd backend && npm run valid",
     "backend": "cd backend && npm run start",
     "frontend": "cd frontend && npm run dev",
