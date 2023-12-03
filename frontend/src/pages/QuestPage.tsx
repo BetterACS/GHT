@@ -3,10 +3,16 @@ import SideBar from '../components/SideBar';
 import Quest from '../components/Quest';
 import Input from '../components/Input';
 import Modal from '../components/Modal';
+import TagModal from '../components/TagModal';
+import Tag from '../components/Tag';
 import Button from '../components/Button';
+import DropDown from '../components/DropDown';
 import QuestContainer from '../components/QuestContainer';
-import { DNDType } from '../utils/types';
+import { DNDType, TagType, Item } from '../utils/types';
+import { FaPlus } from 'react-icons/fa';
+import { tagColorList } from '../utils/constants';
 import { useNavigate } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 // DnD
 import {
 	DndContext,
@@ -48,59 +54,122 @@ export default function QuestPage() {
 	const [currentItemId, setCurrentItemId] = useState<UniqueIdentifier>();
 	const [itemName, setItemName] = useState('');
 	const [itemDescription, setItemDescription] = useState('');
+
+	// Tags
+	const [tagName, setTagName] = useState('');
+	const [previewTags, setPreviewTags] = useState<TagType[]>([]);
+
+	// Modals
 	const [showAddItemModal, setShowAddItemModal] = useState(false);
 	const [showEditItemModal, setShowEditItemModal] = useState(false);
+	const [showAddTagModal, setShowAddTagModal] = useState(false);
+
+	const resetItemState = (updatedContainers: DNDType[]) => {
+		setContainers(updatedContainers);
+		setItemName('');
+		setItemDescription('');
+		setShowAddItemModal(false);
+		setShowEditItemModal(false);
+	};
 	const [error, setError] = useState('');
 	//constant temp
 	const [due_date, setDueDate] = useState('2022-01-01');
 	const [item_id, setItemID] = useState(1);
 
 	const email = localStorage.getItem('email') || '';
+	const [tags, setTags] = useState<TagType[]>([]);
 
+	
 	useEffect(() => {
 		tokenAuth(navigate, '/quest'); // Check if the user is logged in
-		const fetchData = async () => {
-			try {
-				const results = await axios.get('http://localhost:5000/filterByDueDateASC', {
-					params: {
-						email: email,
-					},
-				});
-
-				const result = results.data as returnInterface;
-
-				if (result.return !== 0 || result.data === undefined) {
-					// Handle error case
-					console.log(result.data.error);
-				}
-
-				result.data.map((item: any) => {
-					const id = 'item-' + item.quest_id;
-					const currentContainer = item.status === 'Task' ? 'container-1' : 'container-2';
-					containers.map((container) => {
-						if (container.id === currentContainer) {
-							container.items.push({
-								id: id,
-								title: item.quest_name,
-								description: item.description,
-							});
-							console.log(container);
-						}
-					});
-				});
-
-				// Once the Axios request is complete and data is processed, set loaded to true
-				setLoaded(true);
-			} catch (err) {
-				console.log(err);
-			}
-		};
+		
+		
 
 		fetchData(); // Call the asynchronous function to fetch data
 
+
+		//create and add the all tag state
+		
+		fetchTag();
+
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [email]); // Include 'email' in the dependency array if it's used inside the useEffect
+	const fetchData = async () => {
+		try {
+			const results = await axios.get('http://localhost:5000/filterByDueDateASC', {
+				params: {
+					email: email,
+				},
+			});
 
+			const result = results.data as returnInterface;
+
+			if (result.return !== 0 || result.data === undefined) {
+				// Handle error case
+				console.log(result.data.error);
+			}
+
+			const promises = result.data.map(async (item: any) => {
+				const id = 'item-' + item.quest_id;
+				const currentContainer = item.status === 'Task' ? 'container-1' : 'container-2';
+		  
+				for (const container of containers) {
+				  if (container.id === currentContainer) {
+					
+					const tagOfContainer: TagType[] = [];
+		  
+					const query_tag = await axios.get('http://localhost:5000/queryContain', {
+					  params: {
+						quest_id: item.quest_id,
+					  },
+					});
+		  
+					const result_tag = query_tag.data as returnInterface;
+		  
+					await Promise.all(
+					  result_tag.data.map(async (tag: any) => {
+						const tag_id = `tag-${tag.tag_id}`;
+						const eachTag: TagType = {
+						  id: tag_id,
+						  name: tag.tag_name,
+						  color: tag.tag_color,
+						};
+						tagOfContainer.push(eachTag);
+					  })
+					);
+		  
+					container.items.push({
+					  id: id,
+					  title: item.quest_name,
+					  description: item.description,
+					  tags: tagOfContainer,
+					});
+					console.log(container);
+				  }
+				}
+			  });
+		  
+			  // Wait for all promises to resolve
+			  await Promise.all(promises);
+		  
+
+			// Once the Axios request is complete and data is processed, set loaded to true
+			setLoaded(true);
+		} catch (err) {
+			console.log(err);
+		}
+	};
+
+	const fetchTag = async () => {
+		try {
+		  const allTags = await getAllTagsFromContainers();
+		  if (allTags.length > 0) {
+			setTags(allTags);
+		  }
+		} catch (error) {
+		  console.error('Error fetching tags:', error);
+		}
+	  };
 	const onAddItem = async (e: any) => {
 		e.preventDefault();
 		if (!itemName || !currentContainerId) return;
@@ -133,6 +202,7 @@ export default function QuestPage() {
 								id: id,
 								title: itemName,
 								description: itemDescription,
+								tags: [],
 							});
 						}
 					} catch (err) {
@@ -234,6 +304,39 @@ export default function QuestPage() {
 		setItemDescription('');
 		setShowEditItemModal(false);
 	};
+	// Get all tags from all database that same user
+	async function getAllTagsFromContainers(): Promise<TagType[]> {
+		const allTags: TagType[] = [];
+
+		// containers.forEach((container) => {
+		// 	container.items.forEach((item) => {
+		// 		allTags.push(...item.tags);
+		// 	});
+		// });
+		try{
+		const result = await axios.get('http://localhost:5000/getTag', {
+			params: {
+				email: email,
+			},
+		});
+		const results = result.data as returnInterface;
+		console.log(results.data);
+		results.data.map((item: any) => {
+			const tag_id = `tag-${item.tag_id}`;
+			const tag:TagType = {
+			  id: tag_id,
+			  name: item.tag_name,
+			  color: item.tag_color,
+			};
+			allTags.push(tag);
+		  });
+		}catch(err){
+			console.error('Error fetching tags:', err);
+		}
+		
+
+		return allTags;
+	}
 
 	// Find the value of the items
 	function findValueOfQuest(id: UniqueIdentifier | undefined, type: string) {
@@ -260,7 +363,62 @@ export default function QuestPage() {
 		if (!item) return '';
 		return item.description;
 	};
+	async function onAddTag(tagName: string) {
+		// this function will create a tag and add to contain table
+		const randomColor = tagColorList[Math.floor(Math.random() * tagColorList.length)];
 
+		if ((tags).find((tag) => tag.name === tagName)) {
+			console.log('Tag already exists')
+			return;
+		}
+
+		const results = await axios.post('http://localhost:5000/createTag', {
+							tag_name: tagName,
+							tag_color : randomColor,
+							email: email,
+						});
+
+
+		const result = results.data as returnInterface;
+		const tag: TagType = {
+			id: `tag-${result.data.tag_id}`,
+			name: tagName,
+			color: randomColor,
+		};
+		
+		setPreviewTags([...previewTags, tag]);
+		//add in frontend container
+		const updatedContainers = containers.map(async (container) => {
+			if (container.id === currentContainerId) {
+				const updatedItems = await Promise.all(
+					container.items.map(async (item) => {
+						if (item.id === currentItemId) {
+							item.tags.push(tag);
+							//add in backend contain
+							const addTagToContainer = await axios
+								.post("http://localhost:5000/labelQuest", {
+									tag_id: result.data.tag_id,
+									quest_id: item.id?.toString().replace("item-", ""),
+								})
+								.catch((err) => console.log(err));
+						}
+						return item;
+					})
+				);
+
+				container.items = updatedItems;
+			}
+			return container;
+		});
+
+		await Promise.all(updatedContainers).then((resolvedContainers) => {
+			setContainers(resolvedContainers);
+		});
+		fetchTag();
+
+		// contain_id is the id of the label table in database 
+		//const contain_id = result_contain.data.contain_id;
+	}
 	// DND Handlers
 	const sensors = useSensors(
 		useSensor(PointerSensor),
@@ -321,7 +479,12 @@ export default function QuestPage() {
 			<div className="flex">
 				<div className="mx-auto w-full py-10">
 					{/* Add Item Modal */}
-					<Modal showModal={showAddItemModal} setShowModal={setShowAddItemModal}>
+					<Modal
+						showModal={showAddItemModal}
+						setShowModal={setShowAddItemModal}
+						setItemName={setItemName}
+						setItemDescription={setItemDescription}
+					>
 						<div className="flex flex-col w-full items-start gap-y-4">
 							<h1 className="text-gray-800 text-3xl font-bold">Add Item</h1>
 							<Input
@@ -343,8 +506,13 @@ export default function QuestPage() {
 					</Modal>
 
 					{/* Edit Item Modal */}
-					<Modal showModal={showEditItemModal} setShowModal={setShowEditItemModal}>
-						<div className="flex flex-col w-full items-start gap-y-4">
+					<Modal
+						showModal={showEditItemModal}
+						setShowModal={setShowEditItemModal}
+						setItemName={setItemName}
+						setItemDescription={setItemDescription}
+					>
+						<div className="overlay flex flex-col w-full items-start gap-y-4">
 							<h1 className="text-gray-800 text-3xl font-bold">Edit Item</h1>
 							<Input
 								type="text"
@@ -360,10 +528,77 @@ export default function QuestPage() {
 								value={itemDescription}
 								onChange={(e) => setItemDescription(e.target.value)}
 							/>
+							<div className="flex flex-warp">
+								{containers.map((container) => {
+									if (container.id === currentContainerId) {
+										return container.items.map((item) => {
+											if (item.id === currentItemId) {
+												return item.tags.map((tag) => {
+													return (
+														<Tag
+															key={tag.id}
+															id={tag.id}
+															name={tag.name}
+															color={tag.color}
+														/>
+													);
+												});
+											}
+										});
+									}
+								})}
+							</div>
+							<div className="flex flex-warp">
+								<Button
+									onClick={() => {
+										setShowAddTagModal(true);
+									}}
+								>
+									<FaPlus />
+								</Button>
+								{
+									// If there are no tags, don't show the dropdown
+									tags.length > 0 && (
+										<DropDown tags={tags}  currentItemId={currentItemId} containers={containers} setContainers={setContainers} currentContainerId={currentContainerId}/>
+									)
+								}
+							</div>
+
 							<Button onClick={onEditItem}>Edit Item</Button>
 						</div>
 					</Modal>
+					{/* Add Tag Modal */}
+					<TagModal
+						showModal={showAddTagModal}
+						setShowModal={setShowAddTagModal}
+						setPreviewTags={setPreviewTags}
+						setTagName={setTagName}
+						onAddTag={onAddTag}
+						value={tagName}
+					>
+						<div className="flex flex-col w-full items-start gap-y-4">
+							<Input
+								type="text"
+								placeholder="name"
+								name="Tag name"
+								value={tagName}
+								onChange={(value) => {
+									setTagName(value.target.value);
+								}}
+							/>
 
+							{/* If previewTags is not empty, show the tags else show the text */}
+							{previewTags.length > 0 ? (
+								<div className="flex flex-row flex-wrap gap-2">
+									{previewTags.map((tag) => (
+										<Tag key={tag.id} id={tag.id} name={tag.name} color={tag.color} />
+									))}
+								</div>
+							) : (
+								<div className="text-gray-400">Press enter to add new tag</div>
+							)}
+						</div>
+					</TagModal>
 					<div className="mt-10 px-8">
 						<div className="grid grid-cols-1 gap-6">
 							<DndContext
@@ -377,7 +612,6 @@ export default function QuestPage() {
 									<div className="flex">
 										{containers.map((container) => (
 											<div key={container.id} className="mr-4 w-full">
-												{' '}
 												{/* Added margin */}
 												<QuestContainer
 													id={container.id}
@@ -402,6 +636,7 @@ export default function QuestPage() {
 																		setCurrentItemId(i.id);
 																		setShowEditItemModal(true);
 																	}}
+																	tags={i.tags}
 																	onDeleteItem={() => {
 																		onDeleteItem(i.id, container.id);
 																	}}
@@ -422,6 +657,7 @@ export default function QuestPage() {
 											title={findItemTitle(activeId)}
 											description={findItemDescription(activeId)}
 											onEditItem={() => {}}
+											tags={[]}
 											onDeleteItem={() => {
 												onDeleteItem;
 											}}

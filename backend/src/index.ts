@@ -37,6 +37,7 @@ import deleteTag from './questFunc/deleteTag.js';
 import filterByDueDateASC from './questFunc/filterByDueDateASC.js';
 import filterLabelbyTag from './questFunc/filterLabelbyTag.js';
 import labelQuest from './questFunc/labelQuest.js';
+import queryContain from './questFunc/queryContain.js';
 import queryHabit from './questFunc/queryHabit.js';
 import queryQuest from './questFunc/queryQuest.js';
 import queryTag from './questFunc/queryTag.js';
@@ -70,6 +71,7 @@ app.get('/queryHabit', queryHabit);
 app.post('/createHabit', createHabit);
 app.put('/adjustHabit', adjustHabit);
 app.delete('/deleteHabit', deleteHabit);
+app.get('/queryContain', queryContain);
 // app.use(home_route);
 app.use(monster_route);
 

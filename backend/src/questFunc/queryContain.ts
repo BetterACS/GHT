@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import Database from '../database/database.js';
-import { returnInterface, tagInterface } from '../utils/interfaces.js';
+import { containInterface, returnInterface } from '../utils/interfaces.js';
 import Logger from '../utils/logger.js';
-
 let returnJson: returnInterface = {
 	status: 'warning',
 	message: 'Nothing change returnJson variable',
@@ -11,25 +10,23 @@ let returnJson: returnInterface = {
 };
 
 export default async (req: Request, res: Response): Promise<void> => {
-	const { email } = req.query;
+	//การจะใส่ได้ต้องมีข้อมูลอยู่ใน table tag & table quest ก่อน
+	const { quest_id } = req.query;
 	const logger = Logger.instance().logger();
 	let connection;
 	try {
 		const database = Database.instance().mySQL();
 		connection = await database.promise().getConnection();
-		const sqlSearch = 'SELECT * FROM tag WHERE email = ?';
-		const [rows] = await connection.query(sqlSearch, [email]);
-		let tag = rows as tagInterface[];
-		if (tag.length === 0) {
-			logger.error('--------This tag name not exist---------');
-			returnJson = { status: 'error', message: 'This email does not exist', return: 3, data: {} };
-			return;
-		}
-		returnJson = { status: 'success', message: 'tag found', return: 0, data: tag };
+
+		const sql = 'select * from contain inner join tag on contain.tag_id = tag.tag_id where quest_id = ?';
+		const [Result] = await connection.query(sql, [quest_id]);
+		const contain = Result as containInterface[];
+
+		returnJson = { status: 'success', message: 'query success', return: 0, data: Result };
 	} catch (error) {
 		returnJson = {
 			status: 'error',
-			message: "Error searching for the tag. perhap email doesn't not exist",
+			message: "Error searching for the contain id. perhap tag_id or quest_id doesn't not exist",
 			return: 2,
 			data: { error: error },
 		};

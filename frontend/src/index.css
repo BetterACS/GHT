@@ -106,3 +106,31 @@ button:focus-visible {
 .slide-out {
   transform: translateX(-100%);
 }
+
+@keyframes typing {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.typewriter h1 {
+  overflow: hidden;
+  border-right: .15em solid orange;
+  white-space: nowrap;
+  margin: 0;
+  letter-spacing: .15em; /* Adjust as needed */
+  animation: typing 2s steps(40, end), blink-caret .5s step-end infinite;
+}
+
+@keyframes blink-caret {
+  from,
+  to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: orange;
+  }
+}
