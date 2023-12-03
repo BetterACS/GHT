@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import { FaHome, FaRegUserCircle } from 'react-icons/fa';
 import { LuSwords } from 'react-icons/lu';
 import Activity from './Activity';
@@ -69,31 +69,48 @@ const SideBar = () => {
 				</div>
 			</nav>
 
-			<div
-				className={`fixed top-16 left-0 h-full w-1/6 bg-gray-800 text-black menu-animation ${
-					isMenuOpen ? 'slide-in' : 'slide-out'
-				}`}
-			>
-				<img src="https://assets.pokemon.com/assets/cms2/img/pokedex/full/658_f2.png"></img>
-				<div className="w-1/2 sm:w-1/8 lg:w-1/2 mx-auto border-t-2 border-white my-2 sm:mb-3 lg:mb-2"></div>
-				<ul className="p-4">
-					<button className="my-5 p-2 block text-center text-white w-full bg-transparent border-2 border-white focus:outline-none hover:bg-white hover:text-black hover:border-cyan-300 transition-all duration-300">
-						Quest
-					</button>
-					<button className="my-5 p-2 block text-center text-white w-full bg-transparent border-2 border-white focus:outline-none hover:bg-white hover:text-black hover:border-cyan-300 transition-all duration-300">
-						Tasks
-					</button>
-					{/* <button className="my-5 p-2 block text-center text-white w-full bg-transparent border-2 border-white focus:outline-none hover:bg-white hover:text-black hover:border-cyan-300 transition-all duration-300">
-						Achievement
-					</button> */}
-
-					<div className="m-8">
-						<Activity />
-					</div>
-				</ul>
-			</div>
-		</>
-	);
+            {isMenuOpen && (
+                <DelayedAnimationComponent />
+            )}
+        </>
+    );
 };
+
+const DelayedAnimationComponent = () => {
+    const [showComponent, setShowComponent] = useState(false);
+
+    useEffect(() => {
+        // Delay the animation by 500 milliseconds
+        const timer = setTimeout(() => {
+            setShowComponent(true);
+        }, 0);
+
+        // Clear the timeout when the component unmounts or when isMenuOpen changes
+        return () => clearTimeout(timer);
+    }, []);
+  
+    return (
+      <div className={` min-h-screen top-0 left-0 h-full w-1/6 bg-gray-800 text-black menu-animation ${showComponent ? 'slide-in transition-all duration-300' : 'slide-out'}`}>
+        <img src='https://assets.pokemon.com/assets/cms2/img/pokedex/full/658_f2.png' className='mt-16' alt='Pokemon'></img>
+        <div className="w-1/2 sm:w-1/8 lg:w-1/2 mx-auto border-t-2 border-white my-2 sm:mb-3 lg:mb-2"></div>
+        <ul className="p-4">
+          <button className="my-5 p-2 block text-center text-white w-full bg-transparent border-2 border-white focus:outline-none hover:bg-white hover:text-black hover:border-cyan-300 transition-all duration-300">
+            Quest
+          </button>
+          <button className="my-5 p-2 block text-center text-white w-full bg-transparent border-2 border-white focus:outline-none hover:bg-white hover:text-black hover:border-cyan-300 transition-all duration-300">
+            Tasks
+          </button>
+          <button className="my-5 p-2 block text-center text-white w-full bg-transparent border-2 border-white focus:outline-none hover:bg-white hover:text-black hover:border-cyan-300 transition-all duration-300">
+            Achievement
+          </button>
+
+          <div className='m-8'>
+            <Activity />
+          </div>
+          {/* Add more buttons as needed */}
+        </ul>
+      </div>
+    );
+  };
 
 export default SideBar;

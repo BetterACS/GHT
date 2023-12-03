@@ -450,39 +450,42 @@ export default function QuestPage() {
 
 	return (
 		<>
-			<SideBar />
-			{/* Main Content */}
-			<div className="mt-32 text-center text-2xl font-bold tracking-[.25em]">
-				<h1>Quest</h1>
-			</div>
-			<div className="flex">
-				<div className="mx-auto w-full py-10">
-					{/* Add Item Modal */}
-					<Modal
-						showModal={showAddItemModal}
-						setShowModal={setShowAddItemModal}
-						setItemName={setItemName}
-						setItemDescription={setItemDescription}
-					>
-						<div className="flex flex-col w-full items-start gap-y-4">
-							<h1 className="text-gray-800 text-3xl font-bold">Add Item</h1>
-							<Input
-								type="text"
-								placeholder="Item Title"
-								name="itemname"
-								value={itemName}
-								onChange={(e) => setItemName(e.target.value)}
-							/>
-							<Input
-								type="text"
-								placeholder="Item Description"
-								name="itemDescription"
-								value={itemDescription}
-								onChange={(e) => setItemDescription(e.target.value)}
-							/>
-							<Button onClick={onAddItem}>Add Item</Button>
-						</div>
-					</Modal>
+			<div className='flex flex-row'>
+				<SideBar />
+				{/* Main Content */}
+				<div className='w-full'>
+					<div className="mt-32 text-center text-2xl font-bold tracking-[.25em]">
+						<h1>Quest</h1>
+					</div>
+					{/* Task */}
+					<div className="flex">
+						<div className="mx-auto w-full py-10">
+							{/* Add Item Modal */}
+							<Modal
+								showModal={showAddItemModal}
+								setShowModal={setShowAddItemModal}
+								setItemName={setItemName}
+								setItemDescription={setItemDescription}
+							>
+								<div className="flex flex-col w-full items-start gap-y-4">
+									<h1 className="text-gray-800 text-3xl font-bold">Add Item</h1>
+									<Input
+										type="text"
+										placeholder="Item Title"
+										name="itemname"
+										value={itemName}
+										onChange={(e) => setItemName(e.target.value)}
+									/>
+									<Input
+										type="text"
+										placeholder="Item Description"
+										name="itemDescription"
+										value={itemDescription}
+										onChange={(e) => setItemDescription(e.target.value)}
+									/>
+									<Button onClick={onAddItem}>Add Item</Button>
+								</div>
+							</Modal>
 
 					{/* Edit Item Modal */}
 					<Modal
@@ -549,107 +552,109 @@ export default function QuestPage() {
 								}
 							</div>
 
-							<Button onClick={onEditItem}>Edit Item</Button>
-						</div>
-					</Modal>
-					{/* Add Tag Modal */}
-					<TagModal
-						showModal={showAddTagModal}
-						setShowModal={setShowAddTagModal}
-						setPreviewTags={setPreviewTags}
-						setTagName={setTagName}
-						onAddTag={onAddTag}
-						value={tagName}
-					>
-						<div className="flex flex-col w-full items-start gap-y-4">
-							<Input
-								type="text"
-								placeholder="name"
-								name="Tag name"
-								value={tagName}
-								onChange={(value) => {
-									setTagName(value.target.value);
-								}}
-							/>
-
-							{/* If previewTags is not empty, show the tags else show the text */}
-							{previewTags.length > 0 ? (
-								<div className="flex flex-row flex-wrap gap-2">
-									{previewTags.map((tag) => (
-										<Tag key={tag.id} id={tag.id} name={tag.name} color={tag.color} />
-									))}
+									<Button onClick={onEditItem}>Edit Item</Button>
 								</div>
-							) : (
-								<div className="text-gray-400">Press enter to add new tag</div>
-							)}
-						</div>
-					</TagModal>
-					<div className="mt-10 px-8">
-						<div className="grid grid-cols-1 gap-6">
-							<DndContext
-								sensors={sensors}
-								collisionDetection={closestCorners}
-								onDragStart={handleDragStart}
-								onDragMove={handleDragMove}
-								onDragEnd={handleDragEnd}
+							</Modal>
+							{/* Add Tag Modal */}
+							<TagModal
+								showModal={showAddTagModal}
+								setShowModal={setShowAddTagModal}
+								setPreviewTags={setPreviewTags}
+								setTagName={setTagName}
+								onAddTag={onAddTag}
+								value={tagName}
 							>
-								<SortableContext items={containers.map((i) => i.id)}>
-									<div className="flex">
-										{containers.map((container) => (
-											<div key={container.id} className="mr-4 w-full">
-												{/* Added margin */}
-												<QuestContainer
-													id={container.id}
-													title={container.title}
-													onAddItem={() => {
-														setShowAddItemModal(true);
-														setCurrentContainerId(container.id);
-													}}
-												>
-													<SortableContext items={container.items.map((i) => i.id)}>
-														<div className="flex items-start flex-col gap-y-4">
-															{container.items.map((i) => (
-																<Quest
-																	title={i.title}
-																	description={i.description}
-																	id={i.id}
-																	key={i.id}
-																	onEditItem={() => {
-																		setItemName(i.title);
-																		setItemDescription(i.description);
-																		setCurrentContainerId(container.id);
-																		setCurrentItemId(i.id);
-																		setShowEditItemModal(true);
-																	}}
-																	tags={i.tags}
-																	onDeleteItem={() => {
-																		onDeleteItem(i.id, container.id);
-																	}}
-																/>
-															))}
-														</div>
-													</SortableContext>
-												</QuestContainer>
-											</div>
-										))}
-									</div>
-								</SortableContext>
-								<DragOverlay adjustScale={false}>
-									{/* Drag Overlay For item Item */}
-									{activeId && activeId.toString().includes('item') && (
-										<Quest
-											id={activeId}
-											title={findItemTitle(activeId)}
-											description={findItemDescription(activeId)}
-											onEditItem={() => {}}
-											tags={[]}
-											onDeleteItem={() => {
-												onDeleteItem;
-											}}
-										/>
+								<div className="flex flex-col w-full items-start gap-y-4">
+									<Input
+										type="text"
+										placeholder="name"
+										name="Tag name"
+										value={tagName}
+										onChange={(value) => {
+											setTagName(value.target.value);
+										}}
+									/>
+
+									{/* If previewTags is not empty, show the tags else show the text */}
+									{previewTags.length > 0 ? (
+										<div className="flex flex-row flex-wrap gap-2">
+											{previewTags.map((tag) => (
+												<Tag key={tag.id} id={tag.id} name={tag.name} color={tag.color} />
+											))}
+										</div>
+									) : (
+										<div className="text-gray-400">Press enter to add new tag</div>
 									)}
-								</DragOverlay>
-							</DndContext>
+								</div>
+							</TagModal>
+							<div className="mt-10 px-8">
+								<div className="grid grid-cols-1 gap-6">
+									<DndContext
+										sensors={sensors}
+										collisionDetection={closestCorners}
+										onDragStart={handleDragStart}
+										onDragMove={handleDragMove}
+										onDragEnd={handleDragEnd}
+									>
+										<SortableContext items={containers.map((i) => i.id)}>
+											<div className="flex">
+												{containers.map((container) => (
+													<div key={container.id} className="mr-4 w-full">
+														{/* Added margin */}
+														<QuestContainer
+															id={container.id}
+															title={container.title}
+															onAddItem={() => {
+																setShowAddItemModal(true);
+																setCurrentContainerId(container.id);
+															}}
+														>
+															<SortableContext items={container.items.map((i) => i.id)}>
+																<div className="flex items-start flex-col gap-y-4">
+																	{container.items.map((i) => (
+																		<Quest
+																			title={i.title}
+																			description={i.description}
+																			id={i.id}
+																			key={i.id}
+																			onEditItem={() => {
+																				setItemName(i.title);
+																				setItemDescription(i.description);
+																				setCurrentContainerId(container.id);
+																				setCurrentItemId(i.id);
+																				setShowEditItemModal(true);
+																			}}
+																			tags={i.tags}
+																			onDeleteItem={() => {
+																				onDeleteItem(i.id, container.id);
+																			}}
+																		/>
+																	))}
+																</div>
+															</SortableContext>
+														</QuestContainer>
+													</div>
+												))}
+											</div>
+										</SortableContext>
+										<DragOverlay adjustScale={false}>
+											{/* Drag Overlay For item Item */}
+											{activeId && activeId.toString().includes('item') && (
+												<Quest
+													id={activeId}
+													title={findItemTitle(activeId)}
+													description={findItemDescription(activeId)}
+													onEditItem={() => { }}
+													tags={[]}
+													onDeleteItem={() => {
+														onDeleteItem;
+													}}
+												/>
+											)}
+										</DragOverlay>
+									</DndContext>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
