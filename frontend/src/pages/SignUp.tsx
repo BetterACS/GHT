@@ -1,8 +1,9 @@
-import React ,{ useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { returnInterface } from '../../../backend/src/utils/interfaces.ts';
 import tokenAuth from '../utils/tokenAuth.ts';
+import Config from '../../../backend/src/config.ts';
 const SignUp = () => {
 	// Define state variables for form fields
 	const [loaded, setLoaded] = useState(false);
@@ -12,9 +13,6 @@ const SignUp = () => {
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
 	const navigate = useNavigate();
-
-	
-	// Handle form submission
 
 	useEffect(() => {
 		if (loaded) {
@@ -27,7 +25,7 @@ const SignUp = () => {
 	const handleSubmit = async (e: any) => {
 		e.preventDefault();
 		axios
-			.post('http://localhost:5000/register', { username, email, password })
+			.post(`http://localhost:${Config.BACKEND_PORT}/register`, { username, email, password })
 			.then((results) => {
 				const result = results.data as returnInterface;
 				if (result.return === 1 || result.return === 2) {
@@ -45,7 +43,7 @@ const SignUp = () => {
 
 	return (
 		<div className="h-screen bg-gray-900 text-center flex flex-col justify-center items-center lg:flex-row lg:justify-around">
-			<div className='font-bold text-white typewriter'>
+			<div className="font-bold text-white typewriter">
 				<h1>HABITKUB</h1>
 			</div>
 			<div className="bg-gray-800 rounded-[1.0rem] md:rounded-[1.5rem] mt-5 w-2/3 lg:mt-0 lg:rounded-[2.5rem] lg:w-1/3">
@@ -61,7 +59,7 @@ const SignUp = () => {
 							value={username}
 							onChange={(e) => setUsername(e.target.value)}
 							className="border-2 shadow-sm shadow-white rounded-md p-2 w-full"
-							placeholder='Username'
+							placeholder="Username"
 							required
 						/>
 					</div>
@@ -75,7 +73,7 @@ const SignUp = () => {
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							className="border-2 shadow-sm shadow-white rounded-md p-2 w-full"
-							placeholder='Email'
+							placeholder="Email"
 							required
 						/>
 					</div>
@@ -89,14 +87,17 @@ const SignUp = () => {
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							className="border-2 shadow-sm shadow-white rounded-md p-2 w-full"
-							placeholder='Password'
+							placeholder="Password"
 							required
 						/>
 					</div>
 
 					{/* Submit Button */}
 					<div className="text-center mb-5">
-						<button type="submit" className="bg-gray-900 border-2 border-gray-500 text-white px-5 py-3 rounded-md mt-3 hover-bg-gray-900 transform hover:scale-105 transition-transform text-xs sm:text-sm">
+						<button
+							type="submit"
+							className="bg-gray-900 border-2 border-gray-500 text-white px-5 py-3 rounded-md mt-3 hover-bg-gray-900 transform hover:scale-105 transition-transform text-xs sm:text-sm"
+						>
 							Sign Up
 						</button>
 					</div>

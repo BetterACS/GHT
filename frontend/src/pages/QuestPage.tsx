@@ -32,6 +32,7 @@ import { onDragStart, onDragMove, onDragEnd } from '../utils/dragController';
 import tokenAuth from '../utils/tokenAuth';
 import axios from 'axios';
 import { returnInterface } from '../../../backend/src/utils/interfaces';
+import Config from '../../../backend/src/config';
 
 export default function QuestPage() {
 	const navigate = useNavigate();
@@ -64,7 +65,7 @@ export default function QuestPage() {
 	const [showEditItemModal, setShowEditItemModal] = useState(false);
 	const [showAddTagModal, setShowAddTagModal] = useState(false);
 
-	const resetItemState = (updatedContainers: DNDType[]) => {
+	const updateAndResetItemState = (updatedContainers: DNDType[]) => {
 		setContainers(updatedContainers);
 		setItemName('');
 		setItemDescription('');
@@ -82,11 +83,12 @@ export default function QuestPage() {
 		tokenAuth(navigate, '/quest'); // Check if the user is logged in
 		const fetchData = async () => {
 			try {
-				const results = await axios.get('http://localhost:5000/filterByDueDateASC', {
+				const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/filter/date`, {
 					params: {
 						email: email,
 					},
 				});
+				console.log(results);
 
 				const result = results.data as returnInterface;
 
@@ -134,7 +136,7 @@ export default function QuestPage() {
 
 					const tempStatus = container.id === 'container-1' ? 'Task' : 'In Progress';
 					try {
-						const results = await axios.post('http://localhost:5000/createQuest', {
+						const results = await axios.post(`http://localhost:${Config.BACKEND_PORT}/quest`, {
 							quest_name: itemName,
 							description: itemDescription,
 							due_date: due_date,
@@ -165,10 +167,7 @@ export default function QuestPage() {
 				return container;
 			})
 		);
-		setContainers(updatedContainers);
-		setItemName('');
-		setItemDescription('');
-		setShowAddItemModal(false);
+		updateAndResetItemState(updatedContainers);
 	};
 
 	const onDeleteItem = async (currentItemId: UniqueIdentifier, currentContainerId: UniqueIdentifier) => {
@@ -182,7 +181,7 @@ export default function QuestPage() {
 					const new_id = Number(currentItemId.toString().replace('item-', ''));
 
 					try {
-						const results = await axios.delete('http://localhost:5000/deleteQuest', {
+						const results = await axios.delete(`http://localhost:${Config.BACKEND_PORT}/quest`, {
 							data: {
 								quest_id: new_id,
 							},
@@ -201,10 +200,7 @@ export default function QuestPage() {
 				return container;
 			})
 		);
-
-		setContainers(updatedContainers);
-		setItemName('');
-		setItemDescription('');
+		updateAndResetItemState(updatedContainers);
 	};
 
 	const onEditItem = async (e: any) => {
@@ -221,7 +217,7 @@ export default function QuestPage() {
 							const new_id = Number(currentItemId.toString().replace('item-', ''));
 							console.log(new_id);
 							try {
-								const results = axios.put('http://localhost:5000/adjustQuest', {
+								const results = axios.put(`http://localhost:${Config.BACKEND_PORT}/quest`, {
 									quest_id: new_id, //change
 									quest_name: itemName,
 									description: itemDescription,
@@ -251,11 +247,7 @@ export default function QuestPage() {
 				return container;
 			})
 		);
-
-		setContainers(updatedContainers);
-		setItemName('');
-		setItemDescription('');
-		setShowEditItemModal(false);
+		updateAndResetItemState(updatedContainers);
 	};
 	function getAllTagsFromContainers(): TagType[] {
 		const allTags: TagType[] = [];
@@ -350,7 +342,7 @@ export default function QuestPage() {
 			const new_id = Number(event.active.id.toString().replace('item-', ''));
 			const tempStatus = AfterContainer.id === 'container-1' ? 'Task' : 'In Progress';
 			try {
-				const results = axios.put('http://localhost:5000/adjustQuest', {
+				const results = axios.put(`http://localhost:${Config.BACKEND_PORT}/quest`, {
 					quest_id: new_id, //change
 					quest_name: findItemTitle(event.active.id),
 					description: findItemDescription(event.active.id),
