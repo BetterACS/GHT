@@ -27,6 +27,8 @@ const DropDown = ({ tags ,currentItemId,containers,setContainers,currentContaine
 			name: tagName,
 			color: tagColor,
 		};
+
+
 		//add in backend contain
 		console.log('You clicked: ', tag_id,item_id);
 		const updatedContainers = containers.map(async (container) => {
@@ -34,19 +36,24 @@ const DropDown = ({ tags ,currentItemId,containers,setContainers,currentContaine
 				const updatedItems = await Promise.all(
 					container.items.map(async (item) => {
 						if (item.id === currentItemId) {
-							item.tags.push(tag);
-							//add in backend contain
-							const addTagToContainer = await axios
-							.post("http://localhost:5000/labelQuest", {
-								tag_id: tag_id,
-								quest_id: item_id,
-							})
-							.catch((err) => console.log(err));
+							// Check if the tag with tagID already exists in item.tags
+							if (item.tags.some((tag) => tag.id === tagID)) {
+								console.log('Tag already exists');
+							} else {
+								// Tag does not exist, so add it to the item.tags array
+								item.tags.push(tag);
+		
+								// Add the tag to the backend
+								const addTagToContainer = await axios.post("http://localhost:5000/labelQuest", {
+									tag_id: tag_id,
+									quest_id: item_id,
+								}).catch((err) => console.log(err));
+							}
 						}
 						return item;
 					})
 				);
-
+		
 				container.items = updatedItems;
 			}
 			return container;
