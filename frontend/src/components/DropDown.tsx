@@ -13,13 +13,13 @@ function classNames(...classes: any) {
 interface DropDownProps {
 	tags: TagType[];
 	currentItemId?: UniqueIdentifier;
-	containers:DNDType[];
-	setContainers:any;
-	currentContainerId:any;
+	containers: DNDType[];
+	setContainers: any;
+	currentContainerId: any;
 }
 
-const DropDown = ({ tags ,currentItemId,containers,setContainers,currentContainerId}: DropDownProps) => {
-	const handleTagClick = async (tagID: UniqueIdentifier,tagName:string,tagColor:string) => {
+const DropDown = ({ tags, currentItemId, containers, setContainers, currentContainerId }: DropDownProps) => {
+	const handleTagClick = async (tagID: UniqueIdentifier, tagName: string, tagColor: string) => {
 		const tag_id = tagID.toString().replace('tag-', '');
 		const item_id = currentItemId?.toString().replace('item-', '');
 		const tag: TagType = {
@@ -28,9 +28,8 @@ const DropDown = ({ tags ,currentItemId,containers,setContainers,currentContaine
 			color: tagColor,
 		};
 
-
 		//add in backend contain
-		console.log('You clicked: ', tag_id,item_id);
+		console.log('You clicked: ', tag_id, item_id);
 		const updatedContainers = containers.map(async (container) => {
 			if (container.id === currentContainerId) {
 				const updatedItems = await Promise.all(
@@ -42,18 +41,20 @@ const DropDown = ({ tags ,currentItemId,containers,setContainers,currentContaine
 							} else {
 								// Tag does not exist, so add it to the item.tags array
 								item.tags.push(tag);
-		
+
 								// Add the tag to the backend
-								const addTagToContainer = await axios.post("http://localhost:5000/labelQuest", {
-									tag_id: tag_id,
-									quest_id: item_id,
-								}).catch((err) => console.log(err));
+								const addTagToContainer = await axios
+									.post('http://localhost:5000/contain-table', {
+										tag_id: tag_id,
+										quest_id: item_id,
+									})
+									.catch((err) => console.log(err));
 							}
 						}
 						return item;
 					})
 				);
-		
+
 				container.items = updatedItems;
 			}
 			return container;
@@ -92,7 +93,7 @@ const DropDown = ({ tags ,currentItemId,containers,setContainers,currentContaine
 											active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
 											'block px-4 py-2 text-sm'
 										)}
-										onClick={() => handleTagClick(tag.id,tag.name,tag.color)}
+										onClick={() => handleTagClick(tag.id, tag.name, tag.color)}
 									>
 										{tag.name}
 									</a>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { returnInterface } from '../../../backend/src/utils/interfaces.ts';
 import tokenAuth from '../utils/tokenAuth.ts';
 import axios from 'axios';
+import Config from '../../../backend/src/config.ts';
 
 const Login = () => {
 	// Define state variables for form fields
@@ -19,7 +20,7 @@ const Login = () => {
 			return;
 		}
 
-		tokenAuth(navigate,'/quest');
+		tokenAuth(navigate, '/quest');
 		setLoaded(true);
 	});
 	const handleSubmit = (e: any) => {
@@ -27,7 +28,7 @@ const Login = () => {
 		// You can add your logic for handling the form submission here
 		// Typically, this is where you'd make an API request to register the user.
 		axios
-			.post('http://localhost:5000/login', { email, password })
+			.post(`http://localhost:${Config.BACKEND_PORT}/login`, { email, password })
 			.then((results) => {
 				const result = results.data as returnInterface;
 
@@ -49,7 +50,7 @@ const Login = () => {
 
 	return (
 		<div className="h-screen bg-gray-900 flex flex-col justify-center items-center">
-			<div className='text-white mb-8 typewriter'>
+			<div className="text-white mb-8 typewriter">
 				<h1>HABITKUB</h1>
 			</div>
 			<div className="bg-gray-800 p-8 rounded-md shadow-sm shadow-white">
@@ -65,7 +66,7 @@ const Login = () => {
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							className="border rounded-md p-2 w-64"
-							placeholder='Username'
+							placeholder="Username"
 							required
 						/>
 					</div>
@@ -79,14 +80,17 @@ const Login = () => {
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							className="border rounded-md p-2 w-64"
-							placeholder='Password'
+							placeholder="Password"
 							required
 						/>
 					</div>
 
 					{/* Submit Button */}
 					<div className="text-center">
-						<button type="submit" className="bg-gray-900 border-2 border-gray-500 text-white px-5 py-3 rounded-md mt-3 hover-bg-gray-900 transform hover:scale-105 transition-transform text-xs sm:text-sm">
+						<button
+							type="submit"
+							className="bg-gray-900 border-2 border-gray-500 text-white px-5 py-3 rounded-md mt-3 hover-bg-gray-900 transform hover:scale-105 transition-transform text-xs sm:text-sm"
+						>
 							Log In
 						</button>
 					</div>

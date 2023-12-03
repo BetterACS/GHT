@@ -7,12 +7,18 @@ import Config from './config.js';
 import Database from './database/database.js';
 import Logger from './utils/logger.js';
 import Scheduler from './utils/scheduler.js';
-
 //#endregion
 
 //#region Routes imports
 // import home_route from './routes/home.js';
+import contain_table_route from './routes/contain_table.js';
+import filter_route from './routes/filter.js';
+import habit_route from './routes/habit.js';
+import login_route from './routes/login.js';
 import monster_route from './routes/monster.js';
+import quest_route from './routes/quest.js';
+import register_route from './routes/register.js';
+import tag_route from './routes/tag.js';
 //#endregion
 
 dotenv.config();
@@ -20,60 +26,21 @@ dotenv.config();
 Scheduler.instance();
 Database.instance();
 
-//#region controller zone
-import loginAuth from './auth/loginAuth.js';
-import storeUser from './auth/storeUser.js';
-import { logout } from './auth/tokenController.js';
-import adjustHabit from './questFunc/adjustHabit.js';
-import adjustQuest from './questFunc/adjustQuest.js';
-import adjustTag from './questFunc/adjustTag.js';
-import createHabit from './questFunc/createHabit.js';
-import createQuest from './questFunc/createQuest.js';
-import createTag from './questFunc/createTag.js';
-import deleteHabit from './questFunc/deleteHabit.js';
-import deleteLabel from './questFunc/deleteLabel.js';
-import deleteQuest from './questFunc/deleteQuest.js';
-import deleteTag from './questFunc/deleteTag.js';
-import filterByDueDateASC from './questFunc/filterByDueDateASC.js';
-import filterLabelbyTag from './questFunc/filterLabelbyTag.js';
-import labelQuest from './questFunc/labelQuest.js';
-import queryContain from './questFunc/queryContain.js';
-import queryHabit from './questFunc/queryHabit.js';
-import queryQuest from './questFunc/queryQuest.js';
-import queryTag from './questFunc/queryTag.js';
-//#endregion
-
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-// Initialize all routes.
-app.post('/register', storeUser);
-app.post('/login', loginAuth);
-app.delete('logout', logout);
-//questZone
-app.post('/createTag', createTag);
-app.post('/createQuest', createQuest);
-app.get('/getQuest', queryQuest);
-app.get('/getTag', queryTag);
-app.put('/adjustQuest', adjustQuest);
-app.put('/adjustTag', adjustTag);
-app.post('/labelQuest', labelQuest);
-app.delete('/deleteLabel', deleteLabel);
-app.delete('/deleteTag', deleteTag);
-app.delete('/deleteQuest', deleteQuest);
-app.get('/filterLabelbyTag', filterLabelbyTag);
-app.get('/filterByDueDateASC', filterByDueDateASC);
-app.get('/queryHabit', queryHabit);
-app.post('/createHabit', createHabit);
-app.put('/adjustHabit', adjustHabit);
-app.delete('/deleteHabit', deleteHabit);
-app.get('/queryContain', queryContain);
 // app.use(home_route);
 app.use(monster_route);
+app.use(tag_route);
+app.use(login_route);
+app.use(register_route);
+app.use(quest_route);
+app.use(habit_route);
+app.use(contain_table_route);
+app.use(filter_route);
 
 const logger = Logger.instance().logger();
 
