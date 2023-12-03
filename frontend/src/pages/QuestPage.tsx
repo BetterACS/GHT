@@ -493,84 +493,86 @@ export default function QuestPage() {
 										}}
 									/>
 
-							{/* If previewTags is not empty, show the tags else show the text */}
-							{previewTags.length > 0 ? (
-								<div className="flex flex-row flex-wrap gap-2">
-									{previewTags.map((tag) => (
-										<Tag key={tag.id} id={tag.id} name={tag.name} color={tag.color} />
-									))}
-								</div>
-							) : (
-								<div className="text-gray-400">Press enter to add new tag</div>
-							)}
-						</div>
-					</TagModal>
-					<div className="mt-10 px-8">
-						<div className="grid grid-cols-1 gap-6">
-							<DndContext
-								sensors={sensors}
-								collisionDetection={closestCorners}
-								onDragStart={handleDragStart}
-								onDragMove={handleDragMove}
-								onDragEnd={handleDragEnd}
-							>
-								<SortableContext items={containers.map((i) => i.id)}>
-									<div className="flex">
-										{containers.map((container) => (
-											<div key={container.id} className="mr-4 w-full">
-												{/* Added margin */}
-												<QuestContainer
-													id={container.id}
-													title={container.title}
-													onAddItem={() => {
-														setShowAddItemModal(true);
-														setCurrentContainerId(container.id);
-													}}
-												>
-													<SortableContext items={container.items.map((i) => i.id)}>
-														<div className="flex items-start flex-col gap-y-4">
-															{container.items.map((i) => (
-																<Quest
-																	title={i.title}
-																	description={i.description}
-																	id={i.id}
-																	key={i.id}
-																	onEditItem={() => {
-																		setItemName(i.title);
-																		setItemDescription(i.description);
-																		setCurrentContainerId(container.id);
-																		setCurrentItemId(i.id);
-																		setShowEditItemModal(true);
-																	}}
-																	tags={i.tags}
-																	onDeleteItem={() => {
-																		onDeleteItem(i.id, container.id);
-																	}}
-																/>
-															))}
-														</div>
-													</SortableContext>
-												</QuestContainer>
-											</div>
-										))}
-									</div>
-								</SortableContext>
-								<DragOverlay adjustScale={false}>
-									{/* Drag Overlay For item Item */}
-									{activeId && activeId.toString().includes('item') && (
-										<Quest
-											id={activeId}
-											title={findItemTitle(activeId)}
-											description={findItemDescription(activeId)}
-											onEditItem={() => {}}
-											tags={[]}
-											onDeleteItem={() => {
-												onDeleteItem;
-											}}
-										/>
+									{/* If previewTags is not empty, show the tags else show the text */}
+									{previewTags.length > 0 ? (
+										<div className="flex flex-row flex-wrap gap-2">
+											{previewTags.map((tag) => (
+												<Tag key={tag.id} id={tag.id} name={tag.name} color={tag.color} />
+											))}
+										</div>
+									) : (
+										<div className="text-gray-400">Press enter to add new tag</div>
 									)}
-								</DragOverlay>
-							</DndContext>
+								</div>
+							</TagModal>
+							<div className="mt-10 px-8">
+								<div className="grid grid-cols-1 gap-6">
+									<DndContext
+										sensors={sensors}
+										collisionDetection={closestCorners}
+										onDragStart={handleDragStart}
+										onDragMove={handleDragMove}
+										onDragEnd={handleDragEnd}
+									>
+										<SortableContext items={containers.map((i) => i.id)}>
+											<div className="flex">
+												{containers.map((container) => (
+													<div key={container.id} className="mr-4 w-full">
+														{/* Added margin */}
+														<QuestContainer
+															id={container.id}
+															title={container.title}
+															onAddItem={() => {
+																setShowAddItemModal(true);
+																setCurrentContainerId(container.id);
+															}}
+														>
+															<SortableContext items={container.items.map((i) => i.id)}>
+																<div className="flex items-start flex-col gap-y-4">
+																	{container.items.map((i) => (
+																		<Quest
+																			title={i.title}
+																			description={i.description}
+																			id={i.id}
+																			key={i.id}
+																			onEditItem={() => {
+																				setItemName(i.title);
+																				setItemDescription(i.description);
+																				setCurrentContainerId(container.id);
+																				setCurrentItemId(i.id);
+																				setShowEditItemModal(true);
+																			}}
+																			tags={i.tags}
+																			onDeleteItem={() => {
+																				onDeleteItem(i.id, container.id);
+																			}}
+																		/>
+																	))}
+																</div>
+															</SortableContext>
+														</QuestContainer>
+													</div>
+												))}
+											</div>
+										</SortableContext>
+										<DragOverlay adjustScale={false}>
+											{/* Drag Overlay For item Item */}
+											{activeId && activeId.toString().includes('item') && (
+												<Quest
+													id={activeId}
+													title={findItemTitle(activeId)}
+													description={findItemDescription(activeId)}
+													onEditItem={() => { }}
+													tags={[]}
+													onDeleteItem={() => {
+														onDeleteItem;
+													}}
+												/>
+											)}
+										</DragOverlay>
+									</DndContext>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
