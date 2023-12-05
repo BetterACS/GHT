@@ -1,15 +1,39 @@
-import { TagType } from '../utils/types';
+import { FaTrashAlt } from 'react-icons/fa';
 import clsx from 'clsx';
-const Tag = ({ id, name, color }: TagType) => {
+import { TagType } from '../utils/types';
+import React from 'react';
+import '../styles/Tag.scss';
+import { UniqueIdentifier } from '@dnd-kit/core';
+
+interface TagProps {
+	tag: TagType;
+	onRemoveTag: (tagId: UniqueIdentifier) => void;
+}
+
+const Tag = ({ tag, onRemoveTag }: TagProps) => {
+	const [hiddenClose, setHiddenClose] = React.useState(true);
+
 	return (
-		<div
-			id={id.toString()}
-			className={clsx('text-xs px-2 py-1 w-fit shadow-md rounded-xl border border-transparent', color)}
-		>
-			{name}
-		</div>
+		<li id={tag.id.toString()}>
+			<div
+				className={clsx('tag', tag.color)}
+				onMouseEnter={() => {
+					setHiddenClose(false);
+				}}
+				onMouseLeave={() => {
+					setHiddenClose(true);
+				}}
+			>
+				<span className="tag-title">{tag.name}</span>
+				<span
+					className={clsx('tag-close-icon', tag.color, { hidden: hiddenClose })}
+					onClick={() => onRemoveTag(tag.id)}
+				>
+					<FaTrashAlt />
+				</span>
+			</div>
+		</li>
 	);
 };
 
 export default Tag;
-export type { TagType };
