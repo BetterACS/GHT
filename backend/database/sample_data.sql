@@ -1,54 +1,7 @@
-CREATE DATABASE gamify_habit_tracker;
-USE gamify_habit_tracker;
+USE GHT;
 
-CREATE TABLE Users (
-    user_id INT NOT NULL AUTO_INCREMENT,
-    username VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    PRIMARY KEY (user_id)
-);
-
-CREATE TABLE Quests (
-    quest_id INT NOT NULL AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    quest_name VARCHAR(255) NOT NULL,
-    quest_description VARCHAR(255) NOT NULL,
-    start_date DATE NOT NULL,
-    due_date DATE NOT NULL,
-    PRIMARY KEY (quest_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-
-CREATE TABLE Habits (
-    habit_id INT NOT NULL AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    habit_name VARCHAR(255) NOT NULL,
-    habit_description VARCHAR(255) NOT NULL,
-    value INT NOT NULL,
-    maximum_value INT,
-    PRIMARY KEY (habit_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
-
-INSERT INTO users (username, password) VALUES ('monchinawat', '12345678');
-INSERT INTO users (username, password) VALUES ('jackjessada', '23456789');
-INSERT INTO users (username, password) VALUES ('james', '34567890');
-INSERT INTO users (username, password) VALUES ('kimmycreative', 'microscg');
-
-INSERT INTO quests 
-    (user_id, quest_name, quest_description, start_date, due_date) 
-    VALUES (1, 'Learn React', 'Learn React', '2020-01-01', '2020-01-31'),
-		(1, 'Learn Node.js', 'Learn Node.js', '2020-02-01', '2020-02-28'),
-		(1, 'Learn Express.js', 'Learn Express.js', '2020-03-01', '2020-03-16'),
-		(4, 'Learn React', 'Learn React', '2020-01-01', '2020-01-31');
-
-
-INSERT INTO habits
-    (user_id, habit_name, habit_description, value)
-    VALUES (2, 'Learning', 'Learning', 0),
-		(2, 'Reading', 'Reading', 0),
-		(3, 'Exercising', 'Exercising', 0);
-
-INSERT INTO habits
-    (user_id, habit_name, habit_description, value, maximum_value)
-    VALUES (3, 'Eating', 'Eating', 0, 100);
+INSERT INTO `user` VALUES ('1@1.1','mairoo','$2b$10$UUt7LlBtUcBE474jmVxV8.I4GZrA1biBtZ5Mg.msTbUVXOONMAWti','2023-12-04 08:47:22'),('123@123.123','123123','$2b$10$MRWXwgRStKisxlgzxs8AVud/9HyIIs2fopCFhbFXjTL7QDiMM.4em','2023-12-01 05:03:35'),('123@1234.123','mairoo','$2b$10$orZ4DHIl2Y2FVv.cIywDu.5NZitz99Dr4PgFkMto5fy0YYttsLnvq','2023-12-04 08:48:05'),('hey1@1.com','hey1','$2b$10$bumdYs7uFajYNqOOj48KC.h04QorFT.UkE2kb2ueMKJBEGmE2iKoy','2023-11-17 10:01:11'),('Kodlek@gmail.com','JackHumLek','$2b$10$8YQdmgkCs3I7VNE3FWgWgeB86bcp8iqiT2BEkIFOVL/cU7tDOHnXO','2023-12-01 05:11:16'),('test@test','test','$2a$10$g62Cq5UUGpa1RpKOw/e1heOAn/rLyynnsllpjzsocP10tNCNPVDG6','2023-11-17 09:46:39'),('test1@test','test1','$2a$10$0YBNsedtvcUTPzQmW.eqOuR2bxlvngyWzBhR5VHFw8tbI7RUxOxsO','2023-11-17 09:46:50'),('test2@test','test2','$2a$10$Mhj7s7I/w2X57TpJm.pHpOxH0Qd61JjMpMAIdlcSm.DrfKcsyoTt.','2023-11-17 09:47:01'),('test3@test','test3','$2a$10$F5vW/w/7dOheKH2gYFt10OAcqrU7s1UP.tlwouZn3dr3lNKD2gkR6','2023-11-17 09:47:12');
+INSERT INTO `habit` VALUES (7,'exercise','just exercise',30,3,'test@test'),(8,'play game','just playgame',200,12,'test1@test'),(9,'watering','watering flower',8,24,'test1@test');
+INSERT INTO `quest` VALUES (13,'Kim','love elder ring','2023-11-17 12:32:41','2023-12-12 00:00:00','in progress',21,'test1@test'),(15,'Css232','','2023-11-17 12:34:00','2023-11-27 00:00:00','in progress',13,'test1@test'),(106,'test','test','2023-11-22 11:03:00','2022-01-01 00:00:00','Task',1,'test@test'),(110,'MoN','Mon','2023-11-22 15:57:12','2022-01-01 00:00:00','In Progress',1,'test@test'),(111,'EIEI','juju','2023-12-01 05:56:56','2022-01-01 00:00:00','In Progress',1,'123@123.123'),(112,'123123','123123213213231','2023-12-01 06:00:07','2022-01-01 00:00:00','In Progress',1,'123@123.123'),(113,'test2','test2','2023-12-03 11:38:12','2022-01-01 00:00:00','Task',1,'test@test'),(115,'asdasd','123','2023-12-03 13:36:07','2022-01-01 00:00:00','Task',1,'123@123.123'),(116,'asd','23123231','2023-12-03 13:36:39','2022-01-01 00:00:00','Task',1,'123@123.123');
+INSERT INTO `tag` VALUES (26,'dummy','bg-lime-300','test@test'),(27,'dummy1','bg-yellow-200','test@test'),(28,'dummy2','bg-purple-300','test@test'),(29,'dummy3','bg-red-300','test@test'),(30,'dummy5','bg-amber-300','test@test'),(31,'dummy4','bg-lime-300','test@test'),(32,'Mon','bg-pink-300','test@test'),(33,'Jack','bg-pink-300','test@test'),(34,'Kim','bg-red-300','test@test'),(35,'Monm2','bg-sky-300','test@test'),(36,'Hey','bg-red-300','123@123.123');
+INSERT INTO `contain` VALUES (48,31,106),(49,32,110),(50,33,110),(51,34,110),(52,35,110),(56,26,113),(62,30,113),(63,36,111);
