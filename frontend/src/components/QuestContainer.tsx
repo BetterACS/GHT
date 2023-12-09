@@ -1,6 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { useSortable } from '@dnd-kit/sortable';
+import { FaPlus } from 'react-icons/fa';
 import { CSS } from '@dnd-kit/utilities';
 import Button from './Button';
 import { UniqueIdentifier } from '@dnd-kit/core';
@@ -29,7 +30,7 @@ const QuestContainer = ({ id, children, title, description, onAddItem }: QuestCo
 				transform: CSS.Translate.toString(transform),
 			}}
 			className={clsx(
-				'w-full h-full p-4 bg-gray-50 rounded-xl flex flex-col gap-y-4',
+				'w-full h-full p-4 bg-gray-50 rounded-xl flex flex-col gap-y-4 question-container',
 				isDragging && 'opacity-50'
 			)}
 		>
@@ -40,7 +41,7 @@ const QuestContainer = ({ id, children, title, description, onAddItem }: QuestCo
 				</div>
 				{/* <button className="border p-2 text-xs rounded-xl shadow-lg hover:shadow-xl">Drag Handle</button> */}
 				<Button variant="ghost" onClick={onAddItem}>
-					Add Task
+					<FaPlus />
 				</Button>
 			</div>
 

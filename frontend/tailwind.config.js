@@ -7,7 +7,9 @@ export default {
     "./src/utils/*.{js,ts,jsx,tsx}"
   ],
   theme: {
-    extend: {},
+    extend: {    
+
+    },
   },
   plugins: [],
 }
