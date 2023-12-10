@@ -4,7 +4,8 @@ import { CSS } from '@dnd-kit/utilities';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenToSquare, faArrowPointer, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { UniqueIdentifier } from '@dnd-kit/core';
-import Tag, { TagType } from './Tag';
+import { TagType } from '../utils/types';
+import TagDisplay from './Tag';
 
 type QuestType = {
 	id: UniqueIdentifier;
@@ -42,7 +43,7 @@ const Quest = ({ id, title, description, tags, onEditItem, onDeleteItem }: Quest
 					<div className="text-xs">{description}</div>
 					<div className="pt-3 flex gap-2">
 						{tags.map((tag) => (
-							<Tag key={tag.id} id={tag.id} name={tag.name} color={tag.color} />
+							<TagDisplay.previewTag key={tag.id} tag={tag} />
 						))}
 					</div>
 				</div>
