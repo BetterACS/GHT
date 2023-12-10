@@ -15,6 +15,7 @@ type Item = {
 	id: UniqueIdentifier;
 	title: string;
 	description: string;
+	image_url: string;
 	tags: TagType[];
 };
 

@@ -134,6 +134,7 @@ export default function QuestPage() {
 							id: id,
 							title: item.quest_name,
 							description: item.description,
+							image_url: item.image_url,
 							tags: tagOfContainer,
 						});
 						console.log(container);
@@ -191,6 +192,7 @@ export default function QuestPage() {
 							const id = 'item-' + result.data.quest_id;
 							container.items.push({
 								id: id,
+								image_url: 'https://i.imgur.com/ffuVcXN.png',
 								title: itemName,
 								description: itemDescription,
 								tags: [],
@@ -604,6 +606,7 @@ export default function QuestPage() {
 														<div className="flex items-start flex-col gap-y-4">
 															{container.items.map((i) => (
 																<Quest
+																	image_url={i.image_url}
 																	title={i.title}
 																	description={i.description}
 																	id={i.id}
@@ -632,6 +635,7 @@ export default function QuestPage() {
 									{/* Drag Overlay For item Item */}
 									{activeId && activeId.toString().includes('item') && (
 										<Quest
+											image_url=""
 											id={activeId}
 											title={findItemTitle(activeId)}
 											description={findItemDescription(activeId)}

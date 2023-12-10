@@ -71,11 +71,22 @@ interface containInterface {
 	tag_id: number;
 	quest_id: number;
 }
+
+interface itemInterface {
+	item_id: number;
+	item_name: string;
+	description: string;
+	item_type: string;
+	rarity: number;
+	image_url: string;
+}
+
 export {
 	containInterface,
 	fieldInterface,
 	habitInterface,
 	inventoryInterface,
+	itemInterface,
 	monsterInterface,
 	questInterface,
 	returnInterface,
