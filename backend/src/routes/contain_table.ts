@@ -42,22 +42,30 @@ const createContainTable = async (req: Request, res: Response): Promise<void> =>
 };
 
 const deleteContainTable = async (req: Request, res: Response): Promise<void> => {
-	const { contain_id } = req.body;
+	const { tag_id, quest_id } = req.body;
 	const logger = Logger.instance().logger();
 	let connection;
 	try {
 		const database = Database.instance().mySQL();
 		connection = await database.promise().getConnection();
-		const sqlSearch = 'SELECT * FROM contain WHERE contain_id = ?';
-		const [rows] = await connection.query(sqlSearch, [contain_id]);
-		let contain = rows as containInterface[];
+
+		let contain;
+		if (quest_id === undefined) {
+			const sqlSearch = 'SELECT * FROM contain WHERE tag_id = ?';
+			const [rows] = await connection.query(sqlSearch, [tag_id]);
+			contain = rows as containInterface[];
+		} else {
+			const sqlSearch = 'SELECT * FROM contain WHERE tag_id = ? AND quest_id = ?';
+			const [rows] = await connection.query(sqlSearch, [tag_id, quest_id]);
+			contain = rows as containInterface[];
+		}
 		if (contain.length === 0) {
 			logger.error('--------This contain not exist---------');
 			returnJson = { status: 'error', message: 'This contain not exist.', return: 1, data: {} };
 			return;
 		}
-		const sqlDelete = 'delete from contain where contain_id = ?';
-		const [deleteResult] = await connection.query(sqlDelete, [contain_id]);
+		const sqlDelete = 'delete from contain where tag_id = ? AND quest_id = ?';
+		const [deleteResult] = await connection.query(sqlDelete, [tag_id, quest_id]);
 
 		returnJson = { status: 'success', message: 'contain deleted', return: 0, data: {} };
 	} catch (error) {
@@ -106,6 +114,7 @@ const queryContainTable = async (req: Request, res: Response): Promise<void> => 
 
 router.get('/contain-table', queryContainTable);
 router.post('/contain-table', createContainTable);
+router.delete('/contain-table', deleteContainTable);
 router.delete('/contain-table', deleteContainTable);
 
 export default router;

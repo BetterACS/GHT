@@ -70,7 +70,7 @@ const Quest = ({ id, title, description, tags, image_url, onEditItem, onDeleteIt
 			>
 				{/* <img className="mx-2 w-1/12 h-1/12" src={image_url} alt="item" /> */}
 				<div className="mx-2 h-full pb-1">
-					<div className="flex gap-2 pb-1">
+					<div className="flex gap-2 pb-1 flex-wrap">
 						{tags.map((tag) => (
 							<TagDisplay.previewTag key={tag.id} tag={tag} />
 						))}

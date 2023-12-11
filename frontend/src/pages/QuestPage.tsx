@@ -293,35 +293,32 @@ export default function QuestPage() {
 	};
 	// Get all tags from all database that same user
 	async function getAllTagsFromContainers(): Promise<TagType[]> {
-		const allTags: TagType[] = [];
-
 		// containers.forEach((container) => {
 		// 	container.items.forEach((item) => {
 		// 		allTags.push(...item.tags);
 		// 	});
 		// });
-		try {
-			const result = await axios.get('http://localhost:5000/filter/tag', {
-				params: {
-					email: email,
-				},
-			});
-			const results = result.data as returnInterface;
-			console.log(results.data);
-			results.data.map((item: any) => {
-				const tag_id = `tag-${item.tag_id}`;
-				const tag: TagType = {
-					id: tag_id,
-					name: item.tag_name,
-					color: item.tag_color,
-				};
-				allTags.push(tag);
-			});
-		} catch (err) {
-			console.error('Error fetching tags:', err);
-		}
 
-		return allTags;
+		const results = await axios.get('http://localhost:5000/tag/all', {
+			params: {
+				email: email,
+			},
+		});
+
+		const result = results.data as returnInterface;
+
+		if (result.return == 0) {
+			const tags = result.data.map((tag: any) => {
+				return {
+					id: `tag-${tag.tag_id}`,
+					name: tag.tag_name,
+					color: tag.tag_color,
+				};
+			});
+			return tags;
+		} else {
+			return [];
+		}
 	}
 
 	// Find the value of the items
@@ -340,6 +337,14 @@ export default function QuestPage() {
 		const item = container.items.find((item) => item.id === id);
 		if (!item) return '';
 		return item.title;
+	};
+
+	const findItemTags = (id: UniqueIdentifier | undefined) => {
+		const container = findValueOfQuest(id, 'item');
+		if (!container) return [];
+		const item = container.items.find((item) => item.id === id);
+		if (!item) return [];
+		return item.tags;
 	};
 
 	const findItemDescription = (id: UniqueIdentifier | undefined) => {
@@ -378,14 +383,7 @@ export default function QuestPage() {
 				const updatedItems = await Promise.all(
 					container.items.map(async (item) => {
 						if (item.id === currentItemId) {
-							item.tags.push(tag);
-							//add in backend contain
-							const addTagToContainer = await axios
-								.post('http://localhost:5000/contain-table', {
-									tag_id: result.data.tag_id,
-									quest_id: item.id?.toString().replace('item-', ''),
-								})
-								.catch((err) => console.log(err));
+							await updateTag(item, tag);
 						}
 						return item;
 					})
@@ -404,6 +402,73 @@ export default function QuestPage() {
 		// contain_id is the id of the label table in database
 		//const contain_id = result_contain.data.contain_id;
 	}
+
+	const selectTag = async (item: Item, tag: TagType) => {
+		setPreviewTags([...previewTags, tag]);
+		await updateTag(item, tag);
+		fetchTag();
+	};
+
+	const removeTag = async (item: Item, tag: TagType) => {
+		try {
+			const results = await axios.delete('http://localhost:5000/contain-table', {
+				data: {
+					tag_id: tag.id.toString().replace('tag-', ''),
+					quest_id: item.id?.toString().replace('item-', ''),
+				},
+			});
+			const result = results.data as returnInterface;
+
+			if (result.return == 0) {
+				item.tags = item.tags.filter((t) => t.id !== tag.id);
+				setPreviewTags(previewTags.filter((t) => t.id !== tag.id));
+			}
+		} catch (error) {
+			console.error('Error deleting tag:', error);
+		}
+		fetchTag();
+	};
+
+	const updateTag = async (item: Item, tag: TagType) => {
+		item.tags.push(tag);
+		//add in backend contain
+		const addTagToContainer = await axios
+			.post('http://localhost:5000/contain-table', {
+				tag_id: tag.id.toString().replace('tag-', ''),
+				quest_id: item.id?.toString().replace('item-', ''),
+			})
+			.catch((err) => console.log(err));
+
+		console.log('contain reults ', addTagToContainer);
+		fetchTag();
+	};
+
+	const deleteTag = async (item: Item, tag: TagType) => {
+		removeTag(item, tag);
+		try {
+			const results = await axios.delete('http://localhost:5000/tag', {
+				data: {
+					tag_id: tag.id.toString().replace('tag-', ''),
+				},
+			});
+			const result = results.data as returnInterface;
+
+			if (result.return == 0) {
+				setTags(tags.filter((t) => t.id !== tag.id));
+				setPreviewTags(previewTags.filter((t) => t.id !== tag.id));
+			}
+
+			containers.map(async (container) => {
+				container.items.map(async (item) => {
+					item.tags = item.tags.filter((t) => t.id !== tag.id);
+				});
+			});
+		} catch (error) {
+			console.error('Error deleting tag:', error);
+		}
+		fetchTag();
+	};
+
 	// DND Handlers
 	const sensors = useSensors(
 		useSensor(PointerSensor),
@@ -474,19 +539,24 @@ export default function QuestPage() {
 				setItemDescription={setItemDescription}
 				containers={containers}
 				tags={tags}
+				setTags={setTags}
 				currentContainerId={currentContainerId}
 				currentItemId={currentItemId}
 				onEditItem={onEditItem}
+				onAddTag={onAddTag}
+				onSelectTag={selectTag}
+				onRemoveTag={removeTag}
+				onDeleteTag={deleteTag}
 			/>
 
-			{/* Main Content */}
 			<div className="flex flex-row">
+				{/* Sidebar */}
 				<SideBar />
 				{/* Main Content */}
 				<div className="w-full flex flex-col items-center">
-					<div className="mt-16 mb-8 text-2l font-bold tracking-[.25em]">
+					<header className="mt-16 mb-8 text-2l font-bold tracking-[.25em]">
 						<h1>Quest</h1>
-					</div>
+					</header>
 					<div className="w-8/12 px-2/4">
 						<div className="grid grid-cols-1 gap-6">
 							<DndContext
@@ -547,7 +617,7 @@ export default function QuestPage() {
 											title={findItemTitle(activeId)}
 											description={findItemDescription(activeId)}
 											onEditItem={() => {}}
-											tags={[]}
+											tags={findItemTags(activeId)}
 											onDeleteItem={() => {
 												onDeleteItem;
 											}}

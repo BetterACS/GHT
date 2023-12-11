@@ -54,12 +54,12 @@ body {
 
 .tag {
 	width: auto;
-	height: 32px;
+	height: 24px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: #fff;
-	padding: 0 8px;
+	// color: #fff;
+	padding: 0 6px;
 	font-size: 14px;
 	list-style: none;
 	border-radius: 6px;
@@ -69,13 +69,13 @@ body {
 	}
 	.tag-close-icon {
 		// display: block;
-		width: 16px;
-		height: 20px;
-		line-height: 16px;
+		width: 12px;
+		height: 14px;
+		line-height: 14px;
 		text-align: center;
 		font-size: 14px;
-		margin-left: 12px;
-		margin-top: 6px;
+		margin-left: 8px;
+		// margin-top: 2px;
 		// border-radius: 50%;
 		// background: #fff;
 		cursor: pointer;
@@ -83,10 +83,10 @@ body {
 		 // Hover state for remove button
 		&:hover {
 			// Animation for the circle
-			animation: pulse 0.25s ease-in-out;
+			animation: pulse 0.15s ease-in-out;
 			animation-iteration-count: 1;
 
-			transform: scale(1.2);
+			// transform: scale(1.1);
 		}
 	}
 	

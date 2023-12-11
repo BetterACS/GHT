@@ -21,7 +21,8 @@ interface tagEditorProps {
 	currentTags: TagType[];
 	setCurrentTags: React.Dispatch<React.SetStateAction<TagType[]>>;
 	onAddTag: (tagName: string) => void;
-	onRemoveTag: (tagId: UniqueIdentifier) => void;
+	onRemoveTag: (tag: TagType) => void;
+	onDeleteTag: (tag: TagType) => void;
 	onSelectTag: (tag: TagType) => void;
 }
 
@@ -69,13 +70,24 @@ class TagDisplay {
 		);
 	};
 
-	public static tagsEditor = ({ tags, currentTags, onRemoveTag, onAddTag, onSelectTag }: tagEditorProps) => {
+	public static tagsEditor = ({
+		tags,
+		currentTags,
+		setCurrentTags,
+		onRemoveTag,
+		onDeleteTag,
+		onAddTag,
+		onSelectTag,
+	}: tagEditorProps) => {
 		const [placeholder, setPlaceholder] = React.useState('Add / Edit');
 		const [menuVisible, setMenuVisible] = React.useState(false);
 
 		const getNoneSelectedTags = () => {
-			// Get all tags that are not selected (id)
-			return tags.filter((tag: TagType) => !currentTags.find((currentTag: TagType) => currentTag.id === tag.id));
+			// Get all tags that no currentTags id matches
+			const noneSelect = tags.filter((tag: TagType) => {
+				return !currentTags.find((currentTag: TagType) => currentTag.id === tag.id);
+			});
+			return noneSelect;
 		};
 
 		const addTags = (event: any) => {
@@ -92,7 +104,13 @@ class TagDisplay {
 				<div className="tags-input">
 					<ul id="tags">
 						{currentTags.map((tag: TagType) => (
-							<TagDisplay.tag key={tag.id} tag={tag} onRemoveTag={onRemoveTag} />
+							<TagDisplay.tag
+								key={tag.id}
+								tag={tag}
+								onRemoveTag={() => {
+									onRemoveTag(tag);
+								}}
+							/>
 						))}
 						<input
 							type="text"
@@ -130,11 +148,18 @@ class TagDisplay {
 											<div
 												className={this.classNames(
 													active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-													'block px-4 py-2 text-sm'
+													'block px-4 text-sm h-92 flex flex-row items-center justify-between'
 												)}
 												onClick={() => onSelectTag(tag)}
 											>
-												{tag.name}
+												{/* {tag.name} */}
+												<div className="h-full py-4">{tag.name}</div>
+												<div
+													className="fixed right-0 mr-2 middle-0 hover:text-red-500"
+													onClick={() => onDeleteTag(tag)}
+												>
+													<FaTrashAlt />
+												</div>
 											</div>
 										)}
 									</Menu.Item>

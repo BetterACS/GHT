@@ -147,10 +147,42 @@ const deleteTag = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
+const getAllTag = async (req: Request, res: Response): Promise<void> => {
+	const { email } = req.query;
+	const logger = Logger.instance().logger();
+	let connection;
+	try {
+		const database = Database.instance().mySQL();
+		connection = await database.promise().getConnection();
+		const sqlSearch = 'SELECT * FROM tag WHERE email = ?';
+		const [rows] = await connection.query(sqlSearch, [email]);
+		let tags = rows as tagInterface[];
+		if (tags.length === 0) {
+			logger.error('--------This email not or not have any tags yet exist---------');
+			returnJson = { status: 'error', message: 'There are no tags found', return: 3, data: {} };
+			return;
+		}
+		returnJson = { status: 'success', message: 'tag found', return: 0, data: tags };
+	} catch (error) {
+		returnJson = {
+			status: 'error',
+			message: "Error searching for the tag. perhap email doesn't not exist",
+			return: 2,
+			data: { error: error },
+		};
+	} finally {
+		if (connection) {
+			connection.release();
+		}
+		res.json(returnJson);
+	}
+};
+
 const router = express.Router();
 
 router.post('/tag', createTag);
 router.get('/tag', queryTag);
 router.put('/tag', updateTag);
 router.delete('/tag', deleteTag);
+router.get('/tag/all', getAllTag);
 export default router;
