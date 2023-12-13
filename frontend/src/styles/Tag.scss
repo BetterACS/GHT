@@ -1,4 +1,3 @@
-@import url("https://fonts.googleapis.com/css?family=Overpass");
 
 * {
 	box-sizing: border-box;
@@ -59,12 +58,14 @@ body {
 	align-items: center;
 	justify-content: center;
 	// color: #fff;
-	padding: 0 6px;
+	padding: 4px 8px;
 	font-size: 14px;
 	list-style: none;
-	border-radius: 6px;
+	border-radius: 8px;
 	margin: 0 6px 6px 0;
 	.tag-title {
+		font-weight: 600;
+		color: white;
 		margin-top: 3px;
 	}
 	.tag-close-icon {

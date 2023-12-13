@@ -4,7 +4,6 @@ import Monster from './pages/Monster';
 import SignUp from './pages/SignUp';
 import Login from './pages/Login';
 import Quest from './pages/QuestPage';
-import Tag from './pages/Tag';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -18,7 +17,6 @@ function App() {
 					<Route path="/sign_up" element={<SignUp />} />
 					<Route path="/log_in" element={<Login />} />
 					<Route path="/quest" element={<Quest />} />
-					<Route path="/tag" element={<Tag />} />
 				</Routes>
 			</Router>
 		</>

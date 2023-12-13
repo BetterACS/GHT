@@ -550,7 +550,7 @@ export default function QuestPage() {
 
 			<div className="flex flex-row">
 				{/* Sidebar */}
-				<SideBar />
+				<SideBar tags={tags} />
 				{/* Main Content */}
 				<div className="w-full flex flex-col items-center">
 					<header className="mt-16 mb-8 text-2l font-bold tracking-[.25em]">

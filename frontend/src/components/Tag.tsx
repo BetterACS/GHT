@@ -6,7 +6,6 @@ import '../styles/Tag.scss';
 import { UniqueIdentifier } from '@dnd-kit/core';
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
-
 interface previewTagProps {
 	tag: TagType;
 }
@@ -39,7 +38,7 @@ class TagDisplay {
 		return (
 			<div id={tag.id.toString()}>
 				<div className={clsx('tag', tag.color)}>
-					<span className="tag-title">{tag.name}</span>
+					<span className="tag-title text-white">{tag.name}</span>
 				</div>
 			</div>
 		);
