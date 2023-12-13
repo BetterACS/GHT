@@ -9,6 +9,8 @@ import { TagType } from '../utils/types';
 import TagDisplay from './Tag';
 import { useState } from 'react';
 
+import { Tooltip, Typography } from '@material-tailwind/react';
+
 type QuestType = {
 	id: UniqueIdentifier;
 	title: string;
@@ -87,7 +89,34 @@ const Quest = ({ id, title, description, tags, image_url, onEditItem, onDeleteIt
 							<BsCalendar2Date size="24" />
 							<span className="text-sm pt-1 px-2"> {'28 Dec'} </span>
 						</div>
-						<img className="h-8 rounded-full" src={'https://i.imgur.com/ffuVcXN.png'} alt="item" />
+						<Tooltip
+							content={
+								<div className="w-96 flex flex-row m-2">
+									<img
+										className="h-16 rounded-lg"
+										src={'https://i.imgur.com/ffuVcXN.png'}
+										alt="item"
+									/>
+									<div className="pl-2">
+										<Typography color="white" className="font-medium">
+											Kraken's Delight
+										</Typography>
+										<Typography variant="small" color="white" className="font-normal opacity-80">
+											In the coastal towns of the world of Thalassar, there exists a delicacy that
+											is as much a testament to courage as it is to culinary skill - the 'Kraken's
+											Delight'. This dish, a whole octopus served on a simple earthenware plate,
+											represents a tale of bravery and the sea's bounty.
+										</Typography>
+									</div>
+								</div>
+							}
+							animate={{
+								mount: { scale: 1, y: 0 },
+								unmount: { scale: 0, y: 25 },
+							}}
+						>
+							<img className="h-8 rounded-full" src={'https://i.imgur.com/ffuVcXN.png'} alt="item" />
+						</Tooltip>
 					</div>
 				</div>
 			</div>
