@@ -1,19 +1,10 @@
 import { useEffect, useState } from 'react';
 import SideBar from '../components/SideBar';
 import Quest from '../components/Quest';
-// import Input from '../components/Input';
-// import Modal from '../components/modals/ModalBase';
-// import TagModal from '../components/TagModal';
-// import TagDisplay from '../components/Tag';
-// import Tag from '../components/Tag';
-// import Button from '../components/Button';
-// import DropDown from '../components/DropDown';
 import QuestContainer from '../components/QuestContainer';
 import { DNDType, TagType, Item } from '../utils/types';
-// import { FaPlus } from 'react-icons/fa';
 import { tagColorList } from '../utils/constants';
 import { useNavigate } from 'react-router-dom';
-// import { v4 as uuidv4 } from 'uuid';
 
 import AddItemModal from '../components/modals/AddItemModal';
 import EditItemModal from '../components/modals/EditItemModal';
@@ -53,6 +44,11 @@ export default function QuestPage() {
 			title: 'In Progress',
 			items: [],
 		},
+		{
+			id: `container-3`,
+			title: 'Done',
+			items: [],
+		},
 	]);
 	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 	const [currentContainerId, setCurrentContainerId] = useState<UniqueIdentifier>();
@@ -61,13 +57,11 @@ export default function QuestPage() {
 	const [itemDescription, setItemDescription] = useState('');
 
 	// Tags
-	const [tagName, setTagName] = useState('');
 	const [previewTags, setPreviewTags] = useState<TagType[]>([]);
 
 	// Modals
 	const [showAddItemModal, setShowAddItemModal] = useState(false);
 	const [showEditItemModal, setShowEditItemModal] = useState(false);
-	const [showAddTagModal, setShowAddTagModal] = useState(false);
 
 	const updateAndResetItemState = (updatedContainers: DNDType[]) => {
 		setContainers(updatedContainers);
@@ -108,7 +102,12 @@ export default function QuestPage() {
 
 			const promises = result.data.map(async (item: any) => {
 				const id = 'item-' + item.quest_id;
-				const currentContainer = item.status === 'Task' ? 'container-1' : 'container-2';
+				const currentContainer =
+					item.status === 'Task'
+						? 'container-1'
+						: item.status === 'In Progress'
+						? 'container-2'
+						: 'container-3';
 
 				for (const container of containers) {
 					if (container.id === currentContainer) {
@@ -175,7 +174,7 @@ export default function QuestPage() {
 				if (container.id === currentContainerId) {
 					console.log(container.id);
 
-					const tempStatus = container.id === 'container-1' ? 'Task' : 'In Progress';
+					// const tempStatus = container.id === 'container-1' ? 'Task' : 'In Progress';
 					try {
 						const results = await axios.post(`http://localhost:${Config.BACKEND_PORT}/quest`, {
 							quest_name: itemName,
@@ -183,7 +182,7 @@ export default function QuestPage() {
 							due_date: due_date,
 							item_id: item_id,
 							email: email,
-							status: tempStatus,
+							status: container.title,
 						});
 
 						const result = results.data as returnInterface;
@@ -255,7 +254,7 @@ export default function QuestPage() {
 						if (item.id === currentItemId) {
 							item.title = itemName;
 							item.description = itemDescription;
-							const tempStatus = container.id === 'container-1' ? 'Task' : 'In Progress';
+							// const tempStatus = container.id === 'container-1' ? 'Task' : 'In Progress';
 							const new_id = Number(currentItemId.toString().replace('item-', ''));
 							console.log(new_id);
 							try {
@@ -266,7 +265,7 @@ export default function QuestPage() {
 									due_date: due_date,
 									item_id: item_id,
 									email: email,
-									status: tempStatus,
+									status: container.title,
 								});
 
 								const result = (await results).data as returnInterface;
@@ -495,7 +494,7 @@ export default function QuestPage() {
 		}
 		if (dragObjectOnContainerID !== AfterContainer.id) {
 			const new_id = Number(event.active.id.toString().replace('item-', ''));
-			const tempStatus = AfterContainer.id === 'container-1' ? 'Task' : 'In Progress';
+			// const tempStatus = AfterContainer.id === 'container-1' ? 'Task' : 'In Progress';
 			try {
 				const results = axios.put(`http://localhost:${Config.BACKEND_PORT}/quest`, {
 					quest_id: new_id, //change
@@ -504,7 +503,7 @@ export default function QuestPage() {
 					due_date: due_date,
 					item_id: item_id,
 					email: email,
-					status: tempStatus,
+					status: AfterContainer.title,
 				});
 				const result = (await results).data as returnInterface;
 				if (result.return !== 0 || result.data === undefined) {
