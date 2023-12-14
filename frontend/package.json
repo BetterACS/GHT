@@ -16,7 +16,9 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@headlessui/react": "^1.7.17",
     "@radix-ui/react-slot": "^1.0.2",
+    "@trendyol-js/react-carousel": "^3.0.2",
     "@types/react-calendar-heatmap": "^1.6.6",
+    "@types/swiper": "^6.0.0",
     "@types/uuid": "^9.0.7",
     "axios": "^1.5.1",
     "class-variance-authority": "^0.7.0",
@@ -30,11 +32,12 @@
     "react-calendar-heatmap": "^1.9.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.12.0",
+    "swiper": "^11.0.5",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.17",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react": "^4.0.3",
@@ -45,7 +48,7 @@
     "postcss": "^8.4.31",
     "react-router-dom": "^6.17.0",
     "tailwindcss": "^3.3.3",
-    "typescript": "^5.0.2",
+    "typescript": "^5.3.3",
     "vite": "^4.4.5"
   }
 }
