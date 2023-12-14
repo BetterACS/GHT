@@ -4,13 +4,17 @@ import '../styles/Sidebar.css';
 import { TagType } from '../utils/types';
 import { IconButton, Button } from '@material-tailwind/react';
 import { HiArrowCircleLeft, HiArrowCircleRight } from 'react-icons/hi';
+import { BsBackpackFill } from 'react-icons/bs';
 import { MdAdd, MdScience } from 'react-icons/md';
 import { FaGamepad, FaSpaghettiMonsterFlying } from 'react-icons/fa6';
+import { Tooltip } from '@material-tailwind/react';
+
 interface BarProps {
 	tags: TagType[];
 	active_site?: string;
 }
 import { List, ListItem, ListItemSuffix, Chip, Card } from '@material-tailwind/react';
+import { divider } from '@nextui-org/react';
 
 export function ListWithBadge({ tags }: BarProps) {
 	return (
@@ -28,6 +32,19 @@ export function ListWithBadge({ tags }: BarProps) {
 		</Card>
 	);
 }
+
+const MenuSideBar = ({ name, icon, content, href }: any) => {
+	return (
+		<div className="w-full">
+			<Tooltip content={content}>
+				<Button fullWidth variant="outlined" className="flex items-center gap-3 text-lg">
+					{icon}
+					{name}
+				</Button>
+			</Tooltip>
+		</div>
+	);
+};
 
 const SideBar = ({ tags, active_site }: BarProps) => {
 	const [isOpen, setOpen] = React.useState(false);
@@ -58,18 +75,26 @@ const SideBar = ({ tags, active_site }: BarProps) => {
 
 							<span className="pl-2 text-center text-lg">Add task</span>
 						</div>
-						<Button variant="outlined" className="flex items-center gap-3 text-lg">
-							<FaGamepad size={25} />
-							Quest
-						</Button>
-						<Button variant="outlined" className="flex items-center gap-3 text-lg">
-							<FaSpaghettiMonsterFlying size={25} />
-							Monster
-						</Button>
-						<Button variant="outlined" className="flex items-center gap-3 text-lg">
-							<MdScience size={25} />
-							Analytics
-						</Button>
+						<MenuSideBar
+							icon={<FaGamepad size={25} />}
+							name={<span>Quest</span>}
+							content="Navigate to quest page"
+						/>
+						<MenuSideBar
+							icon={<BsBackpackFill size={25} />}
+							name={<span>Inventory</span>}
+							content="User inventory"
+						/>
+						<MenuSideBar
+							icon={<FaSpaghettiMonsterFlying size={25} />}
+							name={<span>Monster</span>}
+							content="Hunt a monster!!"
+						/>
+						<MenuSideBar
+							icon={<MdScience size={25} />}
+							name={<span>Analytics</span>}
+							content="Time to analysed your work"
+						/>
 					</ul>
 					<hr className="mt-5 mb-2" />
 					<b className="px-8 text-lg">Working tags</b>
