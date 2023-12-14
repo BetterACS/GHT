@@ -1,9 +1,9 @@
 import express, { Request, Response } from 'express';
 import { OkPacket } from 'mysql';
 import Database from '../database/database.js';
+import checkAuthorization from '../middleware/checkAuthorization.js';
 import { containInterface, returnInterface } from '../utils/interfaces.js';
 import Logger from '../utils/logger.js';
-
 const router = express.Router();
 
 let returnJson: returnInterface = {
@@ -112,9 +112,8 @@ const queryContainTable = async (req: Request, res: Response): Promise<void> => 
 	}
 };
 
-router.get('/contain-table', queryContainTable);
-router.post('/contain-table', createContainTable);
-router.delete('/contain-table', deleteContainTable);
-router.delete('/contain-table', deleteContainTable);
+router.get('/contain-table', [checkAuthorization, queryContainTable]);
+router.post('/contain-table', [checkAuthorization, createContainTable]);
+router.delete('/contain-table', [checkAuthorization, deleteContainTable]);
 
 export default router;

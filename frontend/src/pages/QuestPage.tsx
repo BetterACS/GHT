@@ -5,7 +5,7 @@ import QuestContainer from '../components/QuestContainer';
 import { DNDType, TagType, Item } from '../utils/types';
 import { tagColorList } from '../utils/constants';
 import { useNavigate } from 'react-router-dom';
-
+import authorization from '../utils/authorization';
 import AddItemModal from '../components/modals/AddItemModal';
 import EditItemModal from '../components/modals/EditItemModal';
 // DnD
@@ -50,6 +50,10 @@ export default function QuestPage() {
 			items: [],
 		},
 	]);
+
+	//temp
+	let [conter, setConter] = useState(0);
+
 	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 	const [currentContainerId, setCurrentContainerId] = useState<UniqueIdentifier>();
 	const [currentItemId, setCurrentItemId] = useState<UniqueIdentifier>();
@@ -75,22 +79,49 @@ export default function QuestPage() {
 	const [due_date, setDueDate] = useState('2022-01-01');
 	const [item_id, setItemID] = useState(1);
 
-	const email = localStorage.getItem('email') || '';
+	
 	const [tags, setTags] = useState<TagType[]>([]);
+	// ดึงค่าจาก localStorage
+	const email = localStorage.getItem('email') || '';
+	const [accessToken, setAccessToken] = useState(localStorage.getItem('access_token'));
+	const [refreshToken, setRefreshToken] = useState(localStorage.getItem('refresh_token'));
+	const updateAccessToken = async (newToken: string,newRefresh:string) => {
+		await setAccessToken(newToken);
+		await localStorage.setItem('access_token', newToken);
+		await setRefreshToken(newRefresh);
+		await localStorage.setItem('refresh_token', newRefresh);
+	  };
 
+	// สร้าง headers
+	let headers = {
+		authorization: `Bearer ${localStorage.getItem('access_token')}`,
+		refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
+		email: `${localStorage.getItem('email')}`,
+	};
 	useEffect(() => {
-		tokenAuth(navigate, '/quest'); // Check if the user is logged in
-		fetchData(); // Call the asynchronous function to fetch data
-		fetchTag();
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [email]); // Include 'email' in the dependency array if it's used inside the useEffect
+		// tokenAuth(navigate, '/quest');
+		const fetchDataAndTags = async () => {
+			headers = {
+				authorization: `Bearer ${localStorage.getItem('access_token')}`,
+				refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
+				email: `${localStorage.getItem('email')}`,
+			};
+			console.log("ทำ use Effect");
+			await fetchData(); // Assuming fetchData is defined
+			await fetchTag();
+		};
+		
+		Promise.all([fetchDataAndTags()]);
+	}, [accessToken]); // Include 'email' in the dependency array if it's used inside the useEffect
 	const fetchData = async () => {
+		setConter(conter + 1);
+		console.log("ทำ fetch Data ครั้งที่", conter)
 		try {
 			const results = await axios.get('http://localhost:5000/filter/tag', {
 				params: {
 					email: email,
 				},
+				headers: headers
 			});
 
 			const result = results.data as returnInterface;
@@ -112,35 +143,73 @@ export default function QuestPage() {
 				for (const container of containers) {
 					if (container.id === currentContainer) {
 						const tagOfContainer: TagType[] = [];
-
+						
 						const query_tag = await axios.get('http://localhost:5000/contain-table', {
 							params: {
 								quest_id: item.quest_id,
 							},
+							headers: headers
 						});
 
-						const result_tag = query_tag.data as returnInterface;
+						const result_tag = await query_tag.data as returnInterface;
+						console.log(result_tag.return)
+						authorization(result_tag, async ()=>{
+							await Promise.all(
+								result_tag.data.map(async (tag: any) => {
+									const tag_id = `tag-${tag.tag_id}`;
+									const eachTag: TagType = {
+										id: tag_id,
+										name: tag.tag_name,
+										color: tag.tag_color,
+									};
+									tagOfContainer.push(eachTag);
+								})
+							);
+							await Promise.all(
+								container.items = container.items.concat({
+									id: id,
+									title: item.quest_name,
+									description: item.description,
+									image_url: item.image_url,
+									tags: tagOfContainer,
+							}));
+							console.log(container);
+						}
+						,updateAccessToken)
 
-						await Promise.all(
-							result_tag.data.map(async (tag: any) => {
-								const tag_id = `tag-${tag.tag_id}`;
-								const eachTag: TagType = {
-									id: tag_id,
-									name: tag.tag_name,
-									color: tag.tag_color,
-								};
-								tagOfContainer.push(eachTag);
-							})
-						);
-
-						container.items.push({
-							id: id,
-							title: item.quest_name,
-							description: item.description,
-							image_url: item.image_url,
-							tags: tagOfContainer,
-						});
-						console.log(container);
+						// if (result_tag.return === 0)  {
+						// 	await Promise.all(
+						// 		result_tag.data.map(async (tag: any) => {
+						// 			const tag_id = `tag-${tag.tag_id}`;
+						// 			const eachTag: TagType = {
+						// 				id: tag_id,
+						// 				name: tag.tag_name,
+						// 				color: tag.tag_color,
+						// 			};
+						// 			tagOfContainer.push(eachTag);
+						// 		})
+						// 	);
+						// 	await Promise.all(
+						// 		container.items = container.items.concat({
+						// 			id: id,
+						// 			title: item.quest_name,
+						// 			description: item.description,
+						// 			image_url: item.image_url,
+						// 			tags: tagOfContainer,
+						// 	}));
+								
+							
+						// 	console.log(container);
+							
+						// }
+						// else if (result_tag.return === -1){
+						// 	console.log(result_tag.data.accessToken)
+						// 	await localStorage.setItem('access_token', result_tag.data.accessToken);
+						// 	await localStorage.setItem('refresh_token', result_tag.data.refreshToken);
+						// }
+						// else{
+						// 	console.log(result_tag.message)
+						// }
 					}
 				}
 			});
@@ -302,6 +371,7 @@ export default function QuestPage() {
 			params: {
 				email: email,
 			},
+			headers: headers,
 		});
 
 		const result = results.data as returnInterface;

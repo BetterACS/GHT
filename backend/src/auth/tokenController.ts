@@ -9,7 +9,7 @@ const access_token: string = process.env.ACCESS_TOKEN!;
 let refresh_token: string = process.env.REFRESH_TOKEN!;
 
 export function generateAccessToken(user: { user: string }) {
-	return jwt.sign(user, access_token, { expiresIn: '15m' });
+	return jwt.sign(user, access_token, { expiresIn: '3s' });
 }
 
 export function generateRefreshToken(user: { user: string }) {

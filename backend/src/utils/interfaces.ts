@@ -92,5 +92,5 @@ export {
 	returnInterface,
 	tagInterface,
 	userInterface,
-	userStoragesInterface,
+	userStoragesInterface
 };
