@@ -7,7 +7,23 @@ import background from '../assets/sample_scene.png';
 import tokenAuth from '../utils/tokenAuth';
 import '../styles/Monster.css';
 import Swiper from 'swiper';
+// import { Carousel } from '@trendyol-js/react-carousel';
+// import { Carousel } from '@rybr/react-swipeable-infinite-carousel';
 import { Carousel } from '@trendyol-js/react-carousel';
+import { Card, CardHeader, CardBody, Typography, Avatar } from '@material-tailwind/react';
+
+const images = [
+	'https://i.imgur.com/spJyCuT.png',
+	'https://i.imgur.com/iLJzFfZ.png',
+	'https://i.imgur.com/89u5bMC.png',
+	'https://i.imgur.com/b50cjCP.png',
+	'https://i.imgur.com/g6CJO26.png',
+	'https://i.imgur.com/1CmGi93.png',
+	'https://i.imgur.com/bLycv6Y.png',
+	'https://i.imgur.com/wu5HvsQ.png',
+	'https://i.imgur.com/5towfYp.png',
+	'https://i.imgur.com/YumfIWI.png',
+];
 
 const Monster = () => {
 	const [monsters, setMonsters] = useState<monsterInterface[]>([]);
@@ -83,9 +99,7 @@ const Monster = () => {
 					<div className="flex flex-col items-center absolute mt-10">
 						{monsters.map((monster) => (
 							<div key={monster.monster_id}>
-								<h2 className="text-3xl font-bold text-center text-red-600">
-									{monster.monster_name}
-								</h2>
+								<h2 className="text-3xl font-bold text-center text-red-600">{monster.monster_name}</h2>
 								<img src={monster.image_url} alt={monster.monster_name} className="w-[16rem]" />
 							</div>
 						))}
@@ -122,9 +136,24 @@ const Monster = () => {
 								))}
 							</Carousel>
 								</div> */}
-						<div>
-
-						</div>
+						<Carousel show={5} slide={1} swiping={true} swipeOn={0.3} responsive>
+							{[...Array(9)].map((_, i) => (
+								<div key={i} className="bg-red-500">
+									<img referrerPolicy="no-referrer" className="item-image" src={images[i]} alt="" />
+								</div>
+								// <BackgroundBlogCard key={i} />
+							))}
+						</Carousel>
+						{/* {items.map((item) => (
+								<div
+									key={item}
+									className="swiper-slide bg-transparent border-4 border-white rounded-full hover:scale-110 font-bold h-24 w-24"
+									onClick={() => handleItemClick(item)}
+								>
+									<span className="text-white">{item}</span>
+								</div>
+							))}
+						</Carousel> */}
 					</section>
 				</div>
 			</div>

@@ -4,6 +4,12 @@
   image-rendering: pixelated;
 }
 
+.item-image {
+  width: 60%;
+  height: 60%;
+  image-rendering: pixelated;
+}
+
 .grid-container {
   display: grid;
   grid-template-rows: 60% 40%;
