@@ -1,15 +1,14 @@
 import React from 'react';
 import clsx from 'clsx';
+import '../styles/Sidebar.css';
 import { TagType } from '../utils/types';
 import { IconButton, Button } from '@material-tailwind/react';
 import { HiArrowCircleLeft, HiArrowCircleRight } from 'react-icons/hi';
 import { MdAdd, MdScience } from 'react-icons/md';
-// import { Button } from '@material-tailwind/react';
 import { FaGamepad, FaSpaghettiMonsterFlying } from 'react-icons/fa6';
-
-import '../styles/Sidebar.css';
 interface BarProps {
 	tags: TagType[];
+	active_site?: string;
 }
 import { List, ListItem, ListItemSuffix, Chip, Card } from '@material-tailwind/react';
 
@@ -30,7 +29,7 @@ export function ListWithBadge({ tags }: BarProps) {
 	);
 }
 
-const SideBar = ({ tags }: BarProps) => {
+const SideBar = ({ tags, active_site }: BarProps) => {
 	const [isOpen, setOpen] = React.useState(false);
 	return (
 		<div className="flex flex-row">
