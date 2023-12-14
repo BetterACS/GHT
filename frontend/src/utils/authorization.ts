@@ -16,6 +16,7 @@ export default async function authorization(
 			// If the token
 			case -1:
 				tokenCreateFunction(result.data.accessToken, result.data.refreshToken);
+				console.log('tokenCreateFunction มาทำที่ authorization');
 				return;
 			default:
 				tokenFailureFunction();

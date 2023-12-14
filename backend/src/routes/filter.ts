@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
 import Database from '../database/database.js';
-import { containInterface, questInterface, returnInterface } from '../utils/interfaces.js';
+import checkAuthorization from '../middleware/checkAuthorization.js';
+import { questInterface, returnInterface } from '../utils/interfaces.js';
 import Logger from '../utils/logger.js';
-
 const router = express.Router();
 
 let returnJson: returnInterface = {
@@ -12,7 +12,7 @@ let returnJson: returnInterface = {
 	data: {},
 };
 
-const filterLabelByTag = async (req: Request, res: Response): Promise<void> => {
+const filterByDueDateASC = async (req: Request, res: Response): Promise<void> => {
 	const { email } = req.query;
 	const logger = Logger.instance().logger();
 	let connection;
@@ -44,16 +44,31 @@ const filterLabelByTag = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
-const filterByDueDateASC = async (req: Request, res: Response): Promise<void> => {
-	const { tag_id } = req.body;
+const filterByTag = async (req: Request, res: Response): Promise<void> => {
+	const { tag_id, email } = req.query;
+	console.log(tag_id, email);
 	const logger = Logger.instance().logger();
 	let connection;
+
 	try {
 		const database = Database.instance().mySQL();
 		connection = await database.promise().getConnection();
-		const sqlSearch = 'SELECT * FROM contain WHERE tag_id = ?';
-		const [rows] = await connection.query(sqlSearch, [tag_id]);
-		let contain = rows as containInterface[];
+		const sqlSearch = `
+            SELECT distinct quest.quest_id, quest.quest_name, quest.description, quest.start_date, quest.due_date, quest.status, quest.item_id, quest.email 
+            FROM contain 
+            LEFT JOIN tag ON tag.tag_id = contain.tag_id
+            LEFT JOIN quest ON quest.quest_id = contain.quest_id
+            WHERE contain.tag_id IN (?) AND quest.email = ?`;
+
+		// Convert tag_id values to an array of numbers
+		const tagIdArray = (tag_id as string[]).map(Number);
+
+		const [rows] = await connection.query(sqlSearch, [tagIdArray, email]);
+		let contain = rows as questInterface[];
+		console.log(sqlSearch);
+		console.log(rows);
+		console.log(contain);
+
 		if (contain.length === 0) {
 			logger.error('--------This contain name not exist---------');
 			returnJson = { status: 'error', message: 'This contain name not exist.', return: 3, data: {} };
@@ -76,7 +91,7 @@ const filterByDueDateASC = async (req: Request, res: Response): Promise<void> =>
 	}
 };
 
-router.get('/filter/tag', filterLabelByTag);
-router.get('/filter/date', filterByDueDateASC);
+router.get('/filter/date', [checkAuthorization, filterByDueDateASC]);
+router.get('/filter/tag', [checkAuthorization, filterByTag]);
 
 export default router;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { TagType } from '../utils/types';
 import { IconButton, Button } from '@material-tailwind/react';
@@ -8,29 +8,78 @@ import { MdAdd, MdScience } from 'react-icons/md';
 import { FaGamepad, FaSpaghettiMonsterFlying } from 'react-icons/fa6';
 
 import '../styles/Sidebar.css';
+import { List, ListItem, ListItemSuffix, Chip, Card } from '@material-tailwind/react';
+import axios from 'axios';
+import { HeadersType } from '../utils/types';
+import { returnInterface } from '../../../backend/src/utils/interfaces';
+import Config from '../../../backend/src/config';
+import authorization from '../utils/authorization';
 interface BarProps {
 	tags: TagType[];
+	username: string;
+	handleButtonClick: (tag_id: string) => void;
+	header:HeadersType
 }
-import { List, ListItem, ListItemSuffix, Chip, Card } from '@material-tailwind/react';
-
-export function ListWithBadge({ tags }: BarProps) {
+//util funciton
+const countTag = async (tag_id:string,headers:HeadersType) => {
+	try {
+		const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/tag/count`, {
+			params: {
+				tag_id: tag_id,
+			},
+			headers: headers,
+		});
+		const result = results.data as returnInterface;
+		const total = result.data.total.toString();
+		return total as string;
+	} catch (error) {
+		console.error('Error to query user', error);
+	}
+}
+export function ListWithBadge({ tags, handleButtonClick, header }: BarProps) {
+	console.log('ListWithBadge rendered');
+  
+	const [tagCounts, setTagCounts] = useState<{ [key: string]: string | undefined }>({});
+  
+	useEffect(() => {
+	  const fetchTagCounts = async () => {
+		const counts = await Promise.all(
+		  tags.map(async (tag) => {
+			const count = await countTag(tag.id.toString().replace('tag-', ''), header);
+			return { [tag.id.toString()]: count };
+		  })
+		);
+  
+		// Merge counts into a single object
+		const mergedCounts = counts.reduce((acc, count) => ({ ...acc, ...count }), {});
+		setTagCounts(mergedCounts);
+	  };
+  
+	  fetchTagCounts();
+	}, [tags, header]);
+  
 	return (
-		<Card className="w-full">
-			<List>
-				{tags.map((tag: TagType) => (
-					<ListItem>
-						{tag.name}
-						<ListItemSuffix>
-							<Chip value="14" variant="ghost" size="sm" className="rounded-full" />
-						</ListItemSuffix>
-					</ListItem>
-				))}
-			</List>
-		</Card>
+	  <Card className="w-full">
+		<List>
+		  {tags.map((tag: TagType) => (
+			<ListItem key={tag.id} onClick={() => handleButtonClick(tag.id.toString())}>
+			  {tag.name}
+			  <ListItemSuffix>
+				<Chip
+				  value={tagCounts[tag.id.toString()]}
+				  variant="ghost"
+				  size="sm"
+				  className="rounded-full"
+				/>
+			  </ListItemSuffix>
+			</ListItem>
+		  ))}
+		</List>
+	  </Card>
 	);
-}
+  }
 
-const SideBar = ({ tags }: BarProps) => {
+const SideBar = ({ tags,username ,handleButtonClick,header}: BarProps) => {
 	const [isOpen, setOpen] = React.useState(false);
 	return (
 		<div className="flex flex-row">
@@ -43,7 +92,8 @@ const SideBar = ({ tags }: BarProps) => {
 			>
 				<div className="w-full h-auto p-4 flex flex-row">
 					<div className="basis-10/12 flex flex-row">
-						<div className="text-headlines self-center px-4 font-bold text-xl">Monshinawatra</div>
+						{/* ใช้เป็น username */}
+						<div className="text-headlines self-center px-4 font-bold text-xl">{username}</div>
 					</div>
 					<IconButton className="bg-red-400 rounded-full" onClick={() => setOpen(!isOpen)}>
 						<HiArrowCircleLeft size={24} />
@@ -53,6 +103,7 @@ const SideBar = ({ tags }: BarProps) => {
 				<div className="w-96">
 					<ul className="px-8 flex flex-col gap-4">
 						<div>
+							{/* ปุ่ม add task แดง */}
 							<IconButton className="bg-red-400 rounded-full w-8 h-8">
 								<MdAdd color="white" size={24} />
 							</IconButton>
@@ -74,8 +125,13 @@ const SideBar = ({ tags }: BarProps) => {
 					</ul>
 					<hr className="mt-5 mb-2" />
 					<b className="px-8 text-lg">Working tags</b>
+					{/* {ปุ่ม reset} */}
+					<IconButton className="bg-red-400 rounded-full w-8 h-8" onClick={()=>console.log("reset")}>
+								<MdAdd color="white" size={24} />
+							</IconButton>
+					
 					<div className="px-8 pt-2">
-						<ListWithBadge tags={tags} />
+						<ListWithBadge tags={tags}  username={username} handleButtonClick={handleButtonClick} header={header}/>
 					</div>
 				</div>
 			</div>
@@ -96,3 +152,7 @@ const SideBar = ({ tags }: BarProps) => {
 };
 
 export default SideBar;
+function updateAccessToken(newToken: string, newRefresh: string): Promise<void> {
+	throw new Error('Function not implemented.');
+}
+

@@ -19,4 +19,10 @@ type Item = {
 	tags: TagType[];
 };
 
-export type { DNDType, Item, TagType };
+type HeadersType = {
+	authorization: string;
+	refreshToken: string;
+	email: string;
+};
+
+export type { DNDType, HeadersType, Item, TagType };

@@ -20,6 +20,7 @@ import monster_route from './routes/monster.js';
 import quest_route from './routes/quest.js';
 import register_route from './routes/register.js';
 import tag_route from './routes/tag.js';
+import user from './routes/user.js';
 //#endregion
 
 dotenv.config();
@@ -43,7 +44,7 @@ app.use(habit_route);
 app.use(contain_table_route);
 app.use(filter_route);
 app.use(item_route);
-
+app.use(user);
 const logger = Logger.instance().logger();
 
 // Start the Express.js server and log the listening message

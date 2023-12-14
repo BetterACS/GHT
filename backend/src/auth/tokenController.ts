@@ -9,7 +9,7 @@ const access_token: string = process.env.ACCESS_TOKEN!;
 let refresh_token: string = process.env.REFRESH_TOKEN!;
 
 export function generateAccessToken(user: { user: string }) {
-	return jwt.sign(user, access_token, { expiresIn: '3s' });
+	return jwt.sign(user, access_token, { expiresIn: '15m' });
 }
 
 export function generateRefreshToken(user: { user: string }) {
@@ -18,6 +18,7 @@ export function generateRefreshToken(user: { user: string }) {
 	return refreshToken;
 }
 
+// 2 อันนี้ถ้าจะใช้ต้องทำใหม่หมด
 let refreshTokens: string[] = [];
 //อาจจะไม่ได้ใช้ ถ้าจะใช้ต้องทำ database ของ refresh token ใหม่ด้วย
 export function continueToken(req: Request, res: Response) {
@@ -29,7 +30,7 @@ export function continueToken(req: Request, res: Response) {
 	//generate new accessToken and refreshTokens
 	res.json({ accessToken: accessToken, refreshToken: refreshToken });
 }
-//อาจจะเขียนใหม่
+// อาจจะไม่จำเป็นต้องใช้เพราะ logout น่าจะต้องทำฝ่ง client-side อ่ย่างเดียว
 export function logout(req: Request, res: Response) {
 	refreshTokens = refreshTokens.filter((c) => c != req.body.token);
 	//remove the old refreshToken from the refreshTokens list
