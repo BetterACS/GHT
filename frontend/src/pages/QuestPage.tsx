@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react';
 import SideBar from '../components/SideBar';
 import Quest from '../components/Quest';
-import Input from '../components/Input';
-import Modal from '../components/Modal';
-import TagModal from '../components/TagModal';
-import Tag from '../components/Tag';
-import Button from '../components/Button';
-import DropDown from '../components/DropDown';
+// import Input from '../components/Input';
+// import Modal from '../components/modals/ModalBase';
+// import TagModal from '../components/TagModal';
+// import TagDisplay from '../components/Tag';
+// import Tag from '../components/Tag';
+// import Button from '../components/Button';
+// import DropDown from '../components/DropDown';
 import QuestContainer from '../components/QuestContainer';
 import { DNDType, TagType, Item } from '../utils/types';
-import { FaPlus } from 'react-icons/fa';
+// import { FaPlus } from 'react-icons/fa';
 import { tagColorList } from '../utils/constants';
 import { useNavigate } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
+// import { v4 as uuidv4 } from 'uuid';
+
+import AddItemModal from '../components/modals/AddItemModal';
+import EditItemModal from '../components/modals/EditItemModal';
 // DnD
 import {
 	DndContext,
@@ -450,143 +454,38 @@ export default function QuestPage() {
 
 	return (
 		<>
-			<div className='flex flex-row'>
+			<div className="flex flex-row">
 				<SideBar />
 				{/* Main Content */}
-				<div className='w-full'>
+				<div className="w-full">
 					<div className="mt-32 text-center text-2xl font-bold tracking-[.25em]">
 						<h1>Quest</h1>
 					</div>
 					{/* Task */}
 					<div className="flex">
 						<div className="mx-auto w-full py-10">
-							{/* Add Item Modal */}
-							<Modal
+							<AddItemModal.render
 								showModal={showAddItemModal}
 								setShowModal={setShowAddItemModal}
 								setItemName={setItemName}
 								setItemDescription={setItemDescription}
-							>
-								<div className="flex flex-col w-full items-start gap-y-4">
-									<h1 className="text-gray-800 text-3xl font-bold">Add Item</h1>
-									<Input
-										type="text"
-										placeholder="Item Title"
-										name="itemname"
-										value={itemName}
-										onChange={(e) => setItemName(e.target.value)}
-									/>
-									<Input
-										type="text"
-										placeholder="Item Description"
-										name="itemDescription"
-										value={itemDescription}
-										onChange={(e) => setItemDescription(e.target.value)}
-									/>
-									<Button onClick={onAddItem}>Add Item</Button>
-								</div>
-							</Modal>
-
-					{/* Edit Item Modal */}
-					<Modal
-						showModal={showEditItemModal}
-						setShowModal={setShowEditItemModal}
-						setItemName={setItemName}
-						setItemDescription={setItemDescription}
-					>
-						<div className="overlay flex flex-col w-full items-start gap-y-4">
-							<h1 className="text-gray-800 text-3xl font-bold">Edit Item</h1>
-							<Input
-								type="text"
-								placeholder="Item Title"
-								name="itemname"
-								value={itemName}
-								onChange={(e) => setItemName(e.target.value)}
+								itemName={itemName}
+								itemDescription={itemDescription}
+								onAddItem={onAddItem}
 							/>
-							<Input
-								type="text"
-								placeholder="Item Description"
-								name="itemDescription"
-								value={itemDescription}
-								onChange={(e) => setItemDescription(e.target.value)}
+							<EditItemModal.render
+								showModal={showEditItemModal}
+								setShowModal={setShowEditItemModal}
+								itemName={itemName}
+								setItemName={setItemName}
+								itemDescription={itemDescription}
+								setItemDescription={setItemDescription}
+								containers={containers}
+								tags={tags}
+								currentContainerId={currentContainerId}
+								currentItemId={currentItemId}
+								onEditItem={onEditItem}
 							/>
-							<div className="flex flex-warp">
-								{containers.map((container) => {
-									if (container.id === currentContainerId) {
-										return container.items.map((item) => {
-											if (item.id === currentItemId) {
-												return item.tags.map((tag) => {
-													return (
-														<Tag
-															key={tag.id}
-															id={tag.id}
-															name={tag.name}
-															color={tag.color}
-														/>
-													);
-												});
-											}
-										});
-									}
-								})}
-							</div>
-							<div className="flex flex-warp">
-								<Button
-									onClick={() => {
-										setShowAddTagModal(true);
-									}}
-								>
-									<FaPlus />
-								</Button>
-								{
-									// If there are no tags, don't show the dropdown
-									tags.length > 0 && (
-										<DropDown
-											tags={tags}
-											currentItemId={currentItemId}
-											containers={containers}
-											setContainers={setContainers}
-											currentContainerId={currentContainerId}
-										/>
-									)
-								}
-							</div>
-
-									<Button onClick={onEditItem}>Edit Item</Button>
-								</div>
-							</Modal>
-							{/* Add Tag Modal */}
-							<TagModal
-								showModal={showAddTagModal}
-								setShowModal={setShowAddTagModal}
-								setPreviewTags={setPreviewTags}
-								setTagName={setTagName}
-								onAddTag={onAddTag}
-								value={tagName}
-							>
-								<div className="flex flex-col w-full items-start gap-y-4">
-									<Input
-										type="text"
-										placeholder="name"
-										name="Tag name"
-										value={tagName}
-										onChange={(value) => {
-											setTagName(value.target.value);
-										}}
-									/>
-
-									{/* If previewTags is not empty, show the tags else show the text */}
-									{previewTags.length > 0 ? (
-										<div className="flex flex-row flex-wrap gap-2">
-											{previewTags.map((tag) => (
-												<Tag key={tag.id} id={tag.id} name={tag.name} color={tag.color} />
-											))}
-										</div>
-									) : (
-										<div className="text-gray-400">Press enter to add new tag</div>
-									)}
-								</div>
-							</TagModal>
 							<div className="mt-10 px-8">
 								<div className="grid grid-cols-1 gap-6">
 									<DndContext
@@ -644,7 +543,7 @@ export default function QuestPage() {
 													id={activeId}
 													title={findItemTitle(activeId)}
 													description={findItemDescription(activeId)}
-													onEditItem={() => { }}
+													onEditItem={() => {}}
 													tags={[]}
 													onDeleteItem={() => {
 														onDeleteItem;
