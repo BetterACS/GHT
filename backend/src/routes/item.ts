@@ -126,9 +126,9 @@ router.post('/item/user', [
 
 		// If the user's field does not have the current monster, create one.
 		if (!inventory[item.item_id]) {
-			progress = 1;
+			progress = 5;
 		} else {
-			progress += 1;
+			progress += 5;
 		}
 
 		await userStorage.updateOne({

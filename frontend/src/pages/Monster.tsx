@@ -164,6 +164,9 @@ const Monster = () => {
 			}
 		};
 
+		setTimeout(() => {
+			setLoading(false);
+		}, 500);
 		Promise.all([fetchData()]);
 	}, []);
 
@@ -267,7 +270,6 @@ const Monster = () => {
 				});
 
 				setItems(allItems);
-				await setLoading(false); // Set loading to false when data fetch is complete
 				console.log('allItems', allItems);
 			})
 			.catch((err) => {
