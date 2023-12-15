@@ -8,7 +8,6 @@ import { UniqueIdentifier } from '@dnd-kit/core';
 import { TagType } from '../utils/types';
 import TagDisplay from './Tag';
 import { useState } from 'react';
-
 import { Tooltip, Typography } from '@material-tailwind/react';
 
 type QuestType = {
@@ -94,6 +93,7 @@ const Quest = ({ id, title, description, tags, image_url, onEditItem, onDeleteIt
 								<div className="w-96 flex flex-row m-2">
 									<img
 										className="h-16 rounded-lg"
+										referrerPolicy="no-referrer" 
 										src={'https://i.imgur.com/ffuVcXN.png'}
 										alt="item"
 									/>
@@ -115,7 +115,7 @@ const Quest = ({ id, title, description, tags, image_url, onEditItem, onDeleteIt
 								unmount: { scale: 0, y: 25 },
 							}}
 						>
-							<img className="h-8 rounded-full" src={'https://i.imgur.com/ffuVcXN.png'} alt="item" />
+							<img className="h-8 rounded-full" referrerPolicy="no-referrer" src={'https://i.imgur.com/ffuVcXN.png'} alt="item" />
 						</Tooltip>
 					</div>
 				</div>

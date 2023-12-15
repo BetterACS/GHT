@@ -5,6 +5,7 @@ import { FaPlus } from 'react-icons/fa';
 import { CSS } from '@dnd-kit/utilities';
 import Button from './Button';
 import { UniqueIdentifier } from '@dnd-kit/core';
+import { Tooltip } from '@material-tailwind/react';
 
 interface QuestContainerProps {
 	id: UniqueIdentifier;
@@ -40,9 +41,12 @@ const QuestContainer = ({ id, children, title, description, onAddItem }: QuestCo
 					<p className="text-gray-400 text-sm">{description}</p>
 				</div>
 				{/* <button className="border p-2 text-xs rounded-xl shadow-lg hover:shadow-xl">Drag Handle</button> */}
-				<Button variant="ghost" onClick={onAddItem}>
-					<FaPlus />
-				</Button>
+				<Tooltip
+					content="Adding new quest">
+					<Button variant="ghost" onClick={onAddItem}>
+						<FaPlus />
+					</Button>
+				</Tooltip>
 			</div>
 
 			{children}

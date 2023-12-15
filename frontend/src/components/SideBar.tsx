@@ -108,17 +108,17 @@ const SideBar = ({ tags,username ,handleButtonClick,header}: BarProps) => {
 								<MdAdd color="white" size={24} />
 							</IconButton>
 
-							<span className="pl-2 text-center">Add task</span>
+							<span className="pl-2 text-center text-lg">Add task</span>
 						</div>
-						<Button fullWidth variant="outlined" className="flex items-center gap-3">
+						<Button variant="outlined" className="flex items-center gap-3 text-lg">
 							<FaGamepad size={25} />
 							Quest
 						</Button>
-						<Button variant="outlined" className="flex items-center gap-3">
+						<Button variant="outlined" className="flex items-center gap-3 text-lg">
 							<FaSpaghettiMonsterFlying size={25} />
 							Monster
 						</Button>
-						<Button variant="outlined" className="flex items-center gap-3">
+						<Button variant="outlined" className="flex items-center gap-3 text-lg">
 							<MdScience size={25} />
 							Analytics
 						</Button>
