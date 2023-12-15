@@ -151,21 +151,19 @@ const Monster = () => {
 		};
 
 		const fetchData = async () => {
-			setLoading(true);
-			await axios
-				.get(`http://localhost:${Config.BACKEND_PORT}/monster`, { headers })
-				.then((response) => {
-					const result = response.data as returnInterface;
-					const monsterResult = result.data['monsters'] as monsterInterface[];
+			setLoading(true); // Set loading to true when data fetch begins
+			try {
+				const response = await axios.get(`http://localhost:${Config.BACKEND_PORT}/monster`, { headers });
+				const result = response.data as returnInterface;
+				const monsterResult = result.data['monsters'] as monsterInterface[];
 
-					setMonsters(monsterResult);
-				})
-				.catch((err) => {
-					console.log(err);
-				});
-
-			await getItems();
+				setMonsters(monsterResult);
+				await getItems();
+			} catch (err) {
+				console.log(err);
+			}
 		};
+
 		Promise.all([fetchData()]);
 	}, []);
 
@@ -244,27 +242,33 @@ const Monster = () => {
 			})
 			.then(async (response) => {
 				const result = response.data;
+				const itemsss = Object.keys(result);
+				const allItems: any = [];
 
-				for (let i = 0; i < result.length; i++) {
-					if (result[i] === null || result[i] === 0) {
-						continue;
+				itemsss.map(async (itemsad: any) => {
+					const idd = itemsad;
+					console.log('idd', result[idd]);
+
+					if (result[idd] !== null && result[idd] !== 0) {
+						const item = await axios.get(`http://localhost:${Config.BACKEND_PORT}/item/`, {
+							params: {
+								id: itemsad,
+							},
+							headers: headers,
+						});
+
+						const newItem = {
+							item: item.data.data,
+							quantity: result[idd],
+						};
+						// console.log(newItem);
+						await allItems.push(newItem);
 					}
-					const item = await axios.get(`http://localhost:${Config.BACKEND_PORT}/item/`, {
-						params: {
-							id: i,
-						},
-						headers: headers,
-					});
+				});
 
-					const newItem = {
-						item: item.data.data,
-						quantity: result[i],
-					};
-					items.push(newItem);
-				}
-				setItems(items);
-				setLoading(false);
-				console.log(items);
+				setItems(allItems);
+				await setLoading(false); // Set loading to false when data fetch is complete
+				console.log('allItems', allItems);
 			})
 			.catch((err) => {
 				console.log(err);

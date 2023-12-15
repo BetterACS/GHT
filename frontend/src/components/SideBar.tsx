@@ -85,7 +85,7 @@ export function ListWithBadge({ tags, handleButtonClick, header }: BarProps) {
 		</Card>
 	);
 }
-
+import { TbLogout } from 'react-icons/tb';
 const SideBar = ({
 	tags,
 	username,
@@ -111,6 +111,16 @@ const SideBar = ({
 						{/* ใช้เป็น username */}
 						<div className="text-headlines self-center px-4 font-bold text-xl">{username}</div>
 					</div>
+					<IconButton
+						placeholder="close-tab"
+						className="bg-gray-700 rounded-full"
+						onClick={() => {
+							localStorage.clear();
+							navigate('/');
+						}}
+					>
+						<TbLogout size={24} />
+					</IconButton>
 					<IconButton
 						placeholder="close-tab"
 						className="bg-red-400 rounded-full"

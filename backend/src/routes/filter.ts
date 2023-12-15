@@ -55,7 +55,7 @@ const filterByTag = async (req: Request, res: Response): Promise<void> => {
 		const database = Database.instance().mySQL();
 		connection = await database.promise().getConnection();
 		const sqlSearch = `
-            SELECT distinct quest.quest_id, quest.quest_name, quest.description, quest.start_date, DATE_FORMAT(quest.due_date, '%Y-%m-%d) as quest.due_date, quest.status, quest.item_id, quest.email 
+            SELECT distinct quest.quest_id, quest.quest_name, quest.description, quest.start_date, quest.due_date, quest.status, quest.item_id, quest.email 
             FROM contain 
             LEFT JOIN tag ON tag.tag_id = contain.tag_id
             LEFT JOIN quest ON quest.quest_id = contain.quest_id

@@ -8,26 +8,6 @@ import '../styles/Inventory.css';
 import axios from 'axios';
 import { set } from 'date-fns';
 
-// const cardData = [
-// 	{ id: 1, imageUrl: Image1, description: 'Sabimaru' },
-// 	{ id: 2, imageUrl: Image2, description: 'Description 2' },
-// 	{ id: 3, imageUrl: Image3, description: 'Description 3' },
-// 	{ id: 4, imageUrl: Image4, description: 'Description 4' },
-// 	{ id: 5, imageUrl: Image1, description: 'Description 1' },
-// 	{ id: 6, imageUrl: Image2, description: 'Description 2' },
-// 	{ id: 7, imageUrl: Image3, description: 'Description 3' },
-// 	{ id: 8, imageUrl: Image4, description: 'Description 4' },
-// 	{ id: 9, imageUrl: Image1, description: 'Description 1' },
-// 	{ id: 10, imageUrl: Image2, description: 'Description 2' },
-// 	{ id: 11, imageUrl: Image3, description: 'Description 3' },
-// 	{ id: 12, imageUrl: Image4, description: 'Description 4' },
-// 	{ id: 13, imageUrl: Image1, description: 'Description 1' },
-// 	{ id: 14, imageUrl: Image2, description: 'Description 2' },
-// 	{ id: 15, imageUrl: Image3, description: 'Description 3' },
-// 	{ id: 16, imageUrl: Image4, description: 'Description 4' },
-// 	// Add more items as needed
-// ];
-
 const Inventory = () => {
 	const [monster, setMonster] = React.useState<any>([]);
 	const [loading, setLoading] = React.useState(true);
