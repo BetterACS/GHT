@@ -13,12 +13,14 @@ import axios from 'axios';
 import { HeadersType } from '../utils/types';
 import { returnInterface } from '../../../backend/src/utils/interfaces';
 import Config from '../../../backend/src/config';
-import authorization from '../utils/authorization';
+
 interface BarProps {
 	tags: TagType[];
 	username: string;
 	handleButtonClick: (tag_id: string) => void;
 	header:HeadersType
+	handleButtonClickResetFilter: () => void;
+	showWorkingTags:boolean;
 }
 //util funciton
 const countTag = async (tag_id:string,headers:HeadersType) => {
@@ -36,7 +38,7 @@ const countTag = async (tag_id:string,headers:HeadersType) => {
 		console.error('Error to query user', error);
 	}
 }
-export function ListWithBadge({ tags, handleButtonClick, header }: BarProps) {
+export function ListWithBadge({ tags, handleButtonClick, header}: BarProps) {
 	console.log('ListWithBadge rendered');
   
 	const [tagCounts, setTagCounts] = useState<{ [key: string]: string | undefined }>({});
@@ -79,7 +81,7 @@ export function ListWithBadge({ tags, handleButtonClick, header }: BarProps) {
 	);
   }
 
-const SideBar = ({ tags,username ,handleButtonClick,header}: BarProps) => {
+const SideBar = ({ tags,username ,handleButtonClick,header,handleButtonClickResetFilter,showWorkingTags}: BarProps) => {
 	const [isOpen, setOpen] = React.useState(false);
 	return (
 		<div className="flex flex-row">
@@ -102,14 +104,6 @@ const SideBar = ({ tags,username ,handleButtonClick,header}: BarProps) => {
 				{/* Sidebar content goes here */}
 				<div className="w-96">
 					<ul className="px-8 flex flex-col gap-4">
-						<div>
-							{/* ปุ่ม add task แดง */}
-							<IconButton className="bg-red-400 rounded-full w-8 h-8">
-								<MdAdd color="white" size={24} />
-							</IconButton>
-
-							<span className="pl-2 text-center text-lg">Add task</span>
-						</div>
 						<Button variant="outlined" className="flex items-center gap-3 text-lg">
 							<FaGamepad size={25} />
 							Quest
@@ -124,15 +118,22 @@ const SideBar = ({ tags,username ,handleButtonClick,header}: BarProps) => {
 						</Button>
 					</ul>
 					<hr className="mt-5 mb-2" />
-					<b className="px-8 text-lg">Working tags</b>
-					{/* {ปุ่ม reset} */}
-					<IconButton className="bg-red-400 rounded-full w-8 h-8" onClick={()=>console.log("reset")}>
-								<MdAdd color="white" size={24} />
+					{/*  working tags zone*/}
+
+					{showWorkingTags && (
+						<div>
+							<b className="px-8 text-lg">Working tags</b>
+							
+							<IconButton className="bg-red-400 rounded-full w-8 h-8" onClick={handleButtonClickResetFilter}>
+							<MdAdd color="white" size={24} />
 							</IconButton>
-					
-					<div className="px-8 pt-2">
-						<ListWithBadge tags={tags}  username={username} handleButtonClick={handleButtonClick} header={header}/>
-					</div>
+							
+							<div className="px-8 pt-2">
+							<ListWithBadge tags={tags} username={username} handleButtonClick={handleButtonClick} header={header} handleButtonClickResetFilter={handleButtonClickResetFilter} showWorkingTags={showWorkingTags}/>
+							</div>
+						</div>
+						)}
+					{/* working tags zone end */}
 				</div>
 			</div>
 

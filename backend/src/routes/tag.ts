@@ -222,5 +222,5 @@ router.get('/tag', [checkAuthorization, queryTag]);
 router.put('/tag', [checkAuthorization, updateTag]);
 router.delete('/tag', [checkAuthorization, deleteTag]);
 router.get('/tag/all', [checkAuthorization, getAllTag]);
-router.get('/tag/count', countTag);
+router.get('/tag/count', [checkAuthorization, countTag]);
 export default router;
