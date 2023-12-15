@@ -16,6 +16,10 @@ type Item = {
 	title: string;
 	description: string;
 	image_url: string;
+	due_date: string;
+	item_id: UniqueIdentifier;
+	item_name: string;
+	item_description: string;
 	tags: TagType[];
 };
 
@@ -24,5 +28,14 @@ type HeadersType = {
 	refreshToken: string;
 	email: string;
 };
-
-export type { DNDType, HeadersType, Item, TagType };
+type foodItemType = {
+	description: string;
+	image_url: string;
+	item_id: number;
+	item_name: string;
+	item_type: string;
+	rarity: number;
+	__v: number;
+	_id: string;
+};
+export type { DNDType, HeadersType, Item, TagType, foodItemType };

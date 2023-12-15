@@ -9,7 +9,7 @@ router.get('/item', [
 	checkAuthorization,
 	async (request: Request, response: Response) => {
 		let id = request.query.id;
-		if (id === undefined) {
+		if (id === undefined || id === null || id === '') {
 			// 25 is the max number Id in the database
 			id = getRandomInt(25).toString();
 		}
@@ -19,7 +19,7 @@ router.get('/item', [
 			return: -1,
 			data: {},
 		};
-
+		console.log('id', id);
 		itemModel
 			.findOne({ item_id: id })
 			.then((result) => {

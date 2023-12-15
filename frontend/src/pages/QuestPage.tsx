@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import SideBar from '../components/SideBar';
 import Quest from '../components/Quest';
 import QuestContainer from '../components/QuestContainer';
-import { DNDType, TagType, Item } from '../utils/types';
+import { DNDType, TagType, Item, foodItemType } from '../utils/types';
 import { tagColorList } from '../utils/constants';
 import { useNavigate } from 'react-router-dom';
 import { Progress } from "@material-tailwind/react";import authorization from '../utils/authorization';
@@ -79,7 +79,7 @@ export default function QuestPage() {
 	const [filter, setFilter] = useState<string[]>([]);
 	//constant temp
 	const [due_date, setDueDate] = useState('2022-01-01');
-	const [item_id, setItemID] = useState(1);
+	
 	//Tags
 	const [tags, setTags] = useState<TagType[]>([]);
 	// ดึงค่าจาก localStorage
@@ -125,6 +125,7 @@ export default function QuestPage() {
 	}, [accessToken,filter]); // Include 'email' in the dependency array if it's used inside the useEffect
 	
 	const fetchData = async () => {
+		resetContainers();
 		setConter(conter + 1);
 		console.log("ทำ fetch Data ครั้งที่", conter);
 		//get all quest from this email
@@ -151,16 +152,16 @@ export default function QuestPage() {
 					for (const container of containers) {
 						if (container.id === currentContainer) {
 							const tagOfContainer: TagType[] = [];
-	
+							
 							const query_tag = await axios.get(`http://localhost:${Config.BACKEND_PORT}/contain-table`, {
 								params: {
 									quest_id: item.quest_id,
 								},
 								headers: headers
 							});
-	
+							const foodItem = await queryFoodItem(item.item_id) as foodItemType;
 							const result_tag = await query_tag.data as returnInterface;
-							console.log(result_tag.return);
+							console.log(foodItem);
 	
 							authorization(result_tag, async () => {
 								await Promise.all(
@@ -180,8 +181,12 @@ export default function QuestPage() {
 										id: id,
 										title: item.quest_name,
 										description: item.description,
-										image_url: item.image_url,
 										tags: tagOfContainer,
+										image_url: foodItem.image_url,
+										item_name: foodItem.item_name,
+										item_description: foodItem.description,
+										due_date: item.due_date,
+										item_id: foodItem.item_id,
 									})
 								);
 	
@@ -211,74 +216,86 @@ export default function QuestPage() {
 			console.error('Error fetching tags:', error);
 		}
 	};
-	const onAddItem = async (e: any) => {
-		e.preventDefault();
-		if (!itemName || !currentContainerId) return;
-
-		const updatedContainers = await Promise.all(
-			containers.map(async (container) => {
-				if (container.id === currentContainerId) {
-					console.log(container.id);
-
-					// const tempStatus = container.id === 'container-1' ? 'Task' : 'In Progress';
-					try {
-						const results = await axios.post(`http://localhost:${Config.BACKEND_PORT}/quest`, {
-							quest_name: itemName,
-							description: itemDescription,
-							due_date: due_date,
-							item_id: item_id,
-							email: email,
-							status: container.title,
-							
-						},{headers: headers});
-
-						const result = results.data as returnInterface;
-						authorization(result, async () => {
-							console.log(result.data);
-							const id = 'item-' + result.data.quest_id;
-							container.items.push({
-								id: id,
-								image_url: 'https://i.imgur.com/ffuVcXN.png',
-								title: itemName,
-								description: itemDescription,
-								tags: [],
-							});}, updateAccessToken);
-					} catch (err) {
-						console.log(err);
-					}
-				}
-				return container;
-			})
-		);
-		updateAndResetItemState(updatedContainers);
-	};
+	const queryFoodItem = async (item_id: string = ""): Promise<foodItemType | undefined> => {
+		try {
+		  const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/item`, {
+			params: {
+			  id: item_id,
+			},
+			headers: headers,
+		  });
+		  const result = results.data as returnInterface;
+	  
+		  // Use a Promise to correctly handle the asynchronous code
+		  const foodItem = await new Promise<foodItemType>((resolve, reject) => {
+			authorization(result, () => {
+			  const item = result.data as foodItemType;
+			  resolve(item);
+			},updateAccessToken);
+		  });
+	  
+		  return foodItem;
+		} catch (err) {
+		  console.log(err);
+		  return undefined;
+		}
+	  };
+const onAddItem = async (e: any) => {
+	e.preventDefault();
+	if (!itemName || !currentContainerId) return;
+  
+	try {
+	  const foodItem = await queryFoodItem() as foodItemType;
+	  console.log(foodItem);
+	  const updatedContainers = await Promise.all(
+		containers.map(async (container) => {
+		  if (container.id === currentContainerId) {
+			try {
+			  // Insert data into the database
+			  const results = await axios.post(`http://localhost:${Config.BACKEND_PORT}/quest`, {
+				quest_name: itemName,
+				description: itemDescription,
+				due_date: due_date,
+				item_id: foodItem.item_id,
+				email: email,
+				status: container.title,
+			  }, { headers: headers });
+  
+			  const result = results.data as returnInterface;
+			  authorization(result, async () => {
+				console.log(foodItem.item_name, "foodItem all ", foodItem);
+				const id = 'item-' + result.data.quest_id;
+				container.items.push({
+				  id: id,
+				  title: itemName,
+				  description: itemDescription,
+				  image_url: foodItem.image_url,
+				  due_date: "22 Dec",
+				  item_name: foodItem.item_name,
+				  item_description: foodItem.description,
+				  item_id: foodItem.item_id,
+				  tags: [],
+				});
+			  }, updateAccessToken);
+			} catch (err) {
+			  console.log(err);
+			}
+		  }
+		  return container;
+		})
+	  );
+	  updateAndResetItemState(updatedContainers);
+	} catch (err) {
+	  console.log(err);
+	}
+  };
 	const addFilter = (tag_id: string) =>{
 		const cur = tag_id.toString().replace('tag-','')
 		setFilter([...filter,cur])
 		console.log(filter);
 	}
 	const filterByTag = async() => {
-		if (loaded){
-			return;
-		}
-		setLoaded(true);
-		setContainers([
-		{
-		  id: `container-1`,
-		  title: 'Task',
-		  items: [],
-		},
-		{
-		  id: `container-2`,
-		  title: 'In Progress',
-		  items: [],
-		},
-		{
-		  id: `container-3`,
-		  title: 'Done',
-		  items: [],
-		},
-	  ]);
+		resetContainers();
 		try {
 			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/filter/tag`, {
 				params: {
@@ -287,7 +304,7 @@ export default function QuestPage() {
 				},
 				headers: headers
 			});
-	
+			
 			const result = results.data as returnInterface;
 			console.log("Result filterByTag",result)
 			authorization(result, async () => {
@@ -310,7 +327,7 @@ export default function QuestPage() {
 								},
 								headers: headers
 							});
-	
+							const foodItem = await queryFoodItem(item.item_id) as foodItemType;
 							const result_tag = await query_tag.data as returnInterface;
 							console.log(result_tag.return);
 	
@@ -332,8 +349,12 @@ export default function QuestPage() {
 										id: id,
 										title: item.quest_name,
 										description: item.description,
-										image_url: item.image_url,
+										image_url: foodItem.image_url,
 										tags: tagOfContainer,
+										due_date: item.due_date,
+										item_name: foodItem.item_name,
+										item_description: foodItem.description,
+										item_id: foodItem.item_id,
 									})
 								);
 	
@@ -342,8 +363,7 @@ export default function QuestPage() {
 							}, updateAccessToken);
 						}
 					}
-					setContainers(newContainer);
-					setLoaded(false);
+					setContainers([...newContainer]);
 				});
 	
 				await Promise.all(promises);
@@ -401,7 +421,7 @@ export default function QuestPage() {
 									quest_name: itemName,
 									description: itemDescription,
 									due_date: due_date,
-									item_id: item_id,
+									item_id: item.item_id,
 									email: email,
 									status: container.title,
 									
@@ -474,7 +494,7 @@ export default function QuestPage() {
 		if (!item) return '';
 		return item.title;
 	};
-
+	
 	const findItemTags = (id: UniqueIdentifier | undefined) => {
 		const container = findValueOfQuest(id, 'item');
 		if (!container) return [];
@@ -490,7 +510,41 @@ export default function QuestPage() {
 		if (!item) return '';
 		return item.description;
 	};
-	
+	const findFoodItemId = (id: UniqueIdentifier | undefined) => {
+		const container = findValueOfQuest(id, 'item');
+		if (!container) return '';
+		const item = container.items.find((item) => item.id === id);
+		if (!item) return '';
+		return item.item_id;
+	}
+	const findFoodImageUrl = (id: UniqueIdentifier | undefined) => {
+		const container = findValueOfQuest(id, 'item');
+		if (!container) return '';
+		const item = container.items.find((item) => item.id === id);
+		if (!item) return '';
+		return item.image_url;
+	}
+	const findFoodItemName = (id: UniqueIdentifier | undefined) => {
+		const container = findValueOfQuest(id, 'item');
+		if (!container) return '';
+		const item = container.items.find((item) => item.id === id);
+		if (!item) return '';
+		return item.item_name;
+	}
+	const findDueDate = (id: UniqueIdentifier | undefined) => {
+		const container = findValueOfQuest(id, 'item');
+		if (!container) return '';
+		const item = container.items.find((item) => item.id === id);
+		if (!item) return '';
+		return item.due_date;
+	}
+	const findFoodItemDescription = (id: UniqueIdentifier | undefined) => {
+		const container = findValueOfQuest(id, 'item');
+		if (!container) return '';
+		const item = container.items.find((item) => item.id === id);
+		if (!item) return '';
+		return item.item_description;
+	}
 	const userQuery = async () => {
 		try {
 			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/user`, {
@@ -507,7 +561,10 @@ export default function QuestPage() {
 			console.error('Error to query user', error);
 		}
 	};
-
+	const resetTag = async () => {
+		resetContainers();
+		setFilter([]);
+	}
 	async function onAddTag(tagName: string) {
 		// this function will create a tag and add to contain table
 		const randomColor = tagColorList[Math.floor(Math.random() * tagColorList.length)];
@@ -554,10 +611,6 @@ export default function QuestPage() {
 			});
 			fetchTag();
 		}, updateAccessToken);
-		
-
-		// contain_id is the id of the label table in database
-		//const contain_id = result_contain.data.contain_id;
 	}
 
 	const selectTag = async (item: Item, tag: TagType) => {
@@ -668,7 +721,7 @@ export default function QuestPage() {
 					quest_name: findItemTitle(event.active.id),
 					description: findItemDescription(event.active.id),
 					due_date: due_date,
-					item_id: item_id,
+					item_id: findFoodItemId(event.active.id),
 					email: email,
 					status: AfterContainer.title,
 					
@@ -714,7 +767,7 @@ export default function QuestPage() {
 
 			<div className="flex flex-row">
 				{/* Sidebar */}
-				<SideBar tags={tags} username={username} handleButtonClick={addFilter} header={headers}/>
+				<SideBar tags={tags} username={username} handleButtonClick={addFilter} header={headers} handleButtonClickResetFilter={resetTag} showWorkingTags={true}/>
 				{/* Main Content */}
 				<div className="w-full flex flex-col items-center">
 					<header className="flex flex-col gap-1 mt-8 mb-4 text-2l font-bold tracking-[.25em]">
@@ -745,28 +798,34 @@ export default function QuestPage() {
 												>
 													<SortableContext items={container.items.map((i) => i.id)}>
 														<div className="flex items-start flex-col gap-y-4">
-															{container.items.map((i) => (
+															{container.items.map((i) => {
+															console.log(i); 
+															return (
 																<Quest
-																	image_url={i.image_url}
-																	title={i.title}
-																	description={i.description}
-																	id={i.id}
-																	key={i.id}
-																	onEditItem={() => {
-																		setItemName(i.title);
-																		setItemDescription(i.description);
-																		setCurrentContainerId(container.id);
-																		setCurrentItemId(i.id);
-																		setShowEditItemModal(true);
-																	}}
-																	tags={i.tags}
-																	onDeleteItem={() => {
-																		onDeleteItem(i.id, container.id);
-																	}}
+																title={i.title}
+																description={i.description}
+																id={i.id}
+																key={i.id}
+																onEditItem={() => {
+																	setItemName(i.title);
+																	setItemDescription(i.description);
+																	setCurrentContainerId(container.id);
+																	setCurrentItemId(i.id);
+																	setShowEditItemModal(true);
+																}}
+																tags={i.tags}
+																onDeleteItem={() => {
+																	onDeleteItem(i.id, container.id);
+																}}
+																due_date={i.due_date}
+																item_name={i.item_name}
+																image_url={i.image_url}
+																item_description={i.item_description}
 																/>
-															))}
+															);
+															})}
 														</div>
-													</SortableContext>
+														</SortableContext>
 												</QuestContainer>
 											</div>
 										))}
@@ -776,7 +835,7 @@ export default function QuestPage() {
 									{/* Drag Overlay For item Item */}
 									{activeId && activeId.toString().includes('item') && (
 										<Quest
-											image_url=""
+											
 											id={activeId}
 											title={findItemTitle(activeId)}
 											description={findItemDescription(activeId)}
@@ -785,6 +844,10 @@ export default function QuestPage() {
 											onDeleteItem={() => {
 												onDeleteItem;
 											}}
+											due_date = {findDueDate(activeId)}
+											item_name = {findFoodItemName(activeId)}
+											image_url={findFoodImageUrl(activeId)}
+											item_description = {findFoodItemDescription(activeId)}
 										/>
 									)}
 								</DragOverlay>
