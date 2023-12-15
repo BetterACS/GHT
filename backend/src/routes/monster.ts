@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import checkAuthorization from '../middleware/checkAuthorization.js';
-import Deliver from './deliver.js';
+import Deliver from '../utils/deliver.js';
 const router = express.Router();
 
 router.get('/monster', checkAuthorization, async (request: Request, response: Response) => {
