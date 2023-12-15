@@ -1,20 +1,11 @@
 import { useEffect, useState } from 'react';
 import SideBar from '../components/SideBar';
 import Quest from '../components/Quest';
-// import Input from '../components/Input';
-// import Modal from '../components/modals/ModalBase';
-// import TagModal from '../components/TagModal';
-// import TagDisplay from '../components/Tag';
-// import Tag from '../components/Tag';
-// import Button from '../components/Button';
-// import DropDown from '../components/DropDown';
 import QuestContainer from '../components/QuestContainer';
-import { DNDType, TagType, Item } from '../utils/types';
-// import { FaPlus } from 'react-icons/fa';
+import { DNDType, TagType, Item, foodItemType } from '../utils/types';
 import { tagColorList } from '../utils/constants';
 import { useNavigate } from 'react-router-dom';
-// import { v4 as uuidv4 } from 'uuid';
-
+import { Progress } from "@material-tailwind/react";import authorization from '../utils/authorization';
 import AddItemModal from '../components/modals/AddItemModal';
 import EditItemModal from '../components/modals/EditItemModal';
 // DnD
@@ -40,20 +31,30 @@ import Config from '../../../backend/src/config';
 
 export default function QuestPage() {
 	const navigate = useNavigate();
-	const [loaded, setLoaded] = useState(false);
-
-	const [containers, setContainers] = useState<DNDType[]>([
+	const initialContainers: DNDType[] = [
 		{
-			id: `container-1`,
-			title: 'Task',
-			items: [],
+		  id: `container-1`,
+		  title: 'Task',
+		  items: [],
 		},
 		{
-			id: `container-2`,
-			title: 'In Progress',
-			items: [],
+		  id: `container-2`,
+		  title: 'In Progress',
+		  items: [],
 		},
-	]);
+		{
+		  id: `container-3`,
+		  title: 'Done',
+		  items: [],
+		},
+	  ];
+	const [containers, setContainers] = useState<DNDType[]>(initialContainers);
+	const resetContainers = () => {
+		setContainers(initialContainers);
+	  };  
+	//temp
+	let [conter, setConter] = useState(0);
+	let [loaded, setLoaded] = useState(false);
 	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 	const [currentContainerId, setCurrentContainerId] = useState<UniqueIdentifier>();
 	const [currentItemId, setCurrentItemId] = useState<UniqueIdentifier>();
@@ -61,13 +62,11 @@ export default function QuestPage() {
 	const [itemDescription, setItemDescription] = useState('');
 
 	// Tags
-	const [tagName, setTagName] = useState('');
 	const [previewTags, setPreviewTags] = useState<TagType[]>([]);
 
 	// Modals
 	const [showAddItemModal, setShowAddItemModal] = useState(false);
 	const [showEditItemModal, setShowEditItemModal] = useState(false);
-	const [showAddTagModal, setShowAddTagModal] = useState(false);
 
 	const updateAndResetItemState = (updatedContainers: DNDType[]) => {
 		setContainers(updatedContainers);
@@ -77,79 +76,131 @@ export default function QuestPage() {
 		setShowEditItemModal(false);
 	};
 	const [error, setError] = useState('');
+	const [filter, setFilter] = useState<string[]>([]);
 	//constant temp
 	const [due_date, setDueDate] = useState('2022-01-01');
-	const [item_id, setItemID] = useState(1);
-
-	const email = localStorage.getItem('email') || '';
+	
+	//Tags
 	const [tags, setTags] = useState<TagType[]>([]);
-
+	// ดึงค่าจาก localStorage
+	const email = localStorage.getItem('email') || '';
+	const [accessToken, setAccessToken] = useState(localStorage.getItem('access_token'));
+	const [refreshToken, setRefreshToken] = useState(localStorage.getItem('refresh_token'));
+	const updateAccessToken = async (newToken: string,newRefresh:string) => {
+		await setAccessToken(newToken);
+		await localStorage.setItem('access_token', newToken);
+		await setRefreshToken(newRefresh);
+		await localStorage.setItem('refresh_token', newRefresh);
+		console.log('update access token',newToken);
+	};
+	const [username, setUsername] = useState('');
+	// สร้าง headers
+	let headers = {
+		authorization: `Bearer ${localStorage.getItem('access_token')}`,
+		refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
+		email: `${localStorage.getItem('email')}`,
+	};
 	useEffect(() => {
-		tokenAuth(navigate, '/quest'); // Check if the user is logged in
-		fetchData(); // Call the asynchronous function to fetch data
-		fetchTag();
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [email]); // Include 'email' in the dependency array if it's used inside the useEffect
+		 userQuery();
+	  }, []);
+	
+	useEffect(() => {
+		tokenAuth(navigate, '/quest');
+		const fetchDataAndTags = async () => {
+			headers = {
+				authorization: `Bearer ${accessToken}`,
+				refreshToken: `Bearer ${refreshToken}`,
+				email: `${localStorage.getItem('email')}`
+			};
+			console.log("ทำ use Effect");
+			if (filter.length > 0){
+				await filterByTag();
+			}else{
+				await fetchData();} // Assuming fetchData is defined
+			await fetchTag();
+		};
+		
+		Promise.all([fetchDataAndTags()]);
+		
+	}, [accessToken,filter]); // Include 'email' in the dependency array if it's used inside the useEffect
+	
 	const fetchData = async () => {
+		resetContainers();
+		setConter(conter + 1);
+		console.log("ทำ fetch Data ครั้งที่", conter);
+		//get all quest from this email
 		try {
-			const results = await axios.get('http://localhost:5000/filter/tag', {
+			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/filter/date`, {
 				params: {
 					email: email,
 				},
+				headers: headers
 			});
-
+	
 			const result = results.data as returnInterface;
-
-			if (result.return !== 0 || result.data === undefined) {
-				// Handle error case
-				console.log(result.data.error);
-			}
-
-			const promises = result.data.map(async (item: any) => {
-				const id = 'item-' + item.quest_id;
-				const currentContainer = item.status === 'Task' ? 'container-1' : 'container-2';
-
-				for (const container of containers) {
-					if (container.id === currentContainer) {
-						const tagOfContainer: TagType[] = [];
-
-						const query_tag = await axios.get('http://localhost:5000/contain-table', {
-							params: {
-								quest_id: item.quest_id,
-							},
-						});
-
-						const result_tag = query_tag.data as returnInterface;
-
-						await Promise.all(
-							result_tag.data.map(async (tag: any) => {
-								const tag_id = `tag-${tag.tag_id}`;
-								const eachTag: TagType = {
-									id: tag_id,
-									name: tag.tag_name,
-									color: tag.tag_color,
-								};
-								tagOfContainer.push(eachTag);
-							})
-						);
-
-						container.items.push({
-							id: id,
-							title: item.quest_name,
-							description: item.description,
-							tags: tagOfContainer,
-						});
-						console.log(container);
+	
+			authorization(result, async () => {
+				const promises = result.data.map(async (item: any) => {
+					const id = 'item-' + item.quest_id;
+					const currentContainer =
+						item.status === 'Task'
+							? 'container-1'
+							: item.status === 'In Progress'
+								? 'container-2'
+								: 'container-3';
+	
+					for (const container of containers) {
+						if (container.id === currentContainer) {
+							const tagOfContainer: TagType[] = [];
+							
+							const query_tag = await axios.get(`http://localhost:${Config.BACKEND_PORT}/contain-table`, {
+								params: {
+									quest_id: item.quest_id,
+								},
+								headers: headers
+							});
+							const foodItem = await queryFoodItem(item.item_id) as foodItemType;
+							const result_tag = await query_tag.data as returnInterface;
+							console.log(foodItem);
+	
+							authorization(result_tag, async () => {
+								await Promise.all(
+									result_tag.data.map(async (tag: any) => {
+										const tag_id = `tag-${tag.tag_id}`;
+										const eachTag: TagType = {
+											id: tag_id,
+											name: tag.tag_name,
+											color: tag.tag_color,
+										};
+										tagOfContainer.push(eachTag);
+									})
+								);
+	
+								await Promise.all(
+									container.items = container.items.concat({
+										id: id,
+										title: item.quest_name,
+										description: item.description,
+										tags: tagOfContainer,
+										image_url: foodItem.image_url,
+										item_name: foodItem.item_name,
+										item_description: foodItem.description,
+										due_date: item.due_date,
+										item_id: foodItem.item_id,
+									})
+								);
+	
+								console.log(container);
+	
+								// Update the state to trigger re-render
+								setContainers([...containers]);
+							}, updateAccessToken);
+						}
 					}
-				}
-			});
-
-			// Wait for all promises to resolve
-			await Promise.all(promises);
-
-			// Once the Axios request is complete and data is processed, set loaded to true
-			setLoaded(true);
+				});
+	
+				await Promise.all(promises);
+			},updateAccessToken);
 		} catch (err) {
 			console.log(err);
 		}
@@ -165,51 +216,162 @@ export default function QuestPage() {
 			console.error('Error fetching tags:', error);
 		}
 	};
-	const onAddItem = async (e: any) => {
-		e.preventDefault();
-		if (!itemName || !currentContainerId) return;
-
-		const updatedContainers = await Promise.all(
-			containers.map(async (container) => {
-				if (container.id === currentContainerId) {
-					console.log(container.id);
-
-					const tempStatus = container.id === 'container-1' ? 'Task' : 'In Progress';
-					try {
-						const results = await axios.post(`http://localhost:${Config.BACKEND_PORT}/quest`, {
-							quest_name: itemName,
-							description: itemDescription,
-							due_date: due_date,
-							item_id: item_id,
-							email: email,
-							status: tempStatus,
-						});
-
-						const result = results.data as returnInterface;
-
-						if (result.return !== 0 || result.data === undefined) {
-							setError(result.data.error);
-							console.log(error);
-						} else {
-							console.log(result.data);
-							const id = 'item-' + result.data.quest_id;
-							container.items.push({
-								id: id,
-								title: itemName,
-								description: itemDescription,
-								tags: [],
+	const queryFoodItem = async (item_id: string = ""): Promise<foodItemType | undefined> => {
+		try {
+		  const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/item`, {
+			params: {
+			  id: item_id,
+			},
+			headers: headers,
+		  });
+		  const result = results.data as returnInterface;
+	  
+		  // Use a Promise to correctly handle the asynchronous code
+		  const foodItem = await new Promise<foodItemType>((resolve, reject) => {
+			authorization(result, () => {
+			  const item = result.data as foodItemType;
+			  resolve(item);
+			},updateAccessToken);
+		  });
+	  
+		  return foodItem;
+		} catch (err) {
+		  console.log(err);
+		  return undefined;
+		}
+	  };
+const onAddItem = async (e: any) => {
+	e.preventDefault();
+	if (!itemName || !currentContainerId) return;
+  
+	try {
+	  const foodItem = await queryFoodItem() as foodItemType;
+	  console.log(foodItem);
+	  const updatedContainers = await Promise.all(
+		containers.map(async (container) => {
+		  if (container.id === currentContainerId) {
+			try {
+			  // Insert data into the database
+			  const results = await axios.post(`http://localhost:${Config.BACKEND_PORT}/quest`, {
+				quest_name: itemName,
+				description: itemDescription,
+				due_date: due_date,
+				item_id: foodItem.item_id,
+				email: email,
+				status: container.title,
+			  }, { headers: headers });
+  
+			  const result = results.data as returnInterface;
+			  authorization(result, async () => {
+				console.log(foodItem.item_name, "foodItem all ", foodItem);
+				const id = 'item-' + result.data.quest_id;
+				container.items.push({
+				  id: id,
+				  title: itemName,
+				  description: itemDescription,
+				  image_url: foodItem.image_url,
+				  due_date: "22 Dec",
+				  item_name: foodItem.item_name,
+				  item_description: foodItem.description,
+				  item_id: foodItem.item_id,
+				  tags: [],
+				});
+			  }, updateAccessToken);
+			} catch (err) {
+			  console.log(err);
+			}
+		  }
+		  return container;
+		})
+	  );
+	  updateAndResetItemState(updatedContainers);
+	} catch (err) {
+	  console.log(err);
+	}
+  };
+	const addFilter = (tag_id: string) =>{
+		const cur = tag_id.toString().replace('tag-','')
+		setFilter([...filter,cur])
+		console.log(filter);
+	}
+	const filterByTag = async() => {
+		resetContainers();
+		try {
+			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/filter/tag`, {
+				params: {
+					tag_id: filter,
+					email: email,
+				},
+				headers: headers
+			});
+			
+			const result = results.data as returnInterface;
+			console.log("Result filterByTag",result)
+			authorization(result, async () => {
+				const promises = result.data.map(async (item: any) => {
+					const id = 'item-' + item.quest_id;
+					const currentContainer =
+						item.status === 'Task'
+							? 'container-1'
+							: item.status === 'In Progress'
+								? 'container-2'
+								: 'container-3';
+					let newContainer = initialContainers;
+					for (const container of newContainer) {
+						if (container.id === currentContainer) {
+							const tagOfContainer: TagType[] = [];
+	
+							const query_tag = await axios.get(`http://localhost:${Config.BACKEND_PORT}/contain-table`, {
+								params: {
+									quest_id: item.quest_id,
+								},
+								headers: headers
 							});
+							const foodItem = await queryFoodItem(item.item_id) as foodItemType;
+							const result_tag = await query_tag.data as returnInterface;
+							console.log(result_tag.return);
+	
+							authorization(result_tag, async () => {
+								await Promise.all(
+									result_tag.data.map(async (tag: any) => {
+										const tag_id = `tag-${tag.tag_id}`;
+										const eachTag: TagType = {
+											id: tag_id,
+											name: tag.tag_name,
+											color: tag.tag_color,
+										};
+										tagOfContainer.push(eachTag);
+									})
+								);
+	
+								await Promise.all(
+									container.items = container.items.concat({
+										id: id,
+										title: item.quest_name,
+										description: item.description,
+										image_url: foodItem.image_url,
+										tags: tagOfContainer,
+										due_date: item.due_date,
+										item_name: foodItem.item_name,
+										item_description: foodItem.description,
+										item_id: foodItem.item_id,
+									})
+								);
+	
+								console.log(container);
+							//ถ้ามีบัคค่อยมาดูตรงนี้
+							}, updateAccessToken);
 						}
-					} catch (err) {
-						console.log(err);
 					}
-				}
-				return container;
-			})
-		);
-		updateAndResetItemState(updatedContainers);
-	};
-
+					setContainers([...newContainer]);
+				});
+	
+				await Promise.all(promises);
+			},updateAccessToken);
+		} catch (err) {
+			console.log(err);
+		}
+	}
 	const onDeleteItem = async (currentItemId: UniqueIdentifier, currentContainerId: UniqueIdentifier) => {
 		const updatedContainers = await Promise.all(
 			containers.map(async (container) => {
@@ -225,14 +387,11 @@ export default function QuestPage() {
 							data: {
 								quest_id: new_id,
 							},
+							headers: headers,
 						});
 						const result = results.data as returnInterface;
-						if (result.return !== 0 || result.data === undefined) {
-							setError(result.data.error);
-							console.log(error);
-						} else {
-							console.log(result.data);
-						}
+						authorization(result, async () => {console.log(result.message)}, updateAccessToken);
+						
 					} catch (err) {
 						console.log(err);
 					}
@@ -253,7 +412,7 @@ export default function QuestPage() {
 						if (item.id === currentItemId) {
 							item.title = itemName;
 							item.description = itemDescription;
-							const tempStatus = container.id === 'container-1' ? 'Task' : 'In Progress';
+							// const tempStatus = container.id === 'container-1' ? 'Task' : 'In Progress';
 							const new_id = Number(currentItemId.toString().replace('item-', ''));
 							console.log(new_id);
 							try {
@@ -262,19 +421,15 @@ export default function QuestPage() {
 									quest_name: itemName,
 									description: itemDescription,
 									due_date: due_date,
-									item_id: item_id,
+									item_id: item.item_id,
 									email: email,
-									status: tempStatus,
-								});
+									status: container.title,
+									
+								},{headers: headers});
 
 								const result = (await results).data as returnInterface;
-
-								if (result.return !== 0 || result.data === undefined) {
-									setError(result.data.error);
-									console.log(error);
-								} else {
-									console.log(result.data);
-								}
+								authorization(result, async () => {console.log(result.message)}, updateAccessToken);
+			
 							} catch (err) {
 								console.log(err);
 							}
@@ -289,37 +444,37 @@ export default function QuestPage() {
 		);
 		updateAndResetItemState(updatedContainers);
 	};
+
 	// Get all tags from all database that same user
 	async function getAllTagsFromContainers(): Promise<TagType[]> {
-		const allTags: TagType[] = [];
-
-		// containers.forEach((container) => {
-		// 	container.items.forEach((item) => {
-		// 		allTags.push(...item.tags);
-		// 	});
-		// });
 		try {
-			const result = await axios.get('http://localhost:5000/filter/tag', {
+			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/tag/all`, {
 				params: {
 					email: email,
 				},
+				headers: headers,
 			});
-			const results = result.data as returnInterface;
-			console.log(results.data);
-			results.data.map((item: any) => {
-				const tag_id = `tag-${item.tag_id}`;
-				const tag: TagType = {
-					id: tag_id,
-					name: item.tag_name,
-					color: item.tag_color,
-				};
-				allTags.push(tag);
+	
+			const result = results.data as returnInterface;
+	
+			// Use a promise to wait for the authorization function
+			const tags = await new Promise<TagType[]>((resolve, reject) => {
+				authorization(result, (async () => {
+					const tags = result.data.map((tag: any) => ({
+						id: `tag-${tag.tag_id}`,
+						name: tag.tag_name,
+						color: tag.tag_color,
+					}));
+					resolve(tags);
+				}), updateAccessToken, reject);
 			});
-		} catch (err) {
-			console.error('Error fetching tags:', err);
+	
+			return tags;
+		} catch (error) {
+			// Handle errors here
+			console.error(error);
+			return [];
 		}
-
-		return allTags;
 	}
 
 	// Find the value of the items
@@ -339,6 +494,14 @@ export default function QuestPage() {
 		if (!item) return '';
 		return item.title;
 	};
+	
+	const findItemTags = (id: UniqueIdentifier | undefined) => {
+		const container = findValueOfQuest(id, 'item');
+		if (!container) return [];
+		const item = container.items.find((item) => item.id === id);
+		if (!item) return [];
+		return item.tags;
+	};
 
 	const findItemDescription = (id: UniqueIdentifier | undefined) => {
 		const container = findValueOfQuest(id, 'item');
@@ -347,6 +510,61 @@ export default function QuestPage() {
 		if (!item) return '';
 		return item.description;
 	};
+	const findFoodItemId = (id: UniqueIdentifier | undefined) => {
+		const container = findValueOfQuest(id, 'item');
+		if (!container) return '';
+		const item = container.items.find((item) => item.id === id);
+		if (!item) return '';
+		return item.item_id;
+	}
+	const findFoodImageUrl = (id: UniqueIdentifier | undefined) => {
+		const container = findValueOfQuest(id, 'item');
+		if (!container) return '';
+		const item = container.items.find((item) => item.id === id);
+		if (!item) return '';
+		return item.image_url;
+	}
+	const findFoodItemName = (id: UniqueIdentifier | undefined) => {
+		const container = findValueOfQuest(id, 'item');
+		if (!container) return '';
+		const item = container.items.find((item) => item.id === id);
+		if (!item) return '';
+		return item.item_name;
+	}
+	const findDueDate = (id: UniqueIdentifier | undefined) => {
+		const container = findValueOfQuest(id, 'item');
+		if (!container) return '';
+		const item = container.items.find((item) => item.id === id);
+		if (!item) return '';
+		return item.due_date;
+	}
+	const findFoodItemDescription = (id: UniqueIdentifier | undefined) => {
+		const container = findValueOfQuest(id, 'item');
+		if (!container) return '';
+		const item = container.items.find((item) => item.id === id);
+		if (!item) return '';
+		return item.item_description;
+	}
+	const userQuery = async () => {
+		try {
+			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/user`, {
+				params: {
+					email: email,
+				},
+				headers: headers,
+			});
+			const result = results.data as returnInterface;
+			authorization(result, async () => {
+				setUsername(result.data[0].username);
+			}, updateAccessToken);
+		} catch (error) {
+			console.error('Error to query user', error);
+		}
+	};
+	const resetTag = async () => {
+		resetContainers();
+		setFilter([]);
+	}
 	async function onAddTag(tagName: string) {
 		// this function will create a tag and add to contain table
 		const randomColor = tagColorList[Math.floor(Math.random() * tagColorList.length)];
@@ -356,52 +574,120 @@ export default function QuestPage() {
 			return;
 		}
 
-		const results = await axios.post('http://localhost:5000/tag', {
+		const results = await axios.post(`http://localhost:${Config.BACKEND_PORT}/tag`, {
 			tag_name: tagName,
 			tag_color: randomColor,
-			email: email,
-		});
+			email: email,	
+		},{headers: headers});
 
 		const result = results.data as returnInterface;
-		const tag: TagType = {
-			id: `tag-${result.data.tag_id}`,
-			name: tagName,
-			color: randomColor,
-		};
-
-		setPreviewTags([...previewTags, tag]);
-		//add in frontend container
-		const updatedContainers = containers.map(async (container) => {
-			if (container.id === currentContainerId) {
-				const updatedItems = await Promise.all(
-					container.items.map(async (item) => {
-						if (item.id === currentItemId) {
-							item.tags.push(tag);
-							//add in backend contain
-							const addTagToContainer = await axios
-								.post('http://localhost:5000/contain-table', {
-									tag_id: result.data.tag_id,
-									quest_id: item.id?.toString().replace('item-', ''),
-								})
-								.catch((err) => console.log(err));
-						}
-						return item;
-					})
-				);
-
-				container.items = updatedItems;
-			}
-			return container;
-		});
-
-		await Promise.all(updatedContainers).then((resolvedContainers) => {
-			setContainers(resolvedContainers);
-		});
-		fetchTag();
-
-		// contain_id is the id of the label table in database
-		//const contain_id = result_contain.data.contain_id;
+		authorization(result, async () => {
+			const tag: TagType = {
+				id: `tag-${result.data.tag_id}`,
+				name: tagName,
+				color: randomColor,
+			};
+	
+			setPreviewTags([...previewTags, tag]);
+			//add in frontend container
+			const updatedContainers = containers.map(async (container) => {
+				if (container.id === currentContainerId) {
+					const updatedItems = await Promise.all(
+						container.items.map(async (item) => {
+							if (item.id === currentItemId) {
+								await updateTag(item, tag);
+							}
+							return item;
+						})
+					);
+	
+					container.items = updatedItems;
+				}
+				return container;
+			});
+	
+			await Promise.all(updatedContainers).then((resolvedContainers) => {
+				setContainers(resolvedContainers);
+			});
+			fetchTag();
+		}, updateAccessToken);
 	}
+
+	const selectTag = async (item: Item, tag: TagType) => {
+		setPreviewTags([...previewTags, tag]);
+		await updateTag(item, tag);
+		fetchTag();
+	};
+
+	const removeTag = async (item: Item, tag: TagType) => {
+		try {
+			const results = await axios.delete(`http://localhost:${Config.BACKEND_PORT}/contain-table`, {
+				data: {
+					tag_id: tag.id.toString().replace('tag-', ''),
+					quest_id: item.id?.toString().replace('item-', ''),
+				},
+				headers: headers,
+			});
+			const result = results.data as returnInterface;
+			authorization(result, async () => {
+				item.tags = item.tags.filter((t) => t.id !== tag.id);
+				setPreviewTags(previewTags.filter((t) => t.id !== tag.id));
+			}, updateAccessToken);
+		} catch (error) {
+			console.error('Error deleting tag:', error);
+		}
+		fetchTag();
+	};
+
+	const updateTag = async (item: Item, tag: TagType) => {
+		item.tags.push(tag);
+		//add in backend contain
+		const addTagToContainer = await axios
+			.post(`http://localhost:${Config.BACKEND_PORT}/contain-table`, {
+				tag_id: tag.id.toString().replace('tag-', ''),
+				quest_id: item.id?.toString().replace('item-', ''),
+				
+			},{headers: headers})
+			.catch((err) => console.log(err));
+		
+		
+		if (addTagToContainer) {
+			const result = addTagToContainer.data as returnInterface;
+			authorization(result, async () => {
+				console.log('contain reults ', addTagToContainer);
+				fetchTag();
+			}, updateAccessToken);
+		}
+	};
+	
+	const deleteTag = async (item: Item, tag: TagType) => {
+		removeTag(item, tag);
+		try {
+			const results = await axios.delete(`http://localhost:${Config.BACKEND_PORT}/tag`, {
+				data: {
+					tag_id: tag.id.toString().replace('tag-', ''),
+				},
+				headers: headers,
+			});
+			const result = results.data as returnInterface;
+			authorization(result, async () => {
+				setTags(tags.filter((t) => t.id !== tag.id));
+				setPreviewTags(previewTags.filter((t) => t.id !== tag.id));
+				containers.map(async (container) => {
+					container.items.map(async (item) => {
+						item.tags = item.tags.filter((t) => t.id !== tag.id);
+					});
+				});
+				fetchTag();
+			}, updateAccessToken);
+			
+
+		} catch (error) {
+			console.error('Error deleting tag:', error);
+		}
+		
+	};
+
 	// DND Handlers
 	const sensors = useSensors(
 		useSensor(PointerSensor),
@@ -428,24 +714,21 @@ export default function QuestPage() {
 		}
 		if (dragObjectOnContainerID !== AfterContainer.id) {
 			const new_id = Number(event.active.id.toString().replace('item-', ''));
-			const tempStatus = AfterContainer.id === 'container-1' ? 'Task' : 'In Progress';
+			// const tempStatus = AfterContainer.id === 'container-1' ? 'Task' : 'In Progress';
 			try {
 				const results = axios.put(`http://localhost:${Config.BACKEND_PORT}/quest`, {
 					quest_id: new_id, //change
 					quest_name: findItemTitle(event.active.id),
 					description: findItemDescription(event.active.id),
 					due_date: due_date,
-					item_id: item_id,
+					item_id: findFoodItemId(event.active.id),
 					email: email,
-					status: tempStatus,
-				});
+					status: AfterContainer.title,
+					
+				},{headers: headers});
 				const result = (await results).data as returnInterface;
-				if (result.return !== 0 || result.data === undefined) {
-					setError(result.data.error);
-					console.log(error);
-				} else {
-					console.log(result.data);
-				}
+				authorization(result, async () => {console.log(result.message)}, updateAccessToken);
+				
 			} catch (err) {
 				console.log(err);
 			}
@@ -454,106 +737,121 @@ export default function QuestPage() {
 
 	return (
 		<>
+			<AddItemModal.render
+				showModal={showAddItemModal}
+				setShowModal={setShowAddItemModal}
+				setItemName={setItemName}
+				setItemDescription={setItemDescription}
+				itemName={itemName}
+				itemDescription={itemDescription}
+				onAddItem={onAddItem}
+			/>
+			<EditItemModal.render
+				showModal={showEditItemModal}
+				setShowModal={setShowEditItemModal}
+				itemName={itemName}
+				setItemName={setItemName}
+				itemDescription={itemDescription}
+				setItemDescription={setItemDescription}
+				containers={containers}
+				tags={tags}
+				setTags={setTags}
+				currentContainerId={currentContainerId}
+				currentItemId={currentItemId}
+				onEditItem={onEditItem}
+				onAddTag={onAddTag}
+				onSelectTag={selectTag}
+				onRemoveTag={removeTag}
+				onDeleteTag={deleteTag}
+			/>
+
 			<div className="flex flex-row">
-				<SideBar />
+				{/* Sidebar */}
+				<SideBar tags={tags} username={username} handleButtonClick={addFilter} header={headers} handleButtonClickResetFilter={resetTag} showWorkingTags={true}/>
 				{/* Main Content */}
-				<div className="w-full">
-					<div className="mt-32 text-center text-2xl font-bold tracking-[.25em]">
+				<div className="w-full flex flex-col items-center">
+					<header className="flex flex-col gap-1 mt-8 mb-4 text-2l font-bold tracking-[.25em]">
 						<h1>Quest</h1>
-					</div>
-					{/* Task */}
-					<div className="flex">
-						<div className="mx-auto w-full py-10">
-							<AddItemModal.render
-								showModal={showAddItemModal}
-								setShowModal={setShowAddItemModal}
-								setItemName={setItemName}
-								setItemDescription={setItemDescription}
-								itemName={itemName}
-								itemDescription={itemDescription}
-								onAddItem={onAddItem}
-							/>
-							<EditItemModal.render
-								showModal={showEditItemModal}
-								setShowModal={setShowEditItemModal}
-								itemName={itemName}
-								setItemName={setItemName}
-								itemDescription={itemDescription}
-								setItemDescription={setItemDescription}
-								containers={containers}
-								tags={tags}
-								currentContainerId={currentContainerId}
-								currentItemId={currentItemId}
-								onEditItem={onEditItem}
-							/>
-							<div className="mt-10 px-8">
-								<div className="grid grid-cols-1 gap-6">
-									<DndContext
-										sensors={sensors}
-										collisionDetection={closestCorners}
-										onDragStart={handleDragStart}
-										onDragMove={handleDragMove}
-										onDragEnd={handleDragEnd}
-									>
-										<SortableContext items={containers.map((i) => i.id)}>
-											<div className="flex">
-												{containers.map((container) => (
-													<div key={container.id} className="mr-4 w-full">
-														{/* Added margin */}
-														<QuestContainer
-															id={container.id}
-															title={container.title}
-															onAddItem={() => {
-																setShowAddItemModal(true);
-																setCurrentContainerId(container.id);
-															}}
-														>
-															<SortableContext items={container.items.map((i) => i.id)}>
-																<div className="flex items-start flex-col gap-y-4">
-																	{container.items.map((i) => (
-																		<Quest
-																			title={i.title}
-																			description={i.description}
-																			id={i.id}
-																			key={i.id}
-																			onEditItem={() => {
-																				setItemName(i.title);
-																				setItemDescription(i.description);
-																				setCurrentContainerId(container.id);
-																				setCurrentItemId(i.id);
-																				setShowEditItemModal(true);
-																			}}
-																			tags={i.tags}
-																			onDeleteItem={() => {
-																				onDeleteItem(i.id, container.id);
-																			}}
-																		/>
-																	))}
-																</div>
-															</SortableContext>
-														</QuestContainer>
-													</div>
-												))}
-											</div>
-										</SortableContext>
-										<DragOverlay adjustScale={false}>
-											{/* Drag Overlay For item Item */}
-											{activeId && activeId.toString().includes('item') && (
-												<Quest
-													id={activeId}
-													title={findItemTitle(activeId)}
-													description={findItemDescription(activeId)}
-													onEditItem={() => {}}
-													tags={[]}
-													onDeleteItem={() => {
-														onDeleteItem;
+						<Progress value={52} color="red" />
+					</header>
+					<div className="w-8/12 px-2/4">
+						<div className="grid grid-cols-1 gap-6">
+							<DndContext
+								sensors={sensors}
+								collisionDetection={closestCorners}
+								onDragStart={handleDragStart}
+								onDragMove={handleDragMove}
+								onDragEnd={handleDragEnd}
+							>
+								<SortableContext items={containers.map((i) => i.id)}>
+									<div className="flex">
+										{containers.map((container) => (
+											<div key={container.id} className="mr-4 w-full">
+												{/* Added margin */}
+												<QuestContainer
+													id={container.id}
+													title={container.title}
+													onAddItem={() => {
+														setShowAddItemModal(true);
+														setCurrentContainerId(container.id);
 													}}
-												/>
-											)}
-										</DragOverlay>
-									</DndContext>
-								</div>
-							</div>
+												>
+													<SortableContext items={container.items.map((i) => i.id)}>
+														<div className="flex items-start flex-col gap-y-4">
+															{container.items.map((i) => {
+															console.log(i); 
+															return (
+																<Quest
+																title={i.title}
+																description={i.description}
+																id={i.id}
+																key={i.id}
+																onEditItem={() => {
+																	setItemName(i.title);
+																	setItemDescription(i.description);
+																	setCurrentContainerId(container.id);
+																	setCurrentItemId(i.id);
+																	setShowEditItemModal(true);
+																}}
+																tags={i.tags}
+																onDeleteItem={() => {
+																	onDeleteItem(i.id, container.id);
+																}}
+																due_date={i.due_date}
+																item_name={i.item_name}
+																image_url={i.image_url}
+																item_description={i.item_description}
+																/>
+															);
+															})}
+														</div>
+														</SortableContext>
+												</QuestContainer>
+											</div>
+										))}
+									</div>
+								</SortableContext>
+								<DragOverlay adjustScale={false}>
+									{/* Drag Overlay For item Item */}
+									{activeId && activeId.toString().includes('item') && (
+										<Quest
+											
+											id={activeId}
+											title={findItemTitle(activeId)}
+											description={findItemDescription(activeId)}
+											onEditItem={() => {}}
+											tags={findItemTags(activeId)}
+											onDeleteItem={() => {
+												onDeleteItem;
+											}}
+											due_date = {findDueDate(activeId)}
+											item_name = {findFoodItemName(activeId)}
+											image_url={findFoodImageUrl(activeId)}
+											item_description = {findFoodItemDescription(activeId)}
+										/>
+									)}
+								</DragOverlay>
+							</DndContext>
 						</div>
 					</div>
 				</div>

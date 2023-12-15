@@ -4,7 +4,7 @@
 import cron from 'node-cron';
 import Config from '../config.js';
 import { monsterModel } from '../database/models.js';
-import Controller from '../routes/deliver.js';
+import Controller from './deliver.js';
 import Logger from './logger.js';
 
 export default class Scheduler {

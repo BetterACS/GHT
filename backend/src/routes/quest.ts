@@ -1,9 +1,9 @@
 import express, { Request, Response } from 'express';
 import { OkPacket } from 'mysql';
 import Database from '../database/database.js';
+import checkAuthorization from '../middleware/checkAuthorization.js';
 import { questInterface, returnInterface } from '../utils/interfaces.js';
 import Logger from '../utils/logger.js';
-
 const router = express.Router();
 
 let returnJson: returnInterface = {
@@ -157,8 +157,8 @@ const updateQuest = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
-router.post('/quest', createQuest);
-router.get('/quest', queryQuest);
-router.delete('/quest', deleteQuest);
-router.put('/quest', updateQuest);
+router.post('/quest', [checkAuthorization, createQuest]);
+router.get('/quest', [checkAuthorization, queryQuest]);
+router.delete('/quest', [checkAuthorization, deleteQuest]);
+router.put('/quest', [checkAuthorization, updateQuest]);
 export default router;

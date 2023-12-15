@@ -1,13 +1,10 @@
 import ModalBase from './ModalBase';
-import { AnimatePresence, motion } from 'framer-motion';
-import clsx from 'clsx';
 import { Dispatch, SetStateAction } from 'react';
 import { UniqueIdentifier } from '@dnd-kit/core';
-import { TagType, DNDType } from '../../utils/types';
+import { TagType, DNDType, Item } from '../../utils/types';
 import TagDisplay from '../Tag';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
-import { render } from 'react-dom';
 
 interface EditItemModalProps {
 	showModal: boolean;
@@ -18,9 +15,14 @@ interface EditItemModalProps {
 	setItemDescription: Dispatch<SetStateAction<string>>;
 	containers: DNDType[];
 	tags: TagType[];
+	setTags: Dispatch<SetStateAction<TagType[]>>;
 	currentContainerId: UniqueIdentifier | undefined;
 	currentItemId: UniqueIdentifier | undefined;
 	onEditItem: (error: any) => Promise<void>;
+	onAddTag: (tagName: string) => void;
+	onSelectTag: (item: Item, tag: TagType) => Promise<void>;
+	onRemoveTag: (item: Item, tag: TagType) => Promise<void>;
+	onDeleteTag: (item: Item, tag: TagType) => Promise<void>;
 }
 class EditItemModal extends ModalBase {
 	public static render({
@@ -32,9 +34,14 @@ class EditItemModal extends ModalBase {
 		setItemDescription,
 		containers,
 		tags,
+		setTags,
 		currentContainerId,
 		currentItemId,
 		onEditItem,
+		onAddTag,
+		onSelectTag,
+		onRemoveTag,
+		onDeleteTag,
 	}: EditItemModalProps) {
 		return (
 			<EditItemModal.Modal
@@ -60,24 +67,31 @@ class EditItemModal extends ModalBase {
 						onChange={(e) => setItemDescription(e.target.value)}
 					/>
 					<div className="flex flex-warp">
+						{/* {containers.map((container) => {
+							return <div key={container.id}></div>;
+						})} */}
 						{containers.map((container) => {
 							if (container.id === currentContainerId) {
 								return container.items.map((item) => {
 									if (item.id === currentItemId) {
 										return (
 											<TagDisplay.tagsEditor
+												key={item.id}
 												tags={tags}
-												currentTags={[]}
+												currentTags={item.tags}
 												setCurrentTags={(tags) => {
-													console.log(tags);
+													console.log('setCurrent', tags);
 												}}
-												onAddTag={(tagName) => {
-													console.log(tagName);
+												onAddTag={onAddTag}
+												onRemoveTag={(tag) => {
+													onRemoveTag(item, tag);
 												}}
-												onRemoveTag={() => {
-													console.log(item);
+												onSelectTag={(tag) => {
+													onSelectTag(item, tag);
 												}}
-												onSelectTag={() => {}}
+												onDeleteTag={(tag) => {
+													onDeleteTag(item, tag);
+												}}
 											/>
 										);
 									}

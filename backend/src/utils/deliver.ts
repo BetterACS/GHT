@@ -1,4 +1,4 @@
-import { monsterInterface } from '../utils/interfaces.js';
+import { monsterInterface } from './interfaces.js';
 export default class Deliver {
 	private static INSTANCE: Deliver;
 	private static currentMonster: monsterInterface;
