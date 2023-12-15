@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
+import '../styles/Sidebar.css';
 import { TagType } from '../utils/types';
 import { IconButton, Button } from '@material-tailwind/react';
 import { HiArrowCircleLeft, HiArrowCircleRight } from 'react-icons/hi';
+import { BsBackpackFill } from 'react-icons/bs';
 import { MdAdd, MdScience } from 'react-icons/md';
-// import { Button } from '@material-tailwind/react';
 import { FaGamepad, FaSpaghettiMonsterFlying } from 'react-icons/fa6';
+import { Tooltip } from '@material-tailwind/react';
 
 import '../styles/Sidebar.css';
 import { List, ListItem, ListItemSuffix, Chip, Card } from '@material-tailwind/react';
@@ -18,12 +20,12 @@ interface BarProps {
 	tags: TagType[];
 	username: string;
 	handleButtonClick: (tag_id: string) => void;
-	header:HeadersType
+	header: HeadersType;
 	handleButtonClickResetFilter: () => void;
-	showWorkingTags:boolean;
+	showWorkingTags: boolean;
 }
 //util funciton
-const countTag = async (tag_id:string,headers:HeadersType) => {
+const countTag = async (tag_id: string, headers: HeadersType) => {
 	try {
 		const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/tag/count`, {
 			params: {
@@ -37,51 +39,58 @@ const countTag = async (tag_id:string,headers:HeadersType) => {
 	} catch (error) {
 		console.error('Error to query user', error);
 	}
-}
-export function ListWithBadge({ tags, handleButtonClick, header}: BarProps) {
+};
+export function ListWithBadge({ tags, handleButtonClick, header }: BarProps) {
 	console.log('ListWithBadge rendered');
-  
-	const [tagCounts, setTagCounts] = useState<{ [key: string]: string | undefined }>({});
-  
-	useEffect(() => {
-	  const fetchTagCounts = async () => {
-		const counts = await Promise.all(
-		  tags.map(async (tag) => {
-			const count = await countTag(tag.id.toString().replace('tag-', ''), header);
-			return { [tag.id.toString()]: count };
-		  })
-		);
-  
-		// Merge counts into a single object
-		const mergedCounts = counts.reduce((acc, count) => ({ ...acc, ...count }), {});
-		setTagCounts(mergedCounts);
-	  };
-  
-	  fetchTagCounts();
-	}, [tags, header]);
-  
-	return (
-	  <Card className="w-full">
-		<List>
-		  {tags.map((tag: TagType) => (
-			<ListItem key={tag.id} onClick={() => handleButtonClick(tag.id.toString())}>
-			  {tag.name}
-			  <ListItemSuffix>
-				<Chip
-				  value={tagCounts[tag.id.toString()]}
-				  variant="ghost"
-				  size="sm"
-				  className="rounded-full"
-				/>
-			  </ListItemSuffix>
-			</ListItem>
-		  ))}
-		</List>
-	  </Card>
-	);
-  }
 
-const SideBar = ({ tags,username ,handleButtonClick,header,handleButtonClickResetFilter,showWorkingTags}: BarProps) => {
+	const [tagCounts, setTagCounts] = useState<{ [key: string]: string | undefined }>({});
+
+	useEffect(() => {
+		const fetchTagCounts = async () => {
+			const counts = await Promise.all(
+				tags.map(async (tag) => {
+					const count = await countTag(tag.id.toString().replace('tag-', ''), header);
+					return { [tag.id.toString()]: count };
+				})
+			);
+
+			// Merge counts into a single object
+			const mergedCounts = counts.reduce((acc, count) => ({ ...acc, ...count }), {});
+			setTagCounts(mergedCounts);
+		};
+
+		fetchTagCounts();
+	}, [tags, header]);
+
+	return (
+		<Card className="w-full">
+			<List>
+				{tags.map((tag: TagType) => (
+					<ListItem key={tag.id} onClick={() => handleButtonClick(tag.id.toString())}>
+						{tag.name}
+						<ListItemSuffix>
+							<Chip
+								value={tagCounts[tag.id.toString()]}
+								variant="ghost"
+								size="sm"
+								className="rounded-full"
+							/>
+						</ListItemSuffix>
+					</ListItem>
+				))}
+			</List>
+		</Card>
+	);
+}
+
+const SideBar = ({
+	tags,
+	username,
+	handleButtonClick,
+	header,
+	handleButtonClickResetFilter,
+	showWorkingTags,
+}: BarProps) => {
 	const [isOpen, setOpen] = React.useState(false);
 	return (
 		<div className="flex flex-row">
@@ -123,16 +132,26 @@ const SideBar = ({ tags,username ,handleButtonClick,header,handleButtonClickRese
 					{showWorkingTags && (
 						<div>
 							<b className="px-8 text-lg">Working tags</b>
-							
-							<IconButton className="bg-red-400 rounded-full w-8 h-8" onClick={handleButtonClickResetFilter}>
-							<MdAdd color="white" size={24} />
+
+							<IconButton
+								className="bg-red-400 rounded-full w-8 h-8"
+								onClick={handleButtonClickResetFilter}
+							>
+								<MdAdd color="white" size={24} />
 							</IconButton>
-							
+
 							<div className="px-8 pt-2">
-							<ListWithBadge tags={tags} username={username} handleButtonClick={handleButtonClick} header={header} handleButtonClickResetFilter={handleButtonClickResetFilter} showWorkingTags={showWorkingTags}/>
+								<ListWithBadge
+									tags={tags}
+									username={username}
+									handleButtonClick={handleButtonClick}
+									header={header}
+									handleButtonClickResetFilter={handleButtonClickResetFilter}
+									showWorkingTags={showWorkingTags}
+								/>
 							</div>
 						</div>
-						)}
+					)}
 					{/* working tags zone end */}
 				</div>
 			</div>
@@ -156,4 +175,3 @@ export default SideBar;
 function updateAccessToken(newToken: string, newRefresh: string): Promise<void> {
 	throw new Error('Function not implemented.');
 }
-

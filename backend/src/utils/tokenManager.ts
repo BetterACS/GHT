@@ -69,8 +69,8 @@ export default class TokenManager {
 							return;
 						}
 						// Generate new access and refresh tokens
-						const accessToken = this.generateAccessToken({ user: userEmail });
-						const refreshToken = this.generateRefreshToken({ user: userEmail });
+						const accessToken = TokenManager.instance().generateAccessToken({ user: userEmail });
+						const refreshToken = TokenManager.instance().generateRefreshToken({ user: userEmail });
 						// Respond with success and the new tokens
 						// ตรงนี้อาจจะมีแก้เพิ่ม
 						res.json({
