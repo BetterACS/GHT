@@ -5,7 +5,6 @@ import SignUp from './pages/SignUp';
 import Login from './pages/Login';
 import Quest from './pages/QuestPage';
 import Analytics from './pages/Analytics';
-import Tag from './pages/Tag';
 import Inventory from './pages/Inventory';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
