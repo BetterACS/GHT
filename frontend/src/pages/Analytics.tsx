@@ -2,7 +2,11 @@ import CalendarHeatmap from 'react-calendar-heatmap';
 import '../styles/Activity.css';
 import SideBar from '../components/SideBar';
 import clsx from 'clsx';
-import { Tooltip } from '@material-tailwind/react';
+import axios from 'axios';
+import { SetStateAction, useEffect, useState } from 'react';
+import { returnInterface } from '../../../backend/src/utils/interfaces';
+import authorization from '../utils/authorization';
+import Config from '../../../backend/src/config';
 
 const SimpleQuestContainer = ({ name }: any) => {
 	return (
@@ -20,27 +24,98 @@ const SimpleQuestContainer = ({ name }: any) => {
 };
 
 const Analytics = () => {
+	const email = localStorage.getItem('email') || '';
+	const [values, setValues] = useState([{}]);
+	const [username, setUsername] = useState('');
+	const [accessToken, setAccessToken] = useState(localStorage.getItem('access_token'));
+	const [refreshToken, setRefreshToken] = useState(localStorage.getItem('refresh_token'));
+	let headers = {
+		authorization: `Bearer ${localStorage.getItem('access_token')}`,
+		refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
+		email: `${localStorage.getItem('email')}`,
+	};
+
+	useEffect(() => {
+		fetchValues();
+		console.log(values);
+	}, []);
+
+	const fetchValues = async () => {
+		try {
+			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/filter/date`, {
+				params: {
+					email: email,
+				},
+				headers: headers,
+			});
+
+			const result = results.data as returnInterface;
+			let temp: any = [];
+
+			result.data.map(async (item: any) => {
+				const id = 'item-' + item.quest_id;
+				if (item.status === 'Done') {
+					temp.push({ date: item.due_date, count: 1 });
+				}
+			});
+
+			setValues(temp);
+		} catch (error) {}
+	};
+
+	const updateAccessToken = async (newToken: string, newRefresh: string) => {
+		await setAccessToken(newToken);
+		await localStorage.setItem('access_token', newToken);
+		await setRefreshToken(newRefresh);
+		await localStorage.setItem('refresh_token', newRefresh);
+		console.log('update access token', newToken);
+	};
+	const userQuery = async () => {
+		try {
+			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/user`, {
+				params: {
+					email: email,
+				},
+				headers: headers,
+			});
+			const result = results.data as returnInterface;
+			authorization(
+				result,
+				async () => {
+					setUsername(result.data[0].username);
+				},
+				updateAccessToken
+			);
+		} catch (error) {
+			console.error('Error to query user', error);
+		}
+	};
+
+	useEffect(() => {
+		userQuery();
+	});
+
 	return (
 		<div className="flex flex-row">
-			<SideBar tags={[]} />
+			<SideBar
+				username={username}
+				header={headers}
+				tags={[]}
+				showWorkingTags={false}
+				handleButtonClick={() => {}}
+				handleButtonClickResetFilter={() => {}}
+			/>
 			<div className="w-full flex flex-col items-center">
-				<div className="pt-80 w-full flex flex-row px-40">
+				{/* <div className="pt-80 w-full flex flex-row px-40">
 					<SimpleQuestContainer name={'Early'} />
 					<SimpleQuestContainer name={'No update'} />
-				</div>
-				<div className="pt-24 w-full px-28">
+				</div> */}
+				<div className="pt-80 w-full px-28">
 					<CalendarHeatmap
 						showWeekdayLabels
-						startDate={new Date('2024-01-01')}
-						endDate={new Date('2024-12-31')}
-						values={[
-							{ date: '2023-12-01', count: 10 },
-							{ date: '2023-12-22', count: 20 },
-							{ date: '2023-12-26', count: 43 },
-							{ date: '2023-12-14', count: 20 },
-							{ date: '2024-01-05', count: 30 },
-							// ...and so on
-						]}
+						startDate={new Date('2023-01-01')}
+						endDate={new Date('2023-12-31')}
+						values={values}
 						classForValue={(value) => {
 							if (!value) {
 								return 'color-empty';

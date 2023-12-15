@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import { monsterModel, userStoragesModel } from '../database/models.js';
 import checkAuthorization from '../middleware/checkAuthorization.js';
 import Deliver from '../utils/deliver.js';
 const router = express.Router();
@@ -12,70 +13,83 @@ router.get('/monster', checkAuthorization, async (request: Request, response: Re
 	response.json({ status: 'success', message: 'Monster appeared', return: 0, data: { monsters: monsters } });
 });
 
-// router.post('/monster', async (request: Request, response: Response) => {
-// 	/**
-// 	 * This route will random json data for a monster.
-// 	 */
+router.get('/monster/user', async (request: Request, response: Response) => {
+	/**
+	 * This route will random json data for a monster.
+	 */
+	const email = request.query.email;
+	const userStorage = await userStoragesModel.findOne({ email: email });
+	const field = userStorage?.field;
+	let monsters = [];
+	for (let key in field) {
+		const monster = await monsterModel.findOne({ monster_id: key });
+		monsters.push({ monster: key, name: monster?.monster_name, image: monster?.image_url, progress: field[key] });
+	}
 
-// 	let json = request.body;
-// 	let monster = new monsterModel(json);
-// 	const results = await monster.save();
-// 	response.json({ count: 1, data: results });
-// });
+	console.log(monsters);
 
-// router.post('/monster/tame/:id', async (request: Request, response: Response) => {
-// 	const logger = Logger.instance().logger();
-// 	let id = Number(request.params.id);
+	response.json({ status: 'success', message: 'Monster appeared', return: 0, data: { monsters: monsters } });
+});
 
-// 	// This is a list of emails. (For testing purposes)
-// 	const emails = ['moneiei@gmail.com', 'montrysohard@hotmail.com'];
-// 	let randomEmailIndex = Math.floor(Math.random() * emails.length);
-// 	let email = emails[randomEmailIndex];
+router.post('/monster', async (request: Request, response: Response) => {
+	/**
+	 * This route will random json data for a monster.
+	 */
 
-// 	// For testing purposes, we will use id as the score.
-// 	let favoriteScore = id;
+	let json = request.body;
+	let monster = new monsterModel(json);
+	const results = await monster.save();
+	response.json({ count: 1, data: results });
+});
 
-// 	// Get the current monster.
-// 	let currentMonster = Deliver.instance().getCurrentMonster();
+router.post('/monster/tame/:id', async (request: Request, response: Response) => {
+	const email = request.body.email;
 
-// 	// Get the current user storage.
-// 	let userStorage = await userStoragesModel.findOne({ email: email });
+	let id = Number(request.params.id);
+	// For testing purposes, we will use id as the score.
+	let favoriteScore = id;
 
-// 	// If the user storage does not exist, create one.
-// 	if (!userStorage) {
-// 		userStorage = new userStoragesModel({
-// 			email: email,
-// 			field: {},
-// 		});
-// 	}
+	// Get the current monster.
+	let currentMonster = Deliver.instance().getCurrentMonster();
 
-// 	// Get the current user's field.
-// 	let field = userStorage.field;
-// 	let progress = field[currentMonster.monster_id] || 0;
+	// Get the current user storage.
+	let userStorage = await userStoragesModel.findOne({ email: email });
 
-// 	// If the user's field does not have the current monster, create one.
-// 	if (!field[currentMonster.monster_id]) {
-// 		progress = favoriteScore;
-// 	} else {
-// 		progress += favoriteScore;
-// 	}
+	// If the user storage does not exist, create one.
+	if (!userStorage) {
+		userStorage = new userStoragesModel({
+			email: email,
+			field: {},
+		});
+	}
 
-// 	await userStorage.updateOne({
-// 		$set: {
-// 			[`field.${currentMonster.monster_id}`]: progress,
-// 		},
-// 	});
+	// Get the current user's field.
+	let field = userStorage.field;
+	let progress = field[currentMonster.monster_id] || 0;
 
-// 	// Save the user's field.
-// 	await userStorage.save();
+	// If the user's field does not have the current monster, create one.
+	if (!field[currentMonster.monster_id]) {
+		progress = favoriteScore;
+	} else {
+		progress += favoriteScore;
+	}
+	console.log('progress', progress);
+	await userStorage.updateOne({
+		$set: {
+			[`field.${currentMonster.monster_id}`]: progress,
+		},
+	});
 
-// 	// Send the response.
-// 	response.json({
-// 		email: email,
-// 		monster_id: currentMonster.monster_id,
-// 		score: favoriteScore,
-// 		progress: progress,
-// 	});
-// });
+	// Save the user's field.
+	await userStorage.save();
+
+	// Send the response.
+	response.json({
+		email: email,
+		monster_id: currentMonster.monster_id,
+		score: favoriteScore,
+		progress: progress,
+	});
+});
 
 export default router;

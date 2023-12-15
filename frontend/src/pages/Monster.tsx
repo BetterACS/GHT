@@ -6,25 +6,12 @@ import { monsterInterface, returnInterface } from '../../../backend/src/utils/in
 import background from '../assets/sample_scene.png';
 import tokenAuth from '../utils/tokenAuth';
 import '../styles/Monster.css';
-import { HiArrowCircleLeft, HiArrowCircleRight } from 'react-icons/hi';
 import { Carousel } from '@trendyol-js/react-carousel';
 import { IconButton, Button, Tooltip } from '@material-tailwind/react';
-
-import { motion } from 'framer-motion';
+import { HiArrowCircleLeft, HiArrowCircleRight } from 'react-icons/hi';
+import { FaGamepad, FaSpaghettiMonsterFlying } from 'react-icons/fa6';
+import { MdAdd, MdScience, MdOutlinePets, MdEmail } from 'react-icons/md';
 import clsx from 'clsx';
-
-const images = [
-	'https://i.imgur.com/spJyCuT.png',
-	'https://i.imgur.com/iLJzFfZ.png',
-	'https://i.imgur.com/89u5bMC.png',
-	'https://i.imgur.com/b50cjCP.png',
-	'https://i.imgur.com/g6CJO26.png',
-	'https://i.imgur.com/1CmGi93.png',
-	'https://i.imgur.com/bLycv6Y.png',
-	'https://i.imgur.com/wu5HvsQ.png',
-	'https://i.imgur.com/5towfYp.png',
-	'https://i.imgur.com/YumfIWI.png',
-];
 
 import { Typography } from '@material-tailwind/react';
 
@@ -78,10 +65,14 @@ function TooltipWithHelperIcon() {
 	);
 }
 
-const Item = ({ id, handleItemClick }: any) => {
+const Item = ({ id, handleItemClick, img_url, quantiy }: any) => {
 	const [isClicked, setIsClicked] = useState(false);
+	const [num, setNum] = useState(quantiy);
 
 	return (
+		// div when number of item is 0
+		//
+
 		<Tooltip content="Item">
 			<div
 				id={id}
@@ -93,25 +84,61 @@ const Item = ({ id, handleItemClick }: any) => {
 				onClick={() => {
 					setIsClicked(true);
 					handleItemClick(id);
+					setNum(num - 1);
 					setTimeout(() => setIsClicked(false), 100);
 				}}
 			>
 				<img
 					referrerPolicy="no-referrer"
 					className="w-full rounded-md opacity-80 hover:opacity-100"
-					src={images[id]}
+					src={img_url}
 					alt=""
 				/>
 				<span className="absolute rounded-full py-1 px-1 text-md font-medium content-[''] leading-none grid place-items-center top-[4%] right-[2%] translate-x-2/4 -translate-y-2/4 bg-red-500 text-white min-w-[36px] min-h-[36px] bg-gradient-to-tr from-green-400 to-green-600 border-2 border-white shadow-lg shadow-black/20">
-					5
+					{num}
 				</span>
 			</div>
 		</Tooltip>
 	);
 };
 
+import { SpeedDial, SpeedDialHandler, SpeedDialContent, SpeedDialAction } from '@material-tailwind/react';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+export function DefaultSpeedDial() {
+	const navigate = useNavigate();
+	return (
+		<div className="absolute top-0 left-0 z-10 m-4">
+			<SpeedDial placement="right">
+				<SpeedDialHandler>
+					<IconButton placeholder={0} size="lg" className="rounded-full">
+						<FaSpaghettiMonsterFlying
+							className="h-5 w-5 transition-transform group-hover:rotate-45"
+							size={25}
+						/>
+					</IconButton>
+				</SpeedDialHandler>
+				<SpeedDialContent placeholder={0} className="flex-row">
+					<SpeedDialAction placeholder={0} onClick={() => navigate('/quest')}>
+						<FaGamepad className="h-5 w-5" size={25} />
+					</SpeedDialAction>
+					<SpeedDialAction placeholder={0} onClick={() => navigate('/analysis')}>
+						<MdScience className="h-5 w-5" size={25} />
+					</SpeedDialAction>
+					<SpeedDialAction placeholder={0} onClick={() => navigate('/collection')}>
+						<MdOutlinePets className="h-5 w-5" size={25} />
+					</SpeedDialAction>
+				</SpeedDialContent>
+			</SpeedDial>
+		</div>
+	);
+}
+
 const Monster = () => {
 	const [monsters, setMonsters] = useState<monsterInterface[]>([]);
+	const [items, setItems] = useState<any[]>([]);
+	const [loading, setLoading] = useState(true);
 	const navigate = useNavigate();
 	const [shake, setShake] = useState(false);
 
@@ -123,37 +150,134 @@ const Monster = () => {
 			email: `${localStorage.getItem('email')}`,
 		};
 
-		axios
-			.get(`http://localhost:${Config.BACKEND_PORT}/monster`, { headers })
-			.then((response) => {
-				const result = response.data as returnInterface;
-				const monsterResult = result.data['monsters'] as monsterInterface[];
+		const fetchData = async () => {
+			setLoading(true);
+			await axios
+				.get(`http://localhost:${Config.BACKEND_PORT}/monster`, { headers })
+				.then((response) => {
+					const result = response.data as returnInterface;
+					const monsterResult = result.data['monsters'] as monsterInterface[];
 
-				setMonsters(monsterResult);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
+					setMonsters(monsterResult);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+
+			await getItems();
+		};
+		Promise.all([fetchData()]);
 	}, []);
 
 	const handleItemClick = (itemId: number) => {
 		setShake(true);
+		tameMonster(itemId);
 		setTimeout(() => setShake(false), 500); // Animation duration is 500ms
 	};
 
-	const tameMonster = (item_id: number) => {
-		axios
-			.post(`http://localhost:${Config.BACKEND_PORT}/monster/tame/${item_id}`)
-			.then((response) => {
-				console.log(response.data);
+	const tameMonster = async (item_id: number) => {
+		console.log('tame monster');
+		const results = await axios
+			.put(
+				`http://localhost:${Config.BACKEND_PORT}/item/use`,
+				{
+					email: localStorage.getItem('email'),
+					item_id: item_id,
+				},
+				{
+					headers: {
+						authorization: `Bearer ${localStorage.getItem('access_token')}`,
+						refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
+						email: `${localStorage.getItem('email')}`,
+					},
+				}
+			)
+			.then(async (response) => {
+				console.log(response);
+				items.map((item) => {
+					if (item.item.item_id === item_id) {
+						item.quantity -= 1;
+					}
+				});
+
+				// Delete item if quantity is 0
+				// const newItems = items.filter((item) => item.quantity > 0);
+				// setItems(newItems);
+
+				await axios
+					.post(`http://localhost:${Config.BACKEND_PORT}/monster/tame/${item_id}`, {
+						email: localStorage.getItem('email'),
+					})
+					.then((response) => {
+						const result = response.data.progress;
+						if (result >= 100) {
+							const MySwal = withReactContent(Swal);
+							MySwal.fire({
+								title: 'You have tamed the monster!',
+								icon: 'success',
+								confirmButtonText: 'Ok',
+							});
+						}
+					})
+					.catch((err) => {
+						console.log(err);
+					});
+			});
+
+		const newItems = items.filter((item) => item.quantity > 0);
+		setItems(newItems);
+	};
+
+	const getItems = async () => {
+		const email = localStorage.getItem('email');
+		const headers = {
+			authorization: `Bearer ${localStorage.getItem('access_token')}`,
+			refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
+			email: email,
+		};
+		await axios
+			.get(`http://localhost:${Config.BACKEND_PORT}/items`, {
+				params: {
+					email: email,
+				},
+				headers: headers,
+			})
+			.then(async (response) => {
+				const result = response.data;
+
+				for (let i = 0; i < result.length; i++) {
+					if (result[i] === null || result[i] === 0) {
+						continue;
+					}
+					const item = await axios.get(`http://localhost:${Config.BACKEND_PORT}/item/`, {
+						params: {
+							id: i,
+						},
+						headers: headers,
+					});
+
+					const newItem = {
+						item: item.data.data,
+						quantity: result[i],
+					};
+					items.push(newItem);
+				}
+				setItems(items);
+				setLoading(false);
+				console.log(items);
 			})
 			.catch((err) => {
 				console.log(err);
 			});
 	};
 
+	if (loading) {
+		return <></>;
+	}
+
 	return (
 		<>
+			<DefaultSpeedDial />
 			<div className="grid grid-rows-2 grid-container">
 				<div className="row-span-1 flex items-center justify-center relative bg-gray-900 ">
 					<div className="flex flex-col items-center absolute mt-10">
@@ -184,7 +308,9 @@ const Monster = () => {
 						<TooltipWithHelperIcon />
 						<h1 className="pl-2 text-gray-500 text-xl font-bold">Available foods</h1>
 					</div>
+
 					<section>
+						{/* {items.length} */}
 						<Carousel
 							show={6.5}
 							slide={3}
@@ -201,8 +327,15 @@ const Monster = () => {
 								</IconButton>
 							}
 						>
-							{[...Array(9)].map((_, i) => (
-								<Item id={i} key={i} handleItemClick={handleItemClick}></Item>
+							{/* If item have quantity */}
+							{items.map((item) => (
+								<Item
+									key={item.item.item_id}
+									id={item.item.item_id}
+									handleItemClick={handleItemClick}
+									img_url={item.item.image_url}
+									quantiy={item.quantity}
+								/>
 							))}
 						</Carousel>
 					</section>

@@ -56,6 +56,7 @@ interface fieldInterface {
 interface userStoragesInterface {
 	email: string;
 	field: fieldInterface;
+	inventory: inventoryInterface;
 }
 
 interface returnInterface {
@@ -92,5 +93,5 @@ export {
 	returnInterface,
 	tagInterface,
 	userInterface,
-	userStoragesInterface
+	userStoragesInterface,
 };

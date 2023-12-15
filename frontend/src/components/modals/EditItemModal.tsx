@@ -1,10 +1,11 @@
 import ModalBase from './ModalBase';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { UniqueIdentifier } from '@dnd-kit/core';
 import { TagType, DNDType, Item } from '../../utils/types';
 import TagDisplay from '../Tag';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+import { format } from 'date-fns';
 
 interface EditItemModalProps {
 	showModal: boolean;
@@ -43,6 +44,8 @@ class EditItemModal extends ModalBase {
 		onRemoveTag,
 		onDeleteTag,
 	}: EditItemModalProps) {
+		const [date, setDate] = useState(format(new Date(), 'dd-MM-yyyy'));
+
 		return (
 			<EditItemModal.Modal
 				showModal={showModal}
@@ -99,7 +102,14 @@ class EditItemModal extends ModalBase {
 							}
 						})}
 					</div>
-					<Button onClick={onEditItem}>Edit Item</Button>
+					<input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+					<Button
+						onClick={() => {
+							onEditItem(date);
+						}}
+					>
+						Edit Item
+					</Button>
 				</div>
 			</EditItemModal.Modal>
 		);

@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import express, { Request, Response } from 'express';
 import Database from '../database/database.js';
+import { userStoragesModel } from '../database/models.js';
 import { returnInterface, userInterface } from '../utils/interfaces.js';
 import Logger from '../utils/logger.js';
 
@@ -36,6 +37,7 @@ const storeUser = async (req: Request, res: Response): Promise<void> => {
 		}
 
 		await connection.query(sqlInsert, [email, username, hashedPassword]);
+		await userStoragesModel.create({ email: email, inventory: {}, field: {} });
 		returnJson = { status: 'success', message: 'Register Successful', return: 0, data: {} };
 	} catch (error) {
 		returnJson = { status: 'error', message: 'Error searching for the email.', return: 2, data: { error: error } };

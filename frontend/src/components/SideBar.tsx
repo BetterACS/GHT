@@ -4,10 +4,9 @@ import '../styles/Sidebar.css';
 import { TagType } from '../utils/types';
 import { IconButton, Button } from '@material-tailwind/react';
 import { HiArrowCircleLeft, HiArrowCircleRight } from 'react-icons/hi';
-import { BsBackpackFill } from 'react-icons/bs';
-import { MdAdd, MdScience } from 'react-icons/md';
 import { FaGamepad, FaSpaghettiMonsterFlying } from 'react-icons/fa6';
-import { Tooltip } from '@material-tailwind/react';
+import { MdAdd, MdScience, MdOutlinePets } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 
 import '../styles/Sidebar.css';
 import { List, ListItem, ListItemSuffix, Chip, Card } from '@material-tailwind/react';
@@ -63,12 +62,16 @@ export function ListWithBadge({ tags, handleButtonClick, header }: BarProps) {
 	}, [tags, header]);
 
 	return (
-		<Card className="w-full">
-			<List>
+		<Card placeholder={'working-tags'} className="w-full">
+			<List placeholder={'working-tags-list'}>
 				{tags.map((tag: TagType) => (
-					<ListItem key={tag.id} onClick={() => handleButtonClick(tag.id.toString())}>
+					<ListItem
+						placeholder={'working-tags-list-item'}
+						key={tag.id}
+						onClick={() => handleButtonClick(tag.id.toString())}
+					>
 						{tag.name}
-						<ListItemSuffix>
+						<ListItemSuffix placeholder={'working-tags-list-item-suffix'}>
 							<Chip
 								value={tagCounts[tag.id.toString()]}
 								variant="ghost"
@@ -91,6 +94,8 @@ const SideBar = ({
 	handleButtonClickResetFilter,
 	showWorkingTags,
 }: BarProps) => {
+	const navigate = useNavigate();
+
 	const [isOpen, setOpen] = React.useState(false);
 	return (
 		<div className="flex flex-row">
@@ -106,24 +111,52 @@ const SideBar = ({
 						{/* ใช้เป็น username */}
 						<div className="text-headlines self-center px-4 font-bold text-xl">{username}</div>
 					</div>
-					<IconButton className="bg-red-400 rounded-full" onClick={() => setOpen(!isOpen)}>
+					<IconButton
+						placeholder="close-tab"
+						className="bg-red-400 rounded-full"
+						onClick={() => setOpen(!isOpen)}
+					>
 						<HiArrowCircleLeft size={24} />
 					</IconButton>
 				</div>
 				{/* Sidebar content goes here */}
 				<div className="w-96">
 					<ul className="px-8 flex flex-col gap-4">
-						<Button variant="outlined" className="flex items-center gap-3 text-lg">
+						<Button
+							placeholder="quest-tab"
+							variant="outlined"
+							className="flex items-center gap-3 text-lg"
+							onClick={() => navigate('/quest')}
+						>
 							<FaGamepad size={25} />
 							Quest
 						</Button>
-						<Button variant="outlined" className="flex items-center gap-3 text-lg">
+						<Button
+							placeholder="monster-tab"
+							variant="outlined"
+							className="flex items-center gap-3 text-lg"
+							onClick={() => navigate('/monster')}
+						>
 							<FaSpaghettiMonsterFlying size={25} />
 							Monster
 						</Button>
-						<Button variant="outlined" className="flex items-center gap-3 text-lg">
+						<Button
+							placeholder="item-tab"
+							variant="outlined"
+							className="flex items-center gap-3 text-lg"
+							onClick={() => navigate('/analysis')}
+						>
 							<MdScience size={25} />
 							Analytics
+						</Button>
+						<Button
+							placeholder="item-tab"
+							variant="outlined"
+							className="flex items-center gap-3 text-lg"
+							onClick={() => navigate('/collection')}
+						>
+							<MdOutlinePets size={25} />
+							Collection
 						</Button>
 					</ul>
 					<hr className="mt-5 mb-2" />
@@ -134,6 +167,7 @@ const SideBar = ({
 							<b className="px-8 text-lg">Working tags</b>
 
 							<IconButton
+								placeholder="reset"
 								className="bg-red-400 rounded-full w-8 h-8"
 								onClick={handleButtonClickResetFilter}
 							>
@@ -161,7 +195,11 @@ const SideBar = ({
 				{/* Replace this with your main content */}
 				<div className="w-12 p-4 justify-start">
 					<div className={clsx({ 'opacity-0': isOpen, 'opacity-100': !isOpen })}>
-						<IconButton className="bg-red-400 rounded-full" onClick={() => setOpen(!isOpen)}>
+						<IconButton
+							placeholder="open-tab"
+							className="bg-red-400 rounded-full"
+							onClick={() => setOpen(!isOpen)}
+						>
 							<HiArrowCircleRight size={24} />
 						</IconButton>
 					</div>
@@ -172,6 +210,3 @@ const SideBar = ({
 };
 
 export default SideBar;
-function updateAccessToken(newToken: string, newRefresh: string): Promise<void> {
-	throw new Error('Function not implemented.');
-}

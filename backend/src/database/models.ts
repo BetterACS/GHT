@@ -21,6 +21,7 @@ const monsterModel = mongoose.model<monsterInterface>('monster', monsterSchema);
 
 const userStoragesSchema = new Schema<userStoragesInterface>({
 	email: { type: String, required: true, unique: true },
+	inventory: { type: Object, default: {} },
 	field: { type: Object, default: {} },
 });
 

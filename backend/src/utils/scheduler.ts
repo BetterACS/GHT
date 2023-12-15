@@ -25,13 +25,13 @@ export default class Scheduler {
 	///#region Monster Schedule
 	public startMonsterSchedule() {
 		const logger = Logger.instance().logger();
+		this.updateRandomMonster();
 		logger.info('[scheduler]:startMonsterSchedule - Updating random monster');
 		cron.schedule(`*/${Config.RESET_EVERY_N_SECONDS} * * * * *`, this.updateRandomMonster);
 	}
 
 	private async updateRandomMonster() {
 		const randomMonster = await monsterModel.aggregate([{ $sample: { size: 1 } }]);
-
 		await Controller.instance().setCurrentMonster(randomMonster[0]);
 	}
 	///#endregion

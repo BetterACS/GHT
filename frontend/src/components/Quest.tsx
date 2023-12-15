@@ -20,10 +20,21 @@ type QuestType = {
 	onDeleteItem: () => void;
 	due_date: string;
 	item_name: string;
-	item_description:string;
+	item_description: string;
 };
 
-const Quest = ({ id, title, description, tags, image_url, onEditItem, onDeleteItem ,due_date,item_name,item_description}: QuestType) => {
+const Quest = ({
+	id,
+	title,
+	description,
+	tags,
+	image_url,
+	onEditItem,
+	onDeleteItem,
+	due_date,
+	item_name,
+	item_description,
+}: QuestType) => {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: id,
 		data: {
@@ -97,17 +108,26 @@ const Quest = ({ id, title, description, tags, image_url, onEditItem, onDeleteIt
 								<div className="w-96 flex flex-row m-2">
 									<img
 										className="h-16 rounded-lg"
-										referrerPolicy="no-referrer" 
+										referrerPolicy="no-referrer"
 										// need to edit
 										src={image_url}
 										alt="item"
 									/>
 									<div className="pl-2">
-										<Typography color="white" className="font-medium">
+										<Typography
+											placeholder={'working-tags-list-item'}
+											color="white"
+											className="font-medium"
+										>
 											{/* need to edit */}
 											{item_name}
 										</Typography>
-										<Typography variant="small" color="white" className="font-normal opacity-80">
+										<Typography
+											placeholder={'working-tags-list-item'}
+											variant="small"
+											color="white"
+											className="font-normal opacity-80"
+										>
 											{/*  need to edit*/}
 											{item_description}
 										</Typography>

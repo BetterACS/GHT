@@ -46,20 +46,22 @@ import { useEffect, useState } from 'react';
 // };
 import CalendarHeatmap from 'react-calendar-heatmap';
 import '../styles/Activity.css';
-const Activity = () => {
+const Activity = ({ values }: any) => {
 	return (
 		<div>
 			<CalendarHeatmap
-				startDate={new Date('2023-11-30')}
-				endDate={new Date('2024-01-15')}
-				values={[
-					{ date: '2023-12-01', count: 10 },
-					{ date: '2023-12-22', count: 20 },
-					{ date: '2023-12-26', count: 43 },
-					{ date: '2023-12-14', count: 20 },
-					{ date: '2024-01-05', count: 30 },
-					// ...and so on
-				]}
+				startDate={new Date('2023-08-30')}
+				endDate={new Date('2024-08-15')}
+				values={
+					values
+					// [
+					// { date: '2023-12-01', count: 10 },
+					// { date: '2023-12-22', count: 20 },
+					// { date: '2023-12-26', count: 43 },
+					// { date: '2023-12-14', count: 20 },
+					// { date: '2024-01-05', count: 30 },
+					// ]
+				}
 				classForValue={(value) => {
 					if (!value) {
 						return 'color-empty';
