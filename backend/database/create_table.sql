@@ -11,19 +11,6 @@ CREATE TABLE `user` (
 );
 
 
-DROP TABLE IF EXISTS `habit`;
-CREATE TABLE `habit` (
-  `habit_id` int NOT NULL AUTO_INCREMENT,
-  `habit_name` varchar(45) NOT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `decrease_rate` int NOT NULL,
-  `value` int NOT NULL,
-  `email` varchar(255) NOT NULL,
-  PRIMARY KEY (`habit_id`),
-  KEY `email` (`email`),
-  CONSTRAINT `email` FOREIGN KEY (`email`) REFERENCES `user` (`email`)
-);
-
 DROP TABLE IF EXISTS `quest`;
 CREATE TABLE `quest` (
   `quest_id` int NOT NULL AUTO_INCREMENT,
