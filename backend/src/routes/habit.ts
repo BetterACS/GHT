@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { OkPacket } from 'mysql';
 import Database from '../database/database.js';
+import checkAuthorization from '../middleware/checkAuthorization.js';
 import { habitInterface, returnInterface } from '../utils/interfaces.js';
 import Logger from '../utils/logger.js';
 const router = express.Router();
@@ -159,8 +160,8 @@ const deleteHabit = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
-router.get('/habit', queryHabit);
-router.post('/habit', createHabit);
-router.put('/habit', updateHabit);
-router.delete('/habit', deleteHabit);
+router.get('/habit', [checkAuthorization, queryHabit]);
+router.post('/habit', [checkAuthorization, createHabit]);
+router.put('/habit', [checkAuthorization, updateHabit]);
+router.delete('/habit', [checkAuthorization, deleteHabit]);
 export default router;

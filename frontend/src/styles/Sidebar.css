@@ -1,0 +1,7 @@
+.profile-sidebar {
+    width: 48px;
+    height: 48px;
+    overflow: hidden;
+    background-color: white;
+    border-radius: 50%;
+}

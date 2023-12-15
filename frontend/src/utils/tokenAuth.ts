@@ -13,7 +13,7 @@ export default async function tokenAuth(
 	},
 	tokenNullFunction = () => {
 		// หน้า  home redirect ไปหน้า login
-		// navigateFunction('/Log_in');
+		navigateFunction('/Log_in');
 	}
 ) {
 	const headers = {
@@ -27,7 +27,7 @@ export default async function tokenAuth(
 
 	try {
 		switch (result.return) {
-			// If the token is valid, redirect to the home page
+			// If the token is valid do nothing
 			case 0:
 				tokenSuccessFunction();
 				navigateFunction(redirect);

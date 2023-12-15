@@ -1,13 +1,7 @@
 import ModalBase from './ModalBase';
-import { AnimatePresence, motion } from 'framer-motion';
-import clsx from 'clsx';
 import { Dispatch, SetStateAction } from 'react';
-import { UniqueIdentifier } from '@dnd-kit/core';
-import { TagType, DNDType } from '../../utils/types';
-import TagDisplay from '../Tag';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
-import { render } from 'react-dom';
 
 interface AddItemModalProps {
 	showModal: boolean;

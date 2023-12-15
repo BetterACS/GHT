@@ -13,6 +13,7 @@ app.listen(Config.VALIDATE_PORT, () => {
 	console.log(`validator Listening on port ${Config.VALIDATE_PORT}`);
 });
 
-app.post('/validator', validateToken, async (request, response) => {
-	response.send({ status: 'success', message: 'Token valid.', return: 0 });
-});
+// app.post('/validator', validateToken, async (request, response) => {
+// 	response.send({ status: 'success', message: 'Token valid.', return: 0 });
+// });
+app.post('/validator', validateToken);

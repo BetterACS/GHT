@@ -10,15 +10,17 @@ import Scheduler from './utils/scheduler.js';
 //#endregion
 
 //#region Routes imports
+// import home_route from './routes/home.js';
 import contain_table_route from './routes/contain_table.js';
 import filter_route from './routes/filter.js';
 import habit_route from './routes/habit.js';
-import home_route from './routes/home.js';
+import item_route from './routes/item.js';
 import login_route from './routes/login.js';
 import monster_route from './routes/monster.js';
 import quest_route from './routes/quest.js';
 import register_route from './routes/register.js';
 import tag_route from './routes/tag.js';
+import user from './routes/user.js';
 //#endregion
 
 dotenv.config();
@@ -29,11 +31,10 @@ Database.instance();
 const app = express();
 app.use(express.json());
 app.use(cors());
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
-//#region Routes
-app.use(home_route);
+// app.use(home_route);
 app.use(monster_route);
 app.use(tag_route);
 app.use(login_route);
@@ -42,8 +43,8 @@ app.use(quest_route);
 app.use(habit_route);
 app.use(contain_table_route);
 app.use(filter_route);
-//#endregion
-
+app.use(item_route);
+app.use(user);
 const logger = Logger.instance().logger();
 
 // Start the Express.js server and log the listening message

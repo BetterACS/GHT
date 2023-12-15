@@ -36,34 +36,41 @@ export default async function authenticateRequest(req: Request, res: Response, n
 	}
 	// Verify the access token
 	jwt.verify(authorization, ACCESS_TOKEN_SECRET, (jwtError, user) => {
-		if (!jwtError) {
-			next();
-			return;
-		}
-		// Verify the refresh token
-		jwt.verify(
-			refreshToken,
-			REFRESH_TOKEN_SECRET,
-			(error: jwt.VerifyErrors | null, user: string | jwt.JwtPayload | undefined) => {
-				if (error) {
-					// Invalid refresh token, return an error
-					res.json({ status: 'error', message: 'Token invalid.', return: 2 });
-					return;
+		if (jwtError) {
+			jwt.verify(
+				refreshToken,
+				REFRESH_TOKEN_SECRET,
+				(error: jwt.VerifyErrors | null, user: string | jwt.JwtPayload | undefined) => {
+					if (error) {
+						// Invalid refresh token, return an error
+						res.json({ status: 'error', message: 'Token invalid.', return: 2 });
+						return;
+					}
+					// Generate new access and refresh tokens
+					const accessToken = generateAccessToken({ user: userEmail });
+					const refreshToken = generateRefreshToken({ user: userEmail });
+					// Respond with success and the new tokens
+					// ตรงนี้อาจจะมีแก้เพิ่ม
+					res.json({
+						status: 'success',
+						message: 'Generated new tokens.',
+						return: -1,
+						data: {
+							accessToken: accessToken,
+							refreshToken: refreshToken,
+						},
+					});
+					// next();
 				}
-				// Generate new access and refresh tokens
-				const accessToken = generateAccessToken({ user: userEmail });
-				const refreshToken = generateRefreshToken({ user: userEmail });
-				// Respond with success and the new tokens
-				res.json({
-					status: 'success',
-					message: 'Generated new tokens.',
-					return: -1,
-					data: {
-						accessToken: accessToken,
-						refreshToken: refreshToken,
-					},
-				});
-			}
-		);
+			);
+		} else {
+			// Access token is valid, continue on to the next middleware function
+			// next();
+			res.json({
+				status: 'success',
+				message: 'Token valid.',
+				return: 0,
+			});
+		}
 	});
 }
