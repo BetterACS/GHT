@@ -1,116 +1,159 @@
-import React, { useState , useEffect } from 'react';
-import { FaHome, FaRegUserCircle } from 'react-icons/fa';
-import { LuSwords } from 'react-icons/lu';
-import Activity from './Activity';
+import React, { useEffect, useState } from 'react';
+import clsx from 'clsx';
+import { TagType } from '../utils/types';
+import { IconButton, Button } from '@material-tailwind/react';
+import { HiArrowCircleLeft, HiArrowCircleRight } from 'react-icons/hi';
+import { MdAdd, MdScience } from 'react-icons/md';
+// import { Button } from '@material-tailwind/react';
+import { FaGamepad, FaSpaghettiMonsterFlying } from 'react-icons/fa6';
 
-const SideBar = () => {
-	const [isMenuOpen, setIsMenuOpen] = useState(false);
+import '../styles/Sidebar.css';
+import { List, ListItem, ListItemSuffix, Chip, Card } from '@material-tailwind/react';
+import axios from 'axios';
+import { HeadersType } from '../utils/types';
+import { returnInterface } from '../../../backend/src/utils/interfaces';
+import Config from '../../../backend/src/config';
 
-	const toggleMenu = () => {
-		setIsMenuOpen(!isMenuOpen);
-	};
-
+interface BarProps {
+	tags: TagType[];
+	username: string;
+	handleButtonClick: (tag_id: string) => void;
+	header:HeadersType
+	handleButtonClickResetFilter: () => void;
+	showWorkingTags:boolean;
+}
+//util funciton
+const countTag = async (tag_id:string,headers:HeadersType) => {
+	try {
+		const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/tag/count`, {
+			params: {
+				tag_id: tag_id,
+			},
+			headers: headers,
+		});
+		const result = results.data as returnInterface;
+		const total = result.data.total.toString();
+		return total as string;
+	} catch (error) {
+		console.error('Error to query user', error);
+	}
+}
+export function ListWithBadge({ tags, handleButtonClick, header}: BarProps) {
+	console.log('ListWithBadge rendered');
+  
+	const [tagCounts, setTagCounts] = useState<{ [key: string]: string | undefined }>({});
+  
+	useEffect(() => {
+	  const fetchTagCounts = async () => {
+		const counts = await Promise.all(
+		  tags.map(async (tag) => {
+			const count = await countTag(tag.id.toString().replace('tag-', ''), header);
+			return { [tag.id.toString()]: count };
+		  })
+		);
+  
+		// Merge counts into a single object
+		const mergedCounts = counts.reduce((acc, count) => ({ ...acc, ...count }), {});
+		setTagCounts(mergedCounts);
+	  };
+  
+	  fetchTagCounts();
+	}, [tags, header]);
+  
 	return (
-		<>
-			<nav className="fixed w-full top-0 left-0 bg-gray-800 mx-auto flex items-center justify-between p-4 z-10">
-				{/* Hamburger Icon (left side) */}
-				<div className="flex items-center">
-					<div className="hamburger">
-						<button
-							onClick={toggleMenu}
-							className={`bg-transparent text-white border-none focus:outline-none transition-all duration-300 ${
-								isMenuOpen ? 'rotate-180' : ''
-							}`}
-						>
-							{isMenuOpen ? (
-								// X Icon
-								<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth="2"
-										d="M6 18L18 6M6 6l12 12"
-									></path>
-								</svg>
-							) : (
-								// Hamburger Icon
-								<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth="2"
-										d="M4 6h16M4 12h16M4 18h16"
-									></path>
-								</svg>
-							)}
-						</button>
-					</div>
+	  <Card className="w-full">
+		<List>
+		  {tags.map((tag: TagType) => (
+			<ListItem key={tag.id} onClick={() => handleButtonClick(tag.id.toString())}>
+			  {tag.name}
+			  <ListItemSuffix>
+				<Chip
+				  value={tagCounts[tag.id.toString()]}
+				  variant="ghost"
+				  size="sm"
+				  className="rounded-full"
+				/>
+			  </ListItemSuffix>
+			</ListItem>
+		  ))}
+		</List>
+	  </Card>
+	);
+  }
 
-					{/* Home */}
-					<div className="px-6">
-						<a href="/" className="text-white hover:text-gray-400">
-							<FaHome size={25} />
-						</a>
+const SideBar = ({ tags,username ,handleButtonClick,header,handleButtonClickResetFilter,showWorkingTags}: BarProps) => {
+	const [isOpen, setOpen] = React.useState(false);
+	return (
+		<div className="flex flex-row">
+			{/* Sidebar */}
+			<div
+				className={clsx('bg-gray-100 h-screen overflow-y-auto transition-all duration-200', {
+					'w-96': isOpen, // Width when open
+					'w-0': !isOpen, // Width when closed
+				})}
+			>
+				<div className="w-full h-auto p-4 flex flex-row">
+					<div className="basis-10/12 flex flex-row">
+						{/* ใช้เป็น username */}
+						<div className="text-headlines self-center px-4 font-bold text-xl">{username}</div>
 					</div>
+					<IconButton className="bg-red-400 rounded-full" onClick={() => setOpen(!isOpen)}>
+						<HiArrowCircleLeft size={24} />
+					</IconButton>
+				</div>
+				{/* Sidebar content goes here */}
+				<div className="w-96">
+					<ul className="px-8 flex flex-col gap-4">
+						<Button variant="outlined" className="flex items-center gap-3 text-lg">
+							<FaGamepad size={25} />
+							Quest
+						</Button>
+						<Button variant="outlined" className="flex items-center gap-3 text-lg">
+							<FaSpaghettiMonsterFlying size={25} />
+							Monster
+						</Button>
+						<Button variant="outlined" className="flex items-center gap-3 text-lg">
+							<MdScience size={25} />
+							Analytics
+						</Button>
+					</ul>
+					<hr className="mt-5 mb-2" />
+					{/*  working tags zone*/}
 
-					{/* Sword */}
-					<div className="px-6">
-						<a href="/monster" className="text-white hover:text-gray-400">
-							<LuSwords size={25} />
-						</a>
+					{showWorkingTags && (
+						<div>
+							<b className="px-8 text-lg">Working tags</b>
+							
+							<IconButton className="bg-red-400 rounded-full w-8 h-8" onClick={handleButtonClickResetFilter}>
+							<MdAdd color="white" size={24} />
+							</IconButton>
+							
+							<div className="px-8 pt-2">
+							<ListWithBadge tags={tags} username={username} handleButtonClick={handleButtonClick} header={header} handleButtonClickResetFilter={handleButtonClickResetFilter} showWorkingTags={showWorkingTags}/>
+							</div>
+						</div>
+						)}
+					{/* working tags zone end */}
+				</div>
+			</div>
+
+			{/* Main content */}
+			<div className="flex-grow">
+				{/* Replace this with your main content */}
+				<div className="w-12 p-4 justify-start">
+					<div className={clsx({ 'opacity-0': isOpen, 'opacity-100': !isOpen })}>
+						<IconButton className="bg-red-400 rounded-full" onClick={() => setOpen(!isOpen)}>
+							<HiArrowCircleRight size={24} />
+						</IconButton>
 					</div>
 				</div>
-
-				{/* User Authentication or Profile Section */}
-				<div className="px-6">
-					<a href="#" className="text-white hover:text-gray-400">
-						<FaRegUserCircle size={30} />
-					</a>
-				</div>
-			</nav>
-
-            {isMenuOpen && (
-                <DelayedAnimationComponent />
-            )}
-        </>
-    );
+			</div>
+		</div>
+	);
 };
 
-const DelayedAnimationComponent = () => {
-    const [showComponent, setShowComponent] = useState(false);
-
-    useEffect(() => {
-        // Delay the animation by 500 milliseconds
-        const timer = setTimeout(() => {
-            setShowComponent(true);
-        }, 0);
-
-        // Clear the timeout when the component unmounts or when isMenuOpen changes
-        return () => clearTimeout(timer);
-    }, []);
-  
-    return (
-      <div className={` min-h-screen top-0 left-0 h-full w-1/6 bg-gray-800 text-black menu-animation ${showComponent ? 'slide-in transition-all duration-300' : 'slide-out'}`}>
-        <img src='https://assets.pokemon.com/assets/cms2/img/pokedex/full/658_f2.png' className='mt-16' alt='Pokemon'></img>
-        <div className="w-1/2 sm:w-1/8 lg:w-1/2 mx-auto border-t-2 border-white my-2 sm:mb-3 lg:mb-2"></div>
-        <ul className="p-4">
-          <button className="my-5 p-2 block text-center text-white w-full bg-transparent border-2 border-white focus:outline-none hover:bg-white hover:text-black hover:border-cyan-300 transition-all duration-300">
-            Quest
-          </button>
-          <button className="my-5 p-2 block text-center text-white w-full bg-transparent border-2 border-white focus:outline-none hover:bg-white hover:text-black hover:border-cyan-300 transition-all duration-300">
-            Tasks
-          </button>
-          <button className="my-5 p-2 block text-center text-white w-full bg-transparent border-2 border-white focus:outline-none hover:bg-white hover:text-black hover:border-cyan-300 transition-all duration-300">
-            Achievement
-          </button>
-
-          <div className='m-8'>
-            <Activity />
-          </div>
-          {/* Add more buttons as needed */}
-        </ul>
-      </div>
-    );
-  };
-
 export default SideBar;
+function updateAccessToken(newToken: string, newRefresh: string): Promise<void> {
+	throw new Error('Function not implemented.');
+}
+

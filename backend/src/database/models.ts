@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { monsterInterface, userStoragesInterface } from '../utils/interfaces.js';
+import { itemInterface, monsterInterface, userStoragesInterface } from '../utils/interfaces.js';
 const Schema = mongoose.Schema;
 
 // Create a schema for the Monster table.
@@ -26,4 +26,15 @@ const userStoragesSchema = new Schema<userStoragesInterface>({
 
 const userStoragesModel = mongoose.model<userStoragesInterface>('user_storages', userStoragesSchema);
 
-export { monsterModel, userStoragesModel };
+const itemSchema = new Schema({
+	item_id: Number,
+	item_name: String,
+	description: String,
+	item_type: String,
+	rarity: Number,
+	image_url: String,
+});
+
+const itemModel = mongoose.model<itemInterface>('item', itemSchema);
+
+export { itemModel, monsterModel, userStoragesModel };

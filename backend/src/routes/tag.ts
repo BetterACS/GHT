@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { OkPacket } from 'mysql';
 import Database from '../database/database.js';
+import checkAuthorization from '../middleware/checkAuthorization.js';
 import { returnInterface, tagInterface } from '../utils/interfaces.js';
 import Logger from '../utils/logger.js';
 
@@ -64,6 +65,42 @@ const queryTag = async (req: Request, res: Response): Promise<void> => {
 			return;
 		}
 		returnJson = { status: 'success', message: 'tag found', return: 0, data: tag };
+	} catch (error) {
+		returnJson = {
+			status: 'error',
+			message: "Error searching for the tag. perhap email doesn't not exist",
+			return: 2,
+			data: { error: error },
+		};
+	} finally {
+		if (connection) {
+			connection.release();
+		}
+		res.json(returnJson);
+	}
+};
+
+const countTag = async (req: Request, res: Response): Promise<void> => {
+	interface CountResult {
+		'count(*)': number;
+	}
+	const { tag_id } = req.query;
+	const logger = Logger.instance().logger();
+	let connection;
+	try {
+		const database = Database.instance().mySQL();
+		connection = await database.promise().getConnection();
+		const sqlSearch = 'SELECT count(*) FROM contain WHERE tag_id = ?';
+		const [rows] = await connection.query(sqlSearch, [tag_id]);
+		const count = rows as CountResult[];
+		if (count.length === 0) {
+			logger.error('--------This tag name nos exist---------');
+			returnJson = { status: 'error', message: 'This tag name nos exist.', return: 3, data: {} };
+			return;
+		}
+		const total = count[0]['count(*)'];
+
+		returnJson = { status: 'success', message: 'count found', return: 0, data: { total } };
 	} catch (error) {
 		returnJson = {
 			status: 'error',
@@ -147,10 +184,43 @@ const deleteTag = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
+const getAllTag = async (req: Request, res: Response): Promise<void> => {
+	const { email } = req.query;
+	const logger = Logger.instance().logger();
+	let connection;
+	try {
+		const database = Database.instance().mySQL();
+		connection = await database.promise().getConnection();
+		const sqlSearch = 'SELECT * FROM tag WHERE email = ?';
+		const [rows] = await connection.query(sqlSearch, [email]);
+		let tags = rows as tagInterface[];
+		if (tags.length === 0) {
+			logger.error('--------This email not or not have any tags yet exist---------');
+			returnJson = { status: 'error', message: 'There are no tags found', return: 3, data: {} };
+			return;
+		}
+		returnJson = { status: 'success', message: 'tag found', return: 0, data: tags };
+	} catch (error) {
+		returnJson = {
+			status: 'error',
+			message: "Error searching for the tag. perhap email doesn't not exist",
+			return: 2,
+			data: { error: error },
+		};
+	} finally {
+		if (connection) {
+			connection.release();
+		}
+		res.json(returnJson);
+	}
+};
+
 const router = express.Router();
 
-router.post('/tag', createTag);
-router.get('/tag', queryTag);
-router.put('/tag', updateTag);
-router.delete('/tag', deleteTag);
+router.post('/tag', [checkAuthorization, createTag]);
+router.get('/tag', [checkAuthorization, queryTag]);
+router.put('/tag', [checkAuthorization, updateTag]);
+router.delete('/tag', [checkAuthorization, deleteTag]);
+router.get('/tag/all', [checkAuthorization, getAllTag]);
+router.get('/tag/count', [checkAuthorization, countTag]);
 export default router;

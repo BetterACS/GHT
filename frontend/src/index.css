@@ -1,9 +1,17 @@
+/* @import url("https://fonts.googleapis.com/css?family=Roboto|Prompt");
+ */
+ @import url("https://fonts.googleapis.com/css?family=Overpass");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    font-family: "Overpass", system-ui, sans-serif;
+  }
+}
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* font-family: "Roboto", "Prompt", Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; */
   line-height: 1.5;
   font-weight: 400;
 
