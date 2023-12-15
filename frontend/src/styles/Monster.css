@@ -1,0 +1,51 @@
+.monster-image {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.pixel-img {
+  image-rendering: pixelated;
+  z-index: 2;
+  /* image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges; */
+}
+
+.grid-container {
+  display: grid;
+  grid-template-rows: 60% 40%;
+  height: 100vh;
+}
+
+.swiper-container {
+  width: 100%;
+}
+
+.swiper-wrapper {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  left: 0;
+}
+
+
+@keyframes shake {
+  10%, 90% {
+    transform: translate3d(-1px, 1px, 0);
+  }
+  
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(-4px, -2px, 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(4px, 2px, 0);
+  }
+}
+.shake-animation {
+  animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+}

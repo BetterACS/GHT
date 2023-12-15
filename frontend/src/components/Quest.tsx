@@ -18,9 +18,12 @@ type QuestType = {
 	image_url: string;
 	onEditItem: () => void;
 	onDeleteItem: () => void;
+	due_date: string;
+	item_name: string;
+	item_description:string;
 };
 
-const Quest = ({ id, title, description, tags, image_url, onEditItem, onDeleteItem }: QuestType) => {
+const Quest = ({ id, title, description, tags, image_url, onEditItem, onDeleteItem ,due_date,item_name,item_description}: QuestType) => {
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
 		id: id,
 		data: {
@@ -86,7 +89,8 @@ const Quest = ({ id, title, description, tags, image_url, onEditItem, onDeleteIt
 					<div className="flex flex-row pt-1">
 						<div className="ml-auto pt-1 flex flex-row">
 							<BsCalendar2Date size="24" />
-							<span className="text-sm pt-1 px-2"> {'28 Dec'} </span>
+							{/*need to edit  */}
+							<span className="text-sm pt-1 px-2"> {due_date} </span>
 						</div>
 						<Tooltip
 							content={
@@ -94,18 +98,18 @@ const Quest = ({ id, title, description, tags, image_url, onEditItem, onDeleteIt
 									<img
 										className="h-16 rounded-lg"
 										referrerPolicy="no-referrer" 
-										src={'https://i.imgur.com/ffuVcXN.png'}
+										// need to edit
+										src={image_url}
 										alt="item"
 									/>
 									<div className="pl-2">
 										<Typography color="white" className="font-medium">
-											Kraken's Delight
+											{/* need to edit */}
+											{item_name}
 										</Typography>
 										<Typography variant="small" color="white" className="font-normal opacity-80">
-											In the coastal towns of the world of Thalassar, there exists a delicacy that
-											is as much a testament to courage as it is to culinary skill - the 'Kraken's
-											Delight'. This dish, a whole octopus served on a simple earthenware plate,
-											represents a tale of bravery and the sea's bounty.
+											{/*  need to edit*/}
+											{item_description}
 										</Typography>
 									</div>
 								</div>
@@ -115,7 +119,8 @@ const Quest = ({ id, title, description, tags, image_url, onEditItem, onDeleteIt
 								unmount: { scale: 0, y: 25 },
 							}}
 						>
-							<img className="h-8 rounded-full" referrerPolicy="no-referrer" src={'https://i.imgur.com/ffuVcXN.png'} alt="item" />
+							{/* need to edit */}
+							<img className="h-8 rounded-full" referrerPolicy="no-referrer" src={image_url} alt="item" />
 						</Tooltip>
 					</div>
 				</div>

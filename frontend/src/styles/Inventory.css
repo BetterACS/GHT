@@ -1,0 +1,41 @@
+.undrag-img {
+    pointer-events: none;
+}
+
+.card-container {
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+}
+
+.card-container:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: scale(1.05);
+}
+
+.selected {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: scale(1.05);
+}
+
+.card-content {
+    text-align: center;
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.selected .card-image {
+    transform: scale(1.1);
+}
+
+.img-pixelated {
+    image-rendering: pixelated;
+}

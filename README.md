@@ -4,6 +4,8 @@ Are you tired of the same old to-do lists? Do you want to gamify your life? Then
 
 ## Installation
 
+Note: This project requires both MongoDB and MySQL to be installed on your machine or you can use a cloud database service.
+
 1. Clone the repository and install the dependencies.
 
 ```bash
@@ -30,8 +32,8 @@ MYSQL_USER = "root"
 MYSQL_PASSWORD = "password"
 MYSQL_PORT = "3300"
 MYSQL_DATABASE = "ght"
-ACCESS_TOKEN = "aCcEsS"
-REFRESH_TOKEN = "rEfReSh"
+ACCESS_TOKEN = "aCcE$s#S"
+REFRESH_TOKEN = "r#E$fReSh"
 ```
 
 3. Install dependencies, run the following commands:
@@ -44,27 +46,101 @@ npm run install
 or you can install all dependencies separately.
 
 ## Usage
+
 To start the web application, you need to run these commands:
 
 Start all the servers at once
+
 ```node
 npm run all
 ```
 
 or you can start each server separately.
 
-- Start the validation server
+-   Start the backend | frontend | validate server
+
 ```node
-npm run validate
+npm run <server>
 ```
 
-- Start the backend server
-```node
-npm run backend
-```
+## Gameplay
 
-- Start the frontend server
-```node
-npm run frontend
-```
+You role-played as a young tamer who wants to become the best tamer in the world. You will be given a monster to tame. You can tame your monster by give it item (food).
 
+Each time you complete a task, you will get a random item. You can view your items in the inventory.
+
+### Default Items
+
+Note: These are the default items. Made by Stable diffusion model.
+
+![item](assets/items/image_0.png)
+![item](assets/items/image_1.png)
+![item](assets/items/image_2.png)
+![item](assets/items/image_3.png)
+![item](assets/items/image_4.png)
+![item](assets/items/image_5.png)
+![item](assets/items/image_6.png)
+![item](assets/items/image_7.png)
+![item](assets/items/image_8.png)
+![item](assets/items/image_9.png)
+![item](assets/items/image_10.png)
+![item](assets/items/image_11.png)
+![item](assets/items/image_12.png)
+![item](assets/items/image_13.png)
+![item](assets/items/image_14.png)
+![item](assets/items/image_15.png)
+![item](assets/items/image_16.png)
+![item](assets/items/image_17.png)
+![item](assets/items/image_18.png)
+![item](assets/items/image_19.png)
+![item](assets/items/image_20.png)
+![item](assets/items/image_21.png)
+![item](assets/items/image_22.png)
+![item](assets/items/image_23.png)
+![item](assets/items/image_24.png)
+![item](assets/items/image_25.png)
+
+Each monster has a different food preference. You need to give the monster the right food to tame it (Better chance).
+
+### Default Monsters
+
+Note: These are the default monsters. Made by Stable diffusion model.
+
+![monster](assets/monsters/monster__1.png)
+![monster](assets/monsters/monster__2.png)
+![monster](assets/monsters/monster__3.png)
+![monster](assets/monsters/monster__4.png)
+![monster](assets/monsters/monster__5.png)
+![monster](assets/monsters/monster__6.png)
+![monster](assets/monsters/monster__7.png)
+![monster](assets/monsters/monster__8.png)
+![monster](assets/monsters/monster__9.png)
+![monster](assets/monsters/monster__10.png)
+![monster](assets/monsters/monster__11.png)
+![monster](assets/monsters/monster__12.png)
+![monster](assets/monsters/monster__13.png)
+![monster](assets/monsters/monster__14.png)
+![monster](assets/monsters/monster__15.png)
+![monster](assets/monsters/monster__16.png)
+![monster](assets/monsters/monster__17.png)
+![monster](assets/monsters/monster__18.png)
+![monster](assets/monsters/monster__19.png)
+![monster](assets/monsters/monster__20.png)
+![monster](assets/monsters/monster__21.png)
+![monster](assets/monsters/monster__22.png)
+![monster](assets/monsters/monster__23.png)
+![monster](assets/monsters/monster__24.png)
+![monster](assets/monsters/monster__25.png)
+![monster](assets/monsters/monster__26.png)
+![monster](assets/monsters/monster__27.png)
+![monster](assets/monsters/monster__28.png)
+![monster](assets/monsters/monster__29.png)
+![monster](assets/monsters/monster__30.png)
+![monster](assets/monsters/monster__31.png)
+![monster](assets/monsters/monster__32.png)
+![monster](assets/monsters/monster__33.png)
+![monster](assets/monsters/monster__34.png)
+![monster](assets/monsters/monster__35.png)
+![monster](assets/monsters/monster__36.png)
+![monster](assets/monsters/monster__37.png)
+![monster](assets/monsters/monster__38.png)
