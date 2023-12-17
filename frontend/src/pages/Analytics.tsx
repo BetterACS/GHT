@@ -55,14 +55,19 @@ const Analytics = () => {
 
 			const result = results.data as returnInterface;
 			let temp: any = [];
-
+			const counter_dict:any = {};
 			result.data.map(async (item: any) => {
 				const id = 'item-' + item.quest_id;
 				if (item.status === 'Done') {
-					temp.push({ date: item.last_update_date, count: 1 });
+					// temp.push({ date: item.last_update_date, count: 1 });
+					counter_dict[item.last_update_date] = (counter_dict[item.last_update_date] || 0) + 1;
 				}
 			});
-
+			// หลักการทำงานคือเอายัดเข้า dict แล้ว loop dict แล้วยัดเข้า temp ซึ่งมันจะเขียนทับตัวเดิม
+			Object.entries(counter_dict).forEach(([key, value]) => {
+				temp.push({ date: key, count: value });
+			  });
+			
 			setValues(temp);
 		} catch (error) {}
 	};
@@ -117,13 +122,13 @@ const Analytics = () => {
 							if (!value) {
 								return 'color-empty';
 							}
-							if (value.count > 0 && value.count <= 20) {
+							if (value.count > 0 && value.count <= 3) {
 								return `color-1`;
-							} else if (value.count > 20 && value.count <= 40) {
+							} else if (value.count > 3 && value.count <= 5) {
 								return `color-2`;
-							} else if (value.count > 40 && value.count <= 60) {
+							} else if (value.count > 5 && value.count <= 7) {
 								return `color-3`;
-							} else if (value.count > 60 && value.count <= 80) {
+							} else {
 								return `color-4`;
 							}
 						}}

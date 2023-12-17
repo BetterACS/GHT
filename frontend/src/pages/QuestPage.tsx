@@ -935,7 +935,6 @@ export default function QuestPage() {
 				<div className="w-full flex flex-col items-center">
 					<header className="flex flex-col gap-1 mt-8 mb-4 text-2l font-bold tracking-[.25em]">
 						<h1>Quest</h1>
-						<Progress placeholder={'progress'} value={52} color="red" />
 					</header>
 					<div className="w-8/12 px-2/4">
 						<div className="grid grid-cols-1 gap-6">
