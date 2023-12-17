@@ -52,7 +52,6 @@ export default function QuestPage() {
 	const [containers, setContainers] = useState<DNDType[]>(initialContainers);
 
 	//temp
-
 	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 	const [currentContainerId, setCurrentContainerId] = useState<UniqueIdentifier>();
 	const [currentItemId, setCurrentItemId] = useState<UniqueIdentifier>();
@@ -101,7 +100,7 @@ export default function QuestPage() {
 	}, []);
 
 	useEffect(() => {
-		tokenAuth(navigate, '/quest');
+		tokenAuth(navigate,'/quest',"/log_in");
 		const fetchDataAndTags = async () => {
 			headers = {
 				authorization: `Bearer ${accessToken}`,

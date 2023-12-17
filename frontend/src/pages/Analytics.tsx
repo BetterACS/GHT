@@ -7,6 +7,8 @@ import { SetStateAction, useEffect, useState } from 'react';
 import { returnInterface } from '../../../backend/src/utils/interfaces';
 import authorization from '../utils/authorization';
 import Config from '../../../backend/src/config';
+import tokenAuth from '../utils/tokenAuth';
+import { useNavigate } from 'react-router-dom';
 
 const SimpleQuestContainer = ({ name }: any) => {
 	return (
@@ -24,6 +26,7 @@ const SimpleQuestContainer = ({ name }: any) => {
 };
 
 const Analytics = () => {
+	const navigate = useNavigate();
 	const email = localStorage.getItem('email') || '';
 	const [values, setValues] = useState([{}]);
 	const [username, setUsername] = useState('');
@@ -36,6 +39,7 @@ const Analytics = () => {
 	};
 
 	useEffect(() => {
+		tokenAuth(navigate,'/analysis', '/log_in');
 		fetchValues();
 		console.log(values);
 	}, []);

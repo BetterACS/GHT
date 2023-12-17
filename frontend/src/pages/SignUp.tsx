@@ -18,7 +18,7 @@ const SignUp = () => {
 		if (loaded) {
 			return;
 		}
-		tokenAuth(navigate, '/quest');
+		tokenAuth(navigate,'/quest',"/sign_up");
 		setLoaded(true);
 	});
 

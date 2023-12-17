@@ -143,7 +143,7 @@ const Monster = () => {
 	const [shake, setShake] = useState(false);
 
 	useEffect(() => {
-		tokenAuth(navigate, '/monster');
+		tokenAuth(navigate,'/monster','/log_in');
 		const headers = {
 			authorization: `Bearer ${localStorage.getItem('access_token')}`,
 			refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
