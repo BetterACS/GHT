@@ -10,26 +10,12 @@ CREATE TABLE `user` (
   PRIMARY KEY (`email`)
 );
 
-
-DROP TABLE IF EXISTS `habit`;
-CREATE TABLE `habit` (
-  `habit_id` int NOT NULL AUTO_INCREMENT,
-  `habit_name` varchar(45) NOT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `decrease_rate` int NOT NULL,
-  `value` int NOT NULL,
-  `email` varchar(255) NOT NULL,
-  PRIMARY KEY (`habit_id`),
-  KEY `email` (`email`),
-  CONSTRAINT `email` FOREIGN KEY (`email`) REFERENCES `user` (`email`)
-);
-
 DROP TABLE IF EXISTS `quest`;
 CREATE TABLE `quest` (
   `quest_id` int NOT NULL AUTO_INCREMENT,
   `quest_name` varchar(45) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `start_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_update_date` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   `due_date` datetime NOT NULL,
   `status` varchar(45) NOT NULL,
   `item_id` int NOT NULL,

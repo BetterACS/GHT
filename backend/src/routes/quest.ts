@@ -114,7 +114,6 @@ const deleteQuest = async (req: Request, res: Response): Promise<void> => {
 };
 
 const updateQuest = async (req: Request, res: Response): Promise<void> => {
-	//quest_id ยังไม่รู้จะเก็บให้อยู่บน frontend ยังไง ส่วน quest_name, description, due_date, item_id, email อาจจะใช้ทับจาก <form> ได้เลย (defailt value ของ input ใน <form> ก็คือค่าเดิมที่ queryQuest.js ได้มา)
 	const { quest_id, quest_name, description, due_date, item_id, email, status } = req.body;
 	const logger = Logger.instance().logger();
 	let connection;
@@ -130,7 +129,7 @@ const updateQuest = async (req: Request, res: Response): Promise<void> => {
 			return;
 		}
 		const sqlUpdate =
-			'UPDATE quest SET quest_name=?, description=?, due_date=?, item_id=?, email=?,status=? WHERE quest_id=?';
+			'UPDATE quest SET quest_name=?, description=?, due_date=?, item_id=?, email=?,status=?,last_update_date = CURRENT_TIMESTAMP WHERE quest_id=?';
 		const [updateResult] = await connection.query(sqlUpdate, [
 			quest_name,
 			description,

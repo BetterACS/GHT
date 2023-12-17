@@ -20,7 +20,7 @@ const filterByDueDateASC = async (req: Request, res: Response): Promise<void> =>
 		const database = Database.instance().mySQL();
 		connection = await database.promise().getConnection();
 		const sqlSearch =
-			"SELECT quest_id, quest_name, description, start_date, DATE_FORMAT(due_date, '%Y-%m-%d') as due_date, status, item_id, email FROM quest WHERE email = ? order by due_date ASC";
+			'SELECT quest_id, quest_name, description, DATE_FORMAT(last_update_date,"%Y-%m-%d") as last_update_date, DATE_FORMAT(due_date,"%Y-%m-%d") as due_date, status, item_id, email FROM quest WHERE email = ? order by due_date ASC';
 		const [rows] = await connection.query(sqlSearch, [email]);
 		let quest = rows as questInterface[];
 		if (quest.length === 0) {
@@ -55,7 +55,7 @@ const filterByTag = async (req: Request, res: Response): Promise<void> => {
 		const database = Database.instance().mySQL();
 		connection = await database.promise().getConnection();
 		const sqlSearch = `
-            SELECT distinct quest.quest_id, quest.quest_name, quest.description, quest.start_date, quest.due_date, quest.status, quest.item_id, quest.email 
+            SELECT distinct quest.quest_id, quest.quest_name, quest.description,DATE_FORMAT(quest.last_update_date,"%Y-%m-%d") as last_update_date, DATE_FORMAT(quest.due_date,"%Y-%m-%d") as due_date, quest.status, quest.item_id, quest.email 
             FROM contain 
             LEFT JOIN tag ON tag.tag_id = contain.tag_id
             LEFT JOIN quest ON quest.quest_id = contain.quest_id

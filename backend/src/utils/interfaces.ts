@@ -23,7 +23,7 @@ interface questInterface {
 	quest_id: number;
 	quest_name: string;
 	description: string;
-	start_date: Date;
+	last_update_date: Date;
 	due_date: Date;
 	status: string;
 	item_id: number;

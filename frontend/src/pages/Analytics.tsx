@@ -55,7 +55,7 @@ const Analytics = () => {
 			result.data.map(async (item: any) => {
 				const id = 'item-' + item.quest_id;
 				if (item.status === 'Done') {
-					temp.push({ date: item.due_date, count: 1 });
+					temp.push({ date: item.last_update_date, count: 1 });
 				}
 			});
 
