@@ -26,12 +26,12 @@ interface BarProps {
 	currentPage?: string;
 }
 import { Checkbox, ListItemPrefix, Typography } from '@material-tailwind/react';
+import { set } from 'date-fns';
 
 export function ListWithBadge({ tags, handleButtonClick, handleButtonClickResetFilter, header }: BarProps) {
 	const [tagCounts, setTagCounts] = useState<{ [key: string]: string | undefined }>({});
 	// State to store selected checkbox IDs
 	const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
 	// Handle checkbox change
 	const handleCheckboxChange = (tagId: string) => {
 		const values = selectedTags.includes(tagId)

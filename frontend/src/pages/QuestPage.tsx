@@ -50,11 +50,9 @@ export default function QuestPage() {
 		},
 	];
 	const [containers, setContainers] = useState<DNDType[]>(initialContainers);
-	const resetContainers = () => {
-		setContainers(initialContainers);
-	};
+
 	//temp
-	let [conter, setConter] = useState(0);
+
 	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 	const [currentContainerId, setCurrentContainerId] = useState<UniqueIdentifier>();
 	const [currentItemId, setCurrentItemId] = useState<UniqueIdentifier>();
@@ -110,9 +108,7 @@ export default function QuestPage() {
 				refreshToken: `Bearer ${refreshToken}`,
 				email: `${localStorage.getItem('email')}`,
 			};
-			('ทำ use Effect');
 			if (filter.length > 0) {
-				console.log('fetch filter', filter);
 				await filterByTag();
 			} else {
 				await fetchData();
@@ -124,8 +120,6 @@ export default function QuestPage() {
 	}, [accessToken, filter]); // Include 'email' in the dependency array if it's used inside the useEffect
 
 	const fetchData = async () => {
-		resetContainers();
-		setConter(conter + 1);
 		//get all quest from this email
 		try {
 			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/filter/date`, {
@@ -140,7 +134,8 @@ export default function QuestPage() {
 			authorization(
 				result,
 				async () => {
-					const promises = result.data.map(async (item: any) => {
+					await Promise.all(
+						result.data.map(async (item: any) => {
 						const id = 'item-' + item.quest_id;
 						const currentContainer =
 							item.status === 'Task'
@@ -148,8 +143,8 @@ export default function QuestPage() {
 								: item.status === 'In Progress'
 								? 'container-2'
 								: 'container-3';
-
-						for (const container of containers) {
+						let newContainer = initialContainers;
+						for (const container of newContainer) {
 							if (container.id === currentContainer) {
 								const tagOfContainer: TagType[] = [];
 
@@ -196,15 +191,15 @@ export default function QuestPage() {
 										);
 
 										// Update the state to trigger re-render
-										setContainers([...containers]);
+										setContainers([...newContainer]);
 									},
 									updateAccessToken
 								);
 							}
 						}
-					});
+					}));
 
-					await Promise.all(promises);
+					
 				},
 				updateAccessToken
 			);
@@ -309,7 +304,6 @@ export default function QuestPage() {
 		}
 	};
 	const filterByTag = async () => {
-		resetContainers();
 		const filters = filter.map((tag) => tag.toString().replace('tag-', ''));
 		try {
 			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/filter/tag`, {
@@ -324,7 +318,7 @@ export default function QuestPage() {
 			authorization(
 				result,
 				async () => {
-					const promises = result.data.map(async (item: any) => {
+					await Promise.all(result.data.map(async (item: any) => {
 						const id = 'item-' + item.quest_id;
 						const currentContainer =
 							item.status === 'Task'
@@ -378,8 +372,6 @@ export default function QuestPage() {
 												item_id: foodItem.item_id,
 											}))
 										);
-
-										container;
 										//ถ้ามีบัคค่อยมาดูตรงนี้
 									},
 									updateAccessToken
@@ -387,9 +379,8 @@ export default function QuestPage() {
 							}
 						}
 						setContainers([...newContainer]);
-					});
-
-					await Promise.all(promises);
+					}));
+					
 				},
 				updateAccessToken
 			);
@@ -618,7 +609,6 @@ export default function QuestPage() {
 		}
 	};
 	const resetTag = async () => {
-		resetContainers();
 		setFilter([]);
 	};
 	async function onAddTag(tagName: string) {
