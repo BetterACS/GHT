@@ -12,7 +12,9 @@ Note: This project requires both MongoDB and MySQL to be installed on your machi
 git clone https://github.com/BetterACS/GHT.git
 ```
 
-2. You need to create file called `.env` inside the `backend` folder. This file should contain the following:
+2. Setup your mysql database. using files in `backend/database` folder. and setup your mongodb database. using files in `backend/src/database/models.ts` folder.
+
+3. You need to create file called `.env` inside the `backend` folder. This file should contain the following:
 
 -   `MONGODB_URI`: The URI of the MongoDB database.
 -   `MYSQL_HOST`: The host of the MySQL database.
@@ -36,10 +38,12 @@ ACCESS_TOKEN = "aCcE$s#S"
 REFRESH_TOKEN = "r#E$fReSh"
 ```
 
-3. Install dependencies, run the following commands:
+4. Install dependencies, run the following commands:
 
 ```node
-cd GHT
+cd GHT/backend
+npm run install
+cd ../frontend
 npm run install
 ```
 
@@ -52,7 +56,8 @@ To start the web application, you need to run these commands:
 Start all the servers at once
 
 ```node
-npm run all
+cd GHT
+npm run all-dev
 ```
 
 or you can start each server separately.

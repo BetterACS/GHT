@@ -29,7 +29,6 @@ import tokenAuth from '../utils/tokenAuth';
 import axios from 'axios';
 import { returnInterface } from '../../../backend/src/utils/interfaces';
 import Config from '../../../backend/src/config';
-import { format } from 'date-fns';
 
 export default function QuestPage() {
 	const navigate = useNavigate();
@@ -832,45 +831,77 @@ export default function QuestPage() {
 							// gainItem(email, newItem);
 						}
 					});
+					const currentTimestamp = Date.now();
+
+					const formattedDate = new Date(currentTimestamp)
+						.toLocaleDateString('en-GB', {
+							year: 'numeric',
+							month: '2-digit',
+							day: '2-digit',
+						})
+						.split('/');
+					console.log(formattedDate);
+					const results = axios.put(
+						`http://localhost:${Config.BACKEND_PORT}/quest`,
+						{
+							quest_id: new_id, //change
+							quest_name: findItemTitle(event.active.id),
+							description: findItemDescription(event.active.id),
+							due_date: formattedDate[2] + '-' + formattedDate[1] + '-' + formattedDate[0],
+							item_id: -1,
+							email: email,
+							status: AfterContainer.title,
+						},
+						{ headers: headers }
+					);
+					const result = (await results).data as returnInterface;
+					authorization(
+						result,
+						async () => {
+							console.log(result.message);
+						},
+						updateAccessToken
+					);
+				} else {
+					// const quest = axios.get(`http://localhost:${Config.BACKEND_PORT}/quest`, {
+					// 	params: {
+					// 		quest_id: new_id, //change
+					// 	},
+					// 	headers: headers,
+					// });
+
+					// const quest_result = (await quest).data as returnInterface;
+
+					// item_id = quest_result.data[0];
+
+					// console.log('find item_id', item_id);
+
+					// if (item_id != -1 && AfterContainer.title == 'Done') {
+					// 	console.log('Gain', item_id);
+					// 	item_id = -1;
+					// }
+					const results = axios.put(
+						`http://localhost:${Config.BACKEND_PORT}/quest`,
+						{
+							quest_id: new_id, //change
+							quest_name: findItemTitle(event.active.id),
+							description: findItemDescription(event.active.id),
+							due_date: findItemDate(event.active.id),
+							item_id: item_id,
+							email: email,
+							status: AfterContainer.title,
+						},
+						{ headers: headers }
+					);
+					const result = (await results).data as returnInterface;
+					authorization(
+						result,
+						async () => {
+							console.log(result.message);
+						},
+						updateAccessToken
+					);
 				}
-				// const quest = axios.get(`http://localhost:${Config.BACKEND_PORT}/quest`, {
-				// 	params: {
-				// 		quest_id: new_id, //change
-				// 	},
-				// 	headers: headers,
-				// });
-
-				// const quest_result = (await quest).data as returnInterface;
-
-				// item_id = quest_result.data[0];
-
-				// console.log('find item_id', item_id);
-
-				// if (item_id != -1 && AfterContainer.title == 'Done') {
-				// 	console.log('Gain', item_id);
-				// 	item_id = -1;
-				// }
-				const results = axios.put(
-					`http://localhost:${Config.BACKEND_PORT}/quest`,
-					{
-						quest_id: new_id, //change
-						quest_name: findItemTitle(event.active.id),
-						description: findItemDescription(event.active.id),
-						due_date: findItemDate(event.active.id),
-						item_id: item_id,
-						email: email,
-						status: AfterContainer.title,
-					},
-					{ headers: headers }
-				);
-				const result = (await results).data as returnInterface;
-				authorization(
-					result,
-					async () => {
-						console.log(result.message);
-					},
-					updateAccessToken
-				);
 			} catch (err) {
 				let container = findValueOfQuest(event.active.id, 'item');
 				container?.items.map((item) => {
@@ -915,7 +946,7 @@ export default function QuestPage() {
 
 			<div className="flex flex-row">
 				{/* Sidebar */}
-				<SideBar
+				<SideBar.full
 					tags={tags}
 					username={username}
 					handleButtonClick={addFilter}

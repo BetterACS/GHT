@@ -10,6 +10,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`email`)
 );
 
+
 DROP TABLE IF EXISTS `quest`;
 CREATE TABLE `quest` (
   `quest_id` int NOT NULL AUTO_INCREMENT,
