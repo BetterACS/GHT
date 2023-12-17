@@ -55,7 +55,7 @@ const Analytics = () => {
 			result.data.map(async (item: any) => {
 				const id = 'item-' + item.quest_id;
 				if (item.status === 'Done') {
-					temp.push({ date: item.due_date, count: 1 });
+					temp.push({ date: item.last_update_date, count: 1 });
 				}
 			});
 
@@ -97,14 +97,7 @@ const Analytics = () => {
 
 	return (
 		<div className="flex flex-row">
-			<SideBar
-				username={username}
-				header={headers}
-				tags={[]}
-				showWorkingTags={false}
-				handleButtonClick={() => {}}
-				handleButtonClickResetFilter={() => {}}
-			/>
+			<SideBar.noWorkingTags username={username} header={headers} />
 			<div className="w-full flex flex-col items-center">
 				{/* <div className="pt-80 w-full flex flex-row px-40">
 					<SimpleQuestContainer name={'Early'} />

@@ -16,7 +16,7 @@ CREATE TABLE `quest` (
   `quest_id` int NOT NULL AUTO_INCREMENT,
   `quest_name` varchar(45) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `start_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_update_date` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   `due_date` datetime NOT NULL,
   `status` varchar(45) NOT NULL,
   `item_id` int NOT NULL,
