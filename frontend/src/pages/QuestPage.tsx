@@ -90,7 +90,6 @@ export default function QuestPage() {
 		await localStorage.setItem('access_token', newToken);
 		await setRefreshToken(newRefresh);
 		await localStorage.setItem('refresh_token', newRefresh);
-		console.log('update access token', newToken);
 	};
 	const [username, setUsername] = useState('');
 	// สร้าง headers
@@ -111,8 +110,9 @@ export default function QuestPage() {
 				refreshToken: `Bearer ${refreshToken}`,
 				email: `${localStorage.getItem('email')}`,
 			};
-			console.log('ทำ use Effect');
+			('ทำ use Effect');
 			if (filter.length > 0) {
+				console.log('fetch filter', filter);
 				await filterByTag();
 			} else {
 				await fetchData();
@@ -126,7 +126,6 @@ export default function QuestPage() {
 	const fetchData = async () => {
 		resetContainers();
 		setConter(conter + 1);
-		console.log('ทำ fetch Data ครั้งที่', conter);
 		//get all quest from this email
 		try {
 			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/filter/date`, {
@@ -137,7 +136,6 @@ export default function QuestPage() {
 			});
 
 			const result = results.data as returnInterface;
-			console.log('asdasd', result);
 
 			authorization(
 				result,
@@ -166,7 +164,7 @@ export default function QuestPage() {
 								);
 								const foodItem = (await queryFoodItem(item.item_id)) as foodItemType;
 								const result_tag = (await query_tag.data) as returnInterface;
-								console.log(foodItem);
+								foodItem;
 
 								authorization(
 									result_tag,
@@ -211,7 +209,7 @@ export default function QuestPage() {
 				updateAccessToken
 			);
 		} catch (err) {
-			console.log(err);
+			err;
 		}
 	};
 
@@ -249,7 +247,7 @@ export default function QuestPage() {
 
 			return foodItem;
 		} catch (err) {
-			console.log(err);
+			err;
 			return undefined;
 		}
 	};
@@ -259,7 +257,7 @@ export default function QuestPage() {
 
 		try {
 			const foodItem = (await queryFoodItem()) as foodItemType;
-			console.log(foodItem);
+			foodItem;
 			const updatedContainers = await Promise.all(
 				containers.map(async (container) => {
 					if (container.id === currentContainerId) {
@@ -282,7 +280,7 @@ export default function QuestPage() {
 							authorization(
 								result,
 								async () => {
-									console.log(foodItem.item_name, 'foodItem all ', foodItem);
+									foodItem.item_name, 'foodItem all ', foodItem;
 									const id = 'item-' + result.data.quest_id;
 									container.items.push({
 										id: id,
@@ -299,7 +297,7 @@ export default function QuestPage() {
 								updateAccessToken
 							);
 						} catch (err) {
-							console.log(err);
+							err;
 						}
 					}
 					return container;
@@ -307,27 +305,22 @@ export default function QuestPage() {
 			);
 			updateAndResetItemState(updatedContainers);
 		} catch (err) {
-			console.log(err);
+			err;
 		}
-	};
-	const addFilter = (tag_id: string) => {
-		const cur = tag_id.toString().replace('tag-', '');
-		setFilter([...filter, cur]);
-		console.log(filter);
 	};
 	const filterByTag = async () => {
 		resetContainers();
+		const filters = filter.map((tag) => tag.toString().replace('tag-', ''));
 		try {
 			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/filter/tag`, {
 				params: {
-					tag_id: filter,
+					tag_id: filters,
 					email: email,
 				},
 				headers: headers,
 			});
 
 			const result = results.data as returnInterface;
-			console.log('Result filterByTag', result);
 			authorization(
 				result,
 				async () => {
@@ -355,7 +348,7 @@ export default function QuestPage() {
 								);
 								const foodItem = (await queryFoodItem(item.item_id)) as foodItemType;
 								const result_tag = (await query_tag.data) as returnInterface;
-								console.log(result_tag.return);
+								result_tag.return;
 
 								authorization(
 									result_tag,
@@ -386,7 +379,7 @@ export default function QuestPage() {
 											}))
 										);
 
-										console.log(container);
+										container;
 										//ถ้ามีบัคค่อยมาดูตรงนี้
 									},
 									updateAccessToken
@@ -425,12 +418,12 @@ export default function QuestPage() {
 						authorization(
 							result,
 							async () => {
-								console.log(result.message);
+								result.message;
 							},
 							updateAccessToken
 						);
 					} catch (err) {
-						console.log(err);
+						err;
 					}
 				}
 				return container;
@@ -452,7 +445,7 @@ export default function QuestPage() {
 							item.due_date = date;
 							// const tempStatus = container.id === 'container-1' ? 'Task' : 'In Progress';
 							const new_id = Number(currentItemId.toString().replace('item-', ''));
-							console.log(new_id);
+							new_id;
 							try {
 								const results = axios.put(
 									`http://localhost:${Config.BACKEND_PORT}/quest`,
@@ -472,12 +465,12 @@ export default function QuestPage() {
 								authorization(
 									result,
 									async () => {
-										console.log(result.message);
+										result.message;
 									},
 									updateAccessToken
 								);
 							} catch (err) {
-								console.log(err);
+								err;
 							}
 						}
 						return item;
@@ -633,7 +626,7 @@ export default function QuestPage() {
 		const randomColor = tagColorList[Math.floor(Math.random() * tagColorList.length)];
 
 		if (tags.find((tag) => tag.name === tagName)) {
-			console.log('Tag already exists');
+			('Tag already exists');
 			return;
 		}
 
@@ -726,14 +719,13 @@ export default function QuestPage() {
 				},
 				{ headers: headers }
 			)
-			.catch((err) => console.log(err));
+			.catch((err) => err);
 
 		if (addTagToContainer) {
 			const result = addTagToContainer.data as returnInterface;
 			authorization(
 				result,
 				async () => {
-					console.log('contain reults ', addTagToContainer);
 					fetchTag();
 				},
 				updateAccessToken
@@ -806,8 +798,6 @@ export default function QuestPage() {
 				if (AfterContainer.title === 'Done') {
 					container?.items.map(async (item) => {
 						if (item.id === event.active.id) {
-							console.log('gain item_id', item.item_id);
-
 							const newItem = {
 								item_id: item.item_id,
 								item_name: item.item_name,
@@ -824,8 +814,6 @@ export default function QuestPage() {
 								{ headers: headers }
 							);
 
-							console.log('gain item_id', item.item_id);
-
 							item.item_id = -1;
 							item_id = -1;
 							// gainItem(email, newItem);
@@ -840,7 +828,7 @@ export default function QuestPage() {
 							day: '2-digit',
 						})
 						.split('/');
-					console.log(formattedDate);
+					formattedDate;
 					const results = axios.put(
 						`http://localhost:${Config.BACKEND_PORT}/quest`,
 						{
@@ -858,7 +846,7 @@ export default function QuestPage() {
 					authorization(
 						result,
 						async () => {
-							console.log(result.message);
+							result.message;
 						},
 						updateAccessToken
 					);
@@ -874,10 +862,10 @@ export default function QuestPage() {
 
 					// item_id = quest_result.data[0];
 
-					// console.log('find item_id', item_id);
+					// ('find item_id', item_id);
 
 					// if (item_id != -1 && AfterContainer.title == 'Done') {
-					// 	console.log('Gain', item_id);
+					// 	('Gain', item_id);
 					// 	item_id = -1;
 					// }
 					const results = axios.put(
@@ -897,7 +885,7 @@ export default function QuestPage() {
 					authorization(
 						result,
 						async () => {
-							console.log(result.message);
+							result.message;
 						},
 						updateAccessToken
 					);
@@ -909,7 +897,6 @@ export default function QuestPage() {
 						item.item_id = item_id;
 					}
 				});
-				console.log(err);
 			}
 		}
 	};
@@ -949,7 +936,7 @@ export default function QuestPage() {
 				<SideBar.full
 					tags={tags}
 					username={username}
-					handleButtonClick={addFilter}
+					handleButtonClick={setFilter}
 					header={headers}
 					handleButtonClickResetFilter={resetTag}
 					showWorkingTags={true}
@@ -985,7 +972,7 @@ export default function QuestPage() {
 													<SortableContext items={container.items.map((i) => i.id)}>
 														<div className="flex items-start flex-col gap-y-4">
 															{container.items.map((i) => {
-																console.log(i);
+																i;
 																return (
 																	<Quest
 																		title={i.title}
