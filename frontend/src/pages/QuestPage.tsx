@@ -940,6 +940,7 @@ export default function QuestPage() {
 					header={headers}
 					handleButtonClickResetFilter={resetTag}
 					showWorkingTags={true}
+					currentPage="quest"
 				/>
 				{/* Main Content */}
 				<div className="w-full flex flex-col items-center">

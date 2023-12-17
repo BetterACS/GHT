@@ -97,7 +97,7 @@ const Analytics = () => {
 
 	return (
 		<div className="flex flex-row">
-			<SideBar.noWorkingTags username={username} header={headers} />
+			<SideBar.noWorkingTags username={username} header={headers} currentPage="analysis" />
 			<div className="w-full flex flex-col items-center">
 				{/* <div className="pt-80 w-full flex flex-row px-40">
 					<SimpleQuestContainer name={'Early'} />

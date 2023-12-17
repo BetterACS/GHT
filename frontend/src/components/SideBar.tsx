@@ -23,6 +23,7 @@ interface BarProps {
 	header: HeadersType;
 	handleButtonClickResetFilter: () => void;
 	showWorkingTags: boolean;
+	currentPage?: string;
 }
 import { Checkbox, ListItemPrefix, Typography } from '@material-tailwind/react';
 
@@ -122,6 +123,7 @@ export function ListWithBadge({ tags, handleButtonClick, handleButtonClickResetF
 									<Chip
 										value={tagCounts[tag.id.toString()] || '0'}
 										variant="ghost"
+										color={tag.color.split('-')[1] as any}
 										size="sm"
 										className="rounded-full"
 									/>
@@ -143,6 +145,7 @@ class SideBar {
 		handleButtonClickResetFilter,
 		header,
 		showWorkingTags,
+		currentPage,
 	}: BarProps) => {
 		const navigate = useNavigate();
 
@@ -181,10 +184,10 @@ class SideBar {
 					</div>
 					{/* Sidebar content goes here */}
 					<div className="w-96">
-						<ul className="px-8 flex flex-col gap-4">
+						<ul className="px-8 flex flex-col gap-2">
 							<Button
 								placeholder="quest-tab"
-								variant="outlined"
+								color={currentPage === 'quest' ? 'red' : 'white'}
 								className="flex items-center gap-3 text-lg"
 								onClick={() => navigate('/quest')}
 							>
@@ -193,7 +196,7 @@ class SideBar {
 							</Button>
 							<Button
 								placeholder="monster-tab"
-								variant="outlined"
+								color="white"
 								className="flex items-center gap-3 text-lg"
 								onClick={() => navigate('/monster')}
 							>
@@ -202,7 +205,7 @@ class SideBar {
 							</Button>
 							<Button
 								placeholder="item-tab"
-								variant="outlined"
+								color={currentPage === 'analysis' ? 'red' : 'white'}
 								className="flex items-center gap-3 text-lg"
 								onClick={() => navigate('/analysis')}
 							>
@@ -211,7 +214,7 @@ class SideBar {
 							</Button>
 							<Button
 								placeholder="item-tab"
-								variant="outlined"
+								color="white"
 								className="flex items-center gap-3 text-lg"
 								onClick={() => navigate('/collection')}
 							>
@@ -255,7 +258,7 @@ class SideBar {
 		);
 	};
 
-	public static noWorkingTags = ({ username, header }: any) => {
+	public static noWorkingTags = ({ username, header, currentPage }: any) => {
 		return this.full({
 			tags: [],
 			username,
@@ -263,6 +266,7 @@ class SideBar {
 			header,
 			handleButtonClickResetFilter: () => {},
 			showWorkingTags: false,
+			currentPage,
 		});
 	};
 
