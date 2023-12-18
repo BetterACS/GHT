@@ -199,6 +199,28 @@ class SideBar {
 			</Menu>
 		);
 	};
+
+	private static MenuItemList = ({ icon, currentPage, page, text, onClick }: any) => {
+		return (
+			<ListItem
+				placeholder=""
+				className={`${
+					currentPage === page ? 'bg-red-400' : ''
+				} hover:bg-red-200 focus:bg-red-200 active:bg-red-200`}
+				onClick={onClick}
+				color="white"
+			>
+				<ListItemPrefix placeholder="">
+					{icon}
+					{/* <FaGamepad size={25} className={`${currentPage === 'quest' ? 'text-white' : ''} `} /> */}
+				</ListItemPrefix>
+				<Typography placeholder="" className={`${currentPage === page ? 'text-white' : ''} `}>
+					{text}
+				</Typography>
+			</ListItem>
+		);
+	};
+
 	public static full = ({
 		tags,
 		username,
@@ -245,53 +267,54 @@ class SideBar {
 					{/* Sidebar content goes here */}
 					<div className="w-80">
 						<List placeholder="" className="px-8">
-							<ListItem
-								placeholder=""
-								className={`${
-									currentPage === 'quest' ? 'bg-gray-300' : ''
-								} hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-300`}
+							<this.MenuItemList
+								currentPage={currentPage}
+								page="quest"
+								text="Quest"
 								onClick={() => navigate('/quest')}
-							>
-								<ListItemPrefix placeholder="">
-									<FaGamepad size={25} />
-								</ListItemPrefix>
-								<Typography placeholder="">Quest</Typography>
-							</ListItem>
-							<ListItem
-								placeholder=""
-								className={`${
-									currentPage === 'monster' ? 'bg-gray-300' : ''
-								} hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-300`}
+								icon={
+									<FaGamepad
+										size={25}
+										className={`${currentPage === 'quest' ? 'text-white' : ''} `}
+									/>
+								}
+							/>
+							<this.MenuItemList
+								currentPage={currentPage}
+								page="monster"
+								text="Monster"
 								onClick={() => navigate('/monster')}
-							>
-								<ListItemPrefix placeholder="">
-									<FaSpaghettiMonsterFlying size={25} />
-								</ListItemPrefix>
-								<Typography placeholder="">Monster</Typography>
-							</ListItem>
-							<ListItem
-								placeholder=""
-								className={`${
-									currentPage === 'analysis' ? 'bg-gray-300' : ''
-								} hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-300`}
+								icon={
+									<FaSpaghettiMonsterFlying
+										size={25}
+										className={`${currentPage === 'monster' ? 'text-white' : ''} `}
+									/>
+								}
+							/>
+							<this.MenuItemList
+								currentPage={currentPage}
+								text="Analysis"
+								page="analysis"
 								onClick={() => navigate('/analysis')}
-							>
-								<ListItemPrefix placeholder="">
-									<MdScience size={25} />
-								</ListItemPrefix>
-								<Typography placeholder="">Analysis</Typography>
-							</ListItem>
-							<ListItem
-								placeholder=""
-								className={`${currentPage === 'collection' ? 'bg-gray-300' : ''}
-							} hover:bg-gray-300 focus:bg-gray-300 active:bg-gray-300`}
+								icon={
+									<MdScience
+										size={25}
+										className={`${currentPage === 'analysis' ? 'text-white' : ''} `}
+									/>
+								}
+							/>
+							<this.MenuItemList
+								currentPage={currentPage}
+								text="Collection"
+								page="collection"
 								onClick={() => navigate('/collection')}
-							>
-								<ListItemPrefix placeholder="">
-									<MdOutlinePets size={25} />
-								</ListItemPrefix>
-								<Typography placeholder="">Collection</Typography>
-							</ListItem>
+								icon={
+									<MdOutlinePets
+										size={25}
+										className={`${currentPage === 'collection' ? 'text-white' : ''} `}
+									/>
+								}
+							/>
 						</List>
 						<hr className="mt-5 mb-2" />
 						{/* working tags zone start */}

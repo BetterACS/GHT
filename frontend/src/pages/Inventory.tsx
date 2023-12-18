@@ -87,7 +87,7 @@ const Inventory = () => {
 	return (
 		<>
 			<div className="flex flex-row">
-				<SideBar.noWorkingTags username={username} header={headers} currentPage="analysis" />
+				<SideBar.noWorkingTags username={username} header={headers} currentPage="collection" />
 				<div className="w-full">
 					<h1 className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl mt-8">
 						Monster Collection
