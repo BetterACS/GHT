@@ -12,7 +12,7 @@ import { HiArrowCircleLeft, HiArrowCircleRight } from 'react-icons/hi';
 import { FaGamepad, FaSpaghettiMonsterFlying } from 'react-icons/fa6';
 import { MdAdd, MdScience, MdOutlinePets, MdEmail } from 'react-icons/md';
 import clsx from 'clsx';
-
+import { Spinner } from '@material-tailwind/react';
 import { Typography } from '@material-tailwind/react';
 
 import { Progress } from '@material-tailwind/react';
@@ -78,7 +78,7 @@ const Item = ({ id, handleItemClick, img_url, quantiy }: any) => {
 				id={id}
 				// Move image to center of screen when clicked
 				className={clsx(
-					'pixel-img m-8 relative shadow-lg shadow-black/20',
+					'pixel-img lg:m-8 md:m-4 sm:m-2 relative shadow-lg shadow-black/20',
 					isClicked ? 'scale-90' : 'hover:scale-110'
 				)}
 				onClick={() => {
@@ -143,7 +143,7 @@ const Monster = () => {
 	const [shake, setShake] = useState(false);
 
 	useEffect(() => {
-		tokenAuth(navigate,'/monster','/log_in');
+		tokenAuth(navigate, '/monster', '/log_in');
 		const headers = {
 			authorization: `Bearer ${localStorage.getItem('access_token')}`,
 			refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
@@ -278,7 +278,11 @@ const Monster = () => {
 	};
 
 	if (loading) {
-		return <></>;
+		return (
+			<div className="min-h-screen w-full py-2/4 flex justify-center items-center">
+				<Spinner color="red" className="h-16 w-16" />
+			</div>
+		);
 	}
 
 	return (

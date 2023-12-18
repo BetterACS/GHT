@@ -46,6 +46,7 @@ export default function QuestPage() {
 		{
 			id: `container-3`,
 			title: 'Done',
+			description: 'Completed quests will be removed from this list after 3 days.',
 			items: [],
 		},
 	];
@@ -100,7 +101,7 @@ export default function QuestPage() {
 	}, []);
 
 	useEffect(() => {
-		tokenAuth(navigate,'/quest',"/log_in");
+		tokenAuth(navigate, '/quest', '/log_in');
 		const fetchDataAndTags = async () => {
 			headers = {
 				authorization: `Bearer ${accessToken}`,
@@ -135,70 +136,69 @@ export default function QuestPage() {
 				async () => {
 					await Promise.all(
 						result.data.map(async (item: any) => {
-						const id = 'item-' + item.quest_id;
-						const currentContainer =
-							item.status === 'Task'
-								? 'container-1'
-								: item.status === 'In Progress'
-								? 'container-2'
-								: 'container-3';
-						let newContainer = initialContainers;
-						for (const container of newContainer) {
-							if (container.id === currentContainer) {
-								const tagOfContainer: TagType[] = [];
+							const id = 'item-' + item.quest_id;
+							const currentContainer =
+								item.status === 'Task'
+									? 'container-1'
+									: item.status === 'In Progress'
+									? 'container-2'
+									: 'container-3';
+							let newContainer = initialContainers;
+							for (const container of newContainer) {
+								if (container.id === currentContainer) {
+									const tagOfContainer: TagType[] = [];
 
-								const query_tag = await axios.get(
-									`http://localhost:${Config.BACKEND_PORT}/contain-table`,
-									{
-										params: {
-											quest_id: item.quest_id,
+									const query_tag = await axios.get(
+										`http://localhost:${Config.BACKEND_PORT}/contain-table`,
+										{
+											params: {
+												quest_id: item.quest_id,
+											},
+											headers: headers,
+										}
+									);
+									const foodItem = (await queryFoodItem(item.item_id)) as foodItemType;
+									const result_tag = (await query_tag.data) as returnInterface;
+									foodItem;
+
+									authorization(
+										result_tag,
+										async () => {
+											await Promise.all(
+												result_tag.data.map(async (tag: any) => {
+													const tag_id = `tag-${tag.tag_id}`;
+													const eachTag: TagType = {
+														id: tag_id,
+														name: tag.tag_name,
+														color: tag.tag_color,
+													};
+													tagOfContainer.push(eachTag);
+												})
+											);
+
+											await Promise.all(
+												(container.items = container.items.concat({
+													id: id,
+													title: item.quest_name,
+													description: item.description,
+													tags: tagOfContainer,
+													image_url: foodItem.image_url,
+													item_name: foodItem.item_name,
+													item_description: foodItem.description,
+													due_date: item.due_date,
+													item_id: foodItem.item_id,
+												}))
+											);
+
+											// Update the state to trigger re-render
+											setContainers([...newContainer]);
 										},
-										headers: headers,
-									}
-								);
-								const foodItem = (await queryFoodItem(item.item_id)) as foodItemType;
-								const result_tag = (await query_tag.data) as returnInterface;
-								foodItem;
-
-								authorization(
-									result_tag,
-									async () => {
-										await Promise.all(
-											result_tag.data.map(async (tag: any) => {
-												const tag_id = `tag-${tag.tag_id}`;
-												const eachTag: TagType = {
-													id: tag_id,
-													name: tag.tag_name,
-													color: tag.tag_color,
-												};
-												tagOfContainer.push(eachTag);
-											})
-										);
-
-										await Promise.all(
-											(container.items = container.items.concat({
-												id: id,
-												title: item.quest_name,
-												description: item.description,
-												tags: tagOfContainer,
-												image_url: foodItem.image_url,
-												item_name: foodItem.item_name,
-												item_description: foodItem.description,
-												due_date: item.due_date,
-												item_id: foodItem.item_id,
-											}))
-										);
-
-										// Update the state to trigger re-render
-										setContainers([...newContainer]);
-									},
-									updateAccessToken
-								);
+										updateAccessToken
+									);
+								}
 							}
-						}
-					}));
-
-					
+						})
+					);
 				},
 				updateAccessToken
 			);
@@ -317,69 +317,70 @@ export default function QuestPage() {
 			authorization(
 				result,
 				async () => {
-					await Promise.all(result.data.map(async (item: any) => {
-						const id = 'item-' + item.quest_id;
-						const currentContainer =
-							item.status === 'Task'
-								? 'container-1'
-								: item.status === 'In Progress'
-								? 'container-2'
-								: 'container-3';
-						let newContainer = initialContainers;
-						for (const container of newContainer) {
-							if (container.id === currentContainer) {
-								const tagOfContainer: TagType[] = [];
+					await Promise.all(
+						result.data.map(async (item: any) => {
+							const id = 'item-' + item.quest_id;
+							const currentContainer =
+								item.status === 'Task'
+									? 'container-1'
+									: item.status === 'In Progress'
+									? 'container-2'
+									: 'container-3';
+							let newContainer = initialContainers;
+							for (const container of newContainer) {
+								if (container.id === currentContainer) {
+									const tagOfContainer: TagType[] = [];
 
-								const query_tag = await axios.get(
-									`http://localhost:${Config.BACKEND_PORT}/contain-table`,
-									{
-										params: {
-											quest_id: item.quest_id,
+									const query_tag = await axios.get(
+										`http://localhost:${Config.BACKEND_PORT}/contain-table`,
+										{
+											params: {
+												quest_id: item.quest_id,
+											},
+											headers: headers,
+										}
+									);
+									const foodItem = (await queryFoodItem(item.item_id)) as foodItemType;
+									const result_tag = (await query_tag.data) as returnInterface;
+									result_tag.return;
+
+									authorization(
+										result_tag,
+										async () => {
+											await Promise.all(
+												result_tag.data.map(async (tag: any) => {
+													const tag_id = `tag-${tag.tag_id}`;
+													const eachTag: TagType = {
+														id: tag_id,
+														name: tag.tag_name,
+														color: tag.tag_color,
+													};
+													tagOfContainer.push(eachTag);
+												})
+											);
+
+											await Promise.all(
+												(container.items = container.items.concat({
+													id: id,
+													title: item.quest_name,
+													description: item.description,
+													image_url: foodItem.image_url,
+													tags: tagOfContainer,
+													due_date: item.due_date,
+													item_name: foodItem.item_name,
+													item_description: foodItem.description,
+													item_id: foodItem.item_id,
+												}))
+											);
+											//ถ้ามีบัคค่อยมาดูตรงนี้
 										},
-										headers: headers,
-									}
-								);
-								const foodItem = (await queryFoodItem(item.item_id)) as foodItemType;
-								const result_tag = (await query_tag.data) as returnInterface;
-								result_tag.return;
-
-								authorization(
-									result_tag,
-									async () => {
-										await Promise.all(
-											result_tag.data.map(async (tag: any) => {
-												const tag_id = `tag-${tag.tag_id}`;
-												const eachTag: TagType = {
-													id: tag_id,
-													name: tag.tag_name,
-													color: tag.tag_color,
-												};
-												tagOfContainer.push(eachTag);
-											})
-										);
-
-										await Promise.all(
-											(container.items = container.items.concat({
-												id: id,
-												title: item.quest_name,
-												description: item.description,
-												image_url: foodItem.image_url,
-												tags: tagOfContainer,
-												due_date: item.due_date,
-												item_name: foodItem.item_name,
-												item_description: foodItem.description,
-												item_id: foodItem.item_id,
-											}))
-										);
-										//ถ้ามีบัคค่อยมาดูตรงนี้
-									},
-									updateAccessToken
-								);
+										updateAccessToken
+									);
+								}
 							}
-						}
-						setContainers([...newContainer]);
-					}));
-					
+							setContainers([...newContainer]);
+						})
+					);
 				},
 				updateAccessToken
 			);
@@ -937,7 +938,7 @@ export default function QuestPage() {
 						<h1>Quest</h1>
 						<Progress placeholder={'progress'} value={52} color="red" />
 					</header>
-					<div className="w-8/12 px-2/4">
+					<div className="xl:w-8/12 lg:w-10/12 md:w-11/12">
 						<div className="grid grid-cols-1 gap-6">
 							<DndContext
 								sensors={sensors}
@@ -954,6 +955,7 @@ export default function QuestPage() {
 												<QuestContainer
 													id={container.id}
 													title={container.title}
+													description={container.description}
 													onAddItem={() => {
 														setShowAddItemModal(true);
 														setCurrentContainerId(container.id);

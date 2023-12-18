@@ -1,6 +1,6 @@
 import ModalBase from './ModalBase';
 import { Dispatch, SetStateAction } from 'react';
-import Input from '../../components/Input';
+// import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 interface AddItemModalProps {
@@ -13,19 +13,10 @@ interface AddItemModalProps {
 	onAddItem: (error: any) => Promise<void>;
 }
 import React from 'react';
-import {
-	//   Input,
-	Popover,
-	PopoverHandler,
-	PopoverContent,
-} from '@material-tailwind/react';
 import { format } from 'date-fns';
-import { DayPicker } from 'react-day-picker';
-import { ChevronRightIcon, ChevronLeftIcon } from '@heroicons/react/24/outline';
+import { Input, Textarea } from '@material-tailwind/react';
+import DatePickerDialog from '../Date';
 
-function Example() {
-	return <div className="p-24 z-80"></div>;
-}
 class AddItemModal extends ModalBase {
 	public static render({
 		showModal,
@@ -44,31 +35,30 @@ class AddItemModal extends ModalBase {
 				setItemName={setItemName}
 				setItemDescription={setItemDescription}
 			>
-				<div className="flex flex-col w-full items-start gap-y-4">
+				<div className="flex flex-col w-full items-start gap-y-4 pb-4">
 					<h1 className="text-gray-800 text-3xl font-bold">Add Item</h1>
 					<Input
-						type="text"
-						placeholder="Item Title"
+						// type="text"
+						label="Item Title"
+						crossOrigin="anonymous"
+						// placeholder="Item Title"
 						name="itemname"
 						value={itemName}
 						onChange={(e) => setItemName(e.target.value)}
 					/>
-					<Input
-						type="text"
-						placeholder="Item Description"
+					<Textarea
+						// type="text"
+						label="Item Description"
+						// placeholder="Item Description"
 						name="itemDescription"
 						value={itemDescription}
 						onChange={(e) => setItemDescription(e.target.value)}
 					/>
-					<input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-					<Button
-						onClick={() => {
-							onAddItem(date);
-						}}
-					>
-						Add Item
-					</Button>
+					{/* <input type="date" value={date} onChange={(e) => setDate(e.target.value)} /> */}
+					{/* <DateMenu /> */}
+					<DatePickerDialog onChangeDate={setDate} />
 				</div>
+				<Button onClick={() => onAddItem(date)}>Add Item</Button>
 			</AddItemModal.Modal>
 		);
 	}

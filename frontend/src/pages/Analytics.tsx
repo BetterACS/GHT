@@ -3,27 +3,12 @@ import '../styles/Activity.css';
 import SideBar from '../components/SideBar';
 import clsx from 'clsx';
 import axios from 'axios';
-import { SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { returnInterface } from '../../../backend/src/utils/interfaces';
 import authorization from '../utils/authorization';
 import Config from '../../../backend/src/config';
 import tokenAuth from '../utils/tokenAuth';
 import { useNavigate } from 'react-router-dom';
-
-const SimpleQuestContainer = ({ name }: any) => {
-	return (
-		<div
-			className={clsx('m-4 w-full h-full p-4 bg-gray-50 rounded-xl flex flex-col gap-y-4 question-container')}
-			style={{ minHeight: '120px', minWidth: '360px' }}
-		>
-			<div className="flex items-center justify-between min-h-36">
-				<div className="flex flex-col gap-y-1">
-					<h1 className="text-gray-800 text-xl font-semibold">{name}</h1>
-				</div>
-			</div>
-		</div>
-	);
-};
 
 const Analytics = () => {
 	const navigate = useNavigate();
@@ -39,7 +24,7 @@ const Analytics = () => {
 	};
 
 	useEffect(() => {
-		tokenAuth(navigate,'/analysis', '/log_in');
+		tokenAuth(navigate, '/analysis', '/log_in');
 		fetchValues();
 		console.log(values);
 	}, []);
@@ -57,7 +42,6 @@ const Analytics = () => {
 			let temp: any = [];
 
 			result.data.map(async (item: any) => {
-				const id = 'item-' + item.quest_id;
 				if (item.status === 'Done') {
 					temp.push({ date: item.last_update_date, count: 1 });
 				}

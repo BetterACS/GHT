@@ -9,6 +9,7 @@ type DNDType = {
 	id: UniqueIdentifier;
 	title: string;
 	items: Item[];
+	description?: string;
 };
 
 type Item = {
