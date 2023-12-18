@@ -37,6 +37,7 @@ const Login = () => {
 					setPassword('');
 					navigate('/Log_in');
 					setError(result.message);
+					return;
 				}
 
 				localStorage.setItem('access_token', result.data.accessToken);

@@ -48,6 +48,11 @@ const loginAuth = async (req: Request, res: Response) => {
 			returnJson = { status: 'error', message: 'Incorrect password.', return: 4, data: {} };
 			return;
 		}
+		if (user[0].is_verified === false) {
+			logger.error('--------This email has not been verified---------');
+			returnJson = { status: 'error', message: 'This email has not been verified.', return: 5, data: {} };
+			return;
+		}
 		logger.info('---------> Login Successful');
 
 		const accessToken = TokenManager.instance().generateAccessToken({ user: req.body.email });
