@@ -26,7 +26,6 @@ const Analytics = () => {
 	useEffect(() => {
 		tokenAuth(navigate, '/analysis', '/log_in');
 		fetchValues();
-		console.log(values);
 	}, []);
 
 	const fetchValues = async () => {

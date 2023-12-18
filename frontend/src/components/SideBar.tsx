@@ -111,6 +111,7 @@ export function ListWithBadge({ tags, handleButtonClick, handleButtonClickResetF
 							>
 								<ListItemPrefix className="mr-3" placeholder="">
 									<Checkbox
+										color="red"
 										key={`checkbox-tag-${tag.id}`}
 										id={`checkbox-tag-${tag.id}`}
 										ripple={false}
@@ -149,7 +150,7 @@ export function ListWithBadge({ tags, handleButtonClick, handleButtonClickResetF
 class SideBar {
 	public static profileMenu = ({ logoutFunction }: any) => {
 		return (
-			<Menu>
+			<Menu placement="bottom-start">
 				<MenuHandler>
 					<Avatar
 						placeholder=""
@@ -204,17 +205,20 @@ class SideBar {
 		return (
 			<ListItem
 				placeholder=""
-				className={`${
-					currentPage === page ? 'bg-red-400' : ''
-				} hover:bg-red-200 focus:bg-red-200 active:bg-red-200`}
+				className={`
+					${currentPage === page ? 'bg-red-400' : 'bg-white'}
+					${
+						currentPage === page
+							? 'hover:bg-red-400 focus:bg-red-400 active:bg-red-400'
+							: 'hover:bg-blue-gray-50 focus:bg-blue-gray-50 active:bg-blue-gray-50'
+					}`}
 				onClick={onClick}
 				color="white"
 			>
-				<ListItemPrefix placeholder="">
+				<ListItemPrefix placeholder="" className="ml-2">
 					{icon}
-					{/* <FaGamepad size={25} className={`${currentPage === 'quest' ? 'text-white' : ''} `} /> */}
 				</ListItemPrefix>
-				<Typography placeholder="" className={`${currentPage === page ? 'text-white' : ''} `}>
+				<Typography placeholder="" variant="lead" className={`${currentPage === page ? 'text-white' : ''} `}>
 					{text}
 				</Typography>
 			</ListItem>
@@ -242,7 +246,7 @@ class SideBar {
 						'w-0': !isOpen, // Width when closed
 					})}
 				>
-					<div className="w-full h-auto px-8 pt-2 pb-4 flex flex-row justify-between items-center">
+					<div className="w-full h-auto px-8 py-4 flex flex-row justify-between items-center">
 						<div className="flex flex-row ">
 							{/* ใช้เป็น username */}
 							<this.profileMenu
