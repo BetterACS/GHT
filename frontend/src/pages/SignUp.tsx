@@ -33,10 +33,11 @@ const SignUp = () => {
 					setEmail('');
 					setPassword('');
 					setError(result.message);
+					console.log(result.data.error)
 					return;
 				}
 				//ตรงนี้อยากให้มีขึ้นว่าสมัครสำเร็จ แล้วก็ให้ไป verify email
-				//navigate('/Log_in');
+				navigate('/log_in');
 			})
 			.catch((err) => console.log(err));
 	};
