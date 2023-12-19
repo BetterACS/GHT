@@ -52,7 +52,7 @@ const Analytics = () => {
 			});
 
 			setValues(temp);
-		} catch (error) {}
+		} catch (error) { }
 	};
 
 	const updateAccessToken = async (newToken: string, newRefresh: string) => {
@@ -95,7 +95,7 @@ const Analytics = () => {
 					<SimpleQuestContainer name={'Early'} />
 					<SimpleQuestContainer name={'No update'} />
 				</div> */}
-				<div className="pt-80 w-full px-28">
+				<div className="pt-56 w-[1000px] md:w-[100vw] xl:w-full xl:px-28 mx-auto overflow-x-auto">
 					<CalendarHeatmap
 						showWeekdayLabels
 						startDate={new Date('2023-01-01')}
