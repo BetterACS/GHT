@@ -7,6 +7,8 @@ import { SetStateAction, useEffect, useState } from 'react';
 import { returnInterface } from '../../../backend/src/utils/interfaces';
 import authorization from '../utils/authorization';
 import Config from '../../../backend/src/config';
+import tokenAuth from '../utils/tokenAuth';
+import { useNavigate } from 'react-router-dom';
 
 const SimpleQuestContainer = ({ name }: any) => {
 	return (
@@ -24,6 +26,7 @@ const SimpleQuestContainer = ({ name }: any) => {
 };
 
 const Analytics = () => {
+	const navigate = useNavigate();
 	const email = localStorage.getItem('email') || '';
 	const [values, setValues] = useState([{}]);
 	const [username, setUsername] = useState('');
@@ -36,6 +39,7 @@ const Analytics = () => {
 	};
 
 	useEffect(() => {
+		tokenAuth(navigate,'/analysis', '/log_in');
 		fetchValues();
 		console.log(values);
 	}, []);
@@ -51,14 +55,19 @@ const Analytics = () => {
 
 			const result = results.data as returnInterface;
 			let temp: any = [];
-
+			const counter_dict:any = {};
 			result.data.map(async (item: any) => {
 				const id = 'item-' + item.quest_id;
 				if (item.status === 'Done') {
-					temp.push({ date: item.last_update_date, count: 1 });
+					// temp.push({ date: item.last_update_date, count: 1 });
+					counter_dict[item.last_update_date] = (counter_dict[item.last_update_date] || 0) + 1;
 				}
 			});
-
+			// หลักการทำงานคือเอายัดเข้า dict แล้ว loop dict แล้วยัดเข้า temp ซึ่งมันจะเขียนทับตัวเดิม
+			Object.entries(counter_dict).forEach(([key, value]) => {
+				temp.push({ date: key, count: value });
+			  });
+			
 			setValues(temp);
 		} catch (error) {}
 	};
@@ -97,7 +106,7 @@ const Analytics = () => {
 
 	return (
 		<div className="flex flex-row">
-			<SideBar.noWorkingTags username={username} header={headers} />
+			<SideBar.noWorkingTags username={username} header={headers} currentPage="analysis" />
 			<div className="w-full flex flex-col items-center">
 				{/* <div className="pt-80 w-full flex flex-row px-40">
 					<SimpleQuestContainer name={'Early'} />
@@ -113,13 +122,13 @@ const Analytics = () => {
 							if (!value) {
 								return 'color-empty';
 							}
-							if (value.count > 0 && value.count <= 20) {
+							if (value.count > 0 && value.count <= 3) {
 								return `color-1`;
-							} else if (value.count > 20 && value.count <= 40) {
+							} else if (value.count > 3 && value.count <= 5) {
 								return `color-2`;
-							} else if (value.count > 40 && value.count <= 60) {
+							} else if (value.count > 5 && value.count <= 7) {
 								return `color-3`;
-							} else if (value.count > 60 && value.count <= 80) {
+							} else {
 								return `color-4`;
 							}
 						}}

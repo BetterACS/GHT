@@ -18,6 +18,11 @@ interface userInterface {
 	username: string;
 	password: string;
 	created_time: Date;
+	verification_token: string;
+	verification_token_expires: Date;
+	reset_token: string;
+	reset_token_expires: Date;
+	is_verified: boolean;
 }
 interface questInterface {
 	quest_id: number;

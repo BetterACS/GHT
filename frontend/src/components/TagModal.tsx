@@ -1,10 +1,9 @@
-'use client';
+('use client');
 
-import { useCallback, useEffect, useRef } from 'react';
+import clsx from 'clsx';
 import FocusTrap from 'focus-trap-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import clsx from 'clsx';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useCallback, useEffect, useRef } from 'react';
 import { TagType } from './Tag';
 
 // Types

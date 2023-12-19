@@ -6,6 +6,7 @@
     "all-dev": "concurrently \"npm run validate\" \"npm run backend\" \"npm run frontend\""
   },
   "dependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "resend": "^2.0.0"
   }
 }
