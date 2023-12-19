@@ -1,20 +1,19 @@
-import React, { useState, useRef } from "react";
-import { UserCircleIcon, Cog6ToothIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
+import React, { useState } from "react";
+import { UserCircleIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
 import {
     List,
     ListItem,
     ListItemPrefix,
     Card,
     Input,
-    textarea,
     Button,
     Dialog,
     DialogHeader,
     DialogBody,
     DialogFooter,
     IconButton,
-    Avatar,
 } from "@material-tailwind/react";
+import Avatar from "react-avatar-edit";
 import { faPenToSquare, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FaCamera } from "react-icons/fa";
@@ -23,17 +22,36 @@ import userProfile from "../assets/JackHumLek.jpg";
 export default function Profile() {
     const [activeTab, setActiveTab] = useState("profile");
     const [open, setOpen] = React.useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const [src, setSrc] = useState<string | undefined>("");
-    const [preview, setPreview] = useState(null);
+    const [imgCrop, setImgCrop] = useState<boolean | null>(null);
+    const [storeImage, setStoreImage] = useState<Array<{ imgCrop: boolean | null }>>([]);
 
     const onClose = () => {
-        setPreview(null);
+        setImgCrop(null);
     };
 
     const onCrop = (view: any): void => {
-        setPreview(view);
+        setImgCrop(view);
     };
+
+    const saveImage = () => {
+        if (imgCrop !== null) {
+            // Find the index of the existing image in the array
+            const existingImageIndex = storeImage.findIndex((item) => item.imgCrop !== null);
+
+            // If an existing image is found, update it; otherwise, add a new one
+            if (existingImageIndex !== -1) {
+                const updatedStoreImage = [...storeImage];
+                updatedStoreImage[existingImageIndex] = { imgCrop };
+                setStoreImage(updatedStoreImage);
+            } else {
+                setStoreImage([{ imgCrop }]);
+            }
+
+            handleModalOpen();
+        }
+    };
+
+    const profileImagesShow = storeImage.map(item => item.imgCrop);
 
     const handleModalOpen = () => setOpen(!open);
 
@@ -44,19 +62,6 @@ export default function Profile() {
     const handleForgotPasswordClick = () => {
         // Add your logic for handling the "forgot password" click event
         console.log('Forgot password clicked!');
-    };
-
-
-    const onEditImage = () => {
-        fileInputRef.current?.click();
-    };
-
-    const onFileInputChange = (e) => {
-        const selectedFile = e.target.files[0];
-        if (selectedFile) {
-            setSrc(URL.createObjectURL(selectedFile));
-            handleModalOpen();
-        }
     };
 
     return (
@@ -88,14 +93,28 @@ export default function Profile() {
 
                             <div className="flex justify-center">
                                 <div className="group relative">
-                                    <img
-                                        className="h-72 w-72 rounded-full object-cover object-center cursor-pointer group-hover:opacity-80 transition-opacity duration-300 ease-in-out"
-                                        src={userProfile}
-                                        alt="userProfile"
+                                    {profileImagesShow.length > 0 ? (
+                                        profileImagesShow.map((item, index) => (
+                                            <img
+                                                key={index}
+                                                className="h-72 w-72 rounded-full object-cover object-center cursor-pointer group-hover:opacity-80 transition-opacity duration-300 ease-in-out"
+                                                src={item || userProfile}
+                                                alt={`userProfile-${index}`}
+                                                onClick={handleModalOpen}
+                                            />
+                                        ))
+                                    ) : (
+                                        <img
+                                            className="h-72 w-72 rounded-full object-cover object-center cursor-pointer group-hover:opacity-80 transition-opacity duration-300 ease-in-out"
+                                            src={userProfile}
+                                            alt="userProfile"
+                                            onClick={handleModalOpen}
+                                        />
+                                    )}
+                                    <div
+                                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 hover:z-10 transition-opacity duration-300 ease-in-out"
                                         onClick={handleModalOpen}
-                                    />
-                                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 hover:z-10 transition-opacity duration-300 ease-in-out"
-                                        onClick={handleModalOpen}>
+                                    >
                                         <FaCamera size={70} color="white" />
                                     </div>
                                 </div>
@@ -150,22 +169,14 @@ export default function Profile() {
                         </IconButton>
                     </DialogHeader>
                     <DialogBody>
-                        <Avatar width={400} src={src} onCrop={onCrop} onClose={onClose} onClick={onEditImage} />
+                        <Avatar width={580} height={400} onCrop={onCrop} onClose={onClose} />
                     </DialogBody>
                     <DialogFooter>
-                        <Button variant="gradient" color="green" onClick={handleModalOpen}>
+                        <Button variant="gradient" color="green" onClick={saveImage}>
                             <span>Save</span>
                         </Button>
                     </DialogFooter>
                 </Dialog>
-
-                <input
-                    type="file"
-                    ref={fileInputRef}
-                    style={{ display: 'none' }}
-                    accept="image/*"
-                    onChange={onFileInputChange}
-                />
             </div>
         </>
     );
