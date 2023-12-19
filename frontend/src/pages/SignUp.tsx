@@ -28,15 +28,16 @@ const SignUp = () => {
 			.post(`http://localhost:${Config.BACKEND_PORT}/register`, { username, email, password })
 			.then((results) => {
 				const result = results.data as returnInterface;
-				if (result.return === 1 || result.return === 2) {
+				if (result.return !== 0) {
 					setUsername('');
 					setEmail('');
 					setPassword('');
 					setError(result.message);
+					console.log(result.data.error)
 					return;
 				}
-
-				navigate('/Log_in');
+				//ตรงนี้อยากให้มีขึ้นว่าสมัครสำเร็จ แล้วก็ให้ไป verify email
+				navigate('/log_in');
 			})
 			.catch((err) => console.log(err));
 	};
