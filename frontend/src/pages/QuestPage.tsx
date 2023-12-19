@@ -771,6 +771,7 @@ export default function QuestPage() {
 	};
 
 	const handleDragEnd = async (event: DragEndEvent) => {
+		console.log('drag move!', event.over);
 		onDragEnd(event, findValueOfQuest, setContainers, setActiveId, containers);
 		const AfterContainer = findValueOfQuest(event.active.id, 'item');
 		if (typeof AfterContainer === 'undefined') {
@@ -948,7 +949,7 @@ export default function QuestPage() {
 								onDragEnd={handleDragEnd}
 							>
 								<SortableContext items={containers.map((i) => i.id)}>
-									<div className="flex">
+									<div className="flex flex-row items-baseline">
 										{containers.map((container) => (
 											<div key={container.id} className="mr-4 w-full">
 												{/* Added margin */}
