@@ -362,16 +362,7 @@ export default function Profile() {
 						</IconButton>
 					</DialogHeader>
 					<DialogBody>
-						<Avatar
-							width={580}
-							height={400}
-							onCrop={onCrop}
-							onClose={onClose}
-							// onBeforeFileLoad={async (elem: any) => {
-							// 	console.log(elem.target.files[0].size);
-							// }}
-							// onFileLoad={(file) => console.log(file)}
-						/>
+						<Avatar width={580} height={400} onCrop={onCrop} onClose={onClose} />
 					</DialogBody>
 					<DialogFooter>
 						<Button variant="gradient" color="green" onClick={saveImage}>
