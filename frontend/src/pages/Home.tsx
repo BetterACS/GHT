@@ -6,21 +6,21 @@ const Home = () => {
 	const navigate = useNavigate();
 	const [loaded, setLoaded] = useState(false);
 	const [showWelcome, setShowWelcome] = useState(false);
-	
+
 	useEffect(() => {
 		setShowWelcome(true);
 		if (loaded) {
 			return;
 		}
-		tokenAuth(navigate,'/quest', '/');
+		tokenAuth(navigate, '/quest', '/');
 		setLoaded(true);
 	});
 	return (
 		<>
 			{/* Navbar */}
-			<nav className="bg-gray-900 text-white flex flex-wrap justify-between items-center fixed top-0 left-0 py-3 px-3 w-full z-10 sm:px-6 lg:px-12 lg:justify-around">
+			<nav className="bg-white text-white flex flex-wrap justify-between items-center fixed top-0 left-0 py-3 px-3 w-full z-10 sm:px-6 lg:px-12 lg:justify-around">
 				<div className="text-xl w-1/2 font-bold sm:text-2xl sm:w-1/2 lg:w-auto lg:text-3xl ">
-					<a href="/" style={{ color: 'white' }}>
+					<a href="/" className="text-gray-900">
 						Habitkub
 					</a>
 				</div>
@@ -38,60 +38,10 @@ const Home = () => {
 				</div>
 			</nav>
 
-			<div className="bg-black top-0 left-0 z-5 flex flex-col items-center justify-center sm:w-full">
-				<div
-					className={`min-h-screen flex-1 flex flex-col items-center justify-center transform transition-transform duration-700 ${
-						showWelcome ? 'welcome-animation' : ''
-					}`}
-				>
-					<h2 className="text-3xl font-bold text-white text-center sm:text-4xl lg:text-6xl">
-						WELCOME HONOURED GUEST
-					</h2>
-					<p className="text-lg text-white text-center mt-4 sm:mt-3 sm:text-xl lg:text-2xl lg:mt-5 lg:mb-2">
-						to the birthplace of our dynasty
-					</p>
-					<button className="bg-black border-2 border-gray-500 text-white px-5 py-3 rounded-md mt-3 hover-bg-gray-900 transform hover:scale-105 transition-transform text-sm sm:text-base sm:mt-4">
-						Get Started
-					</button>
-				</div>
+			<hr className="mt-5 mb-2" />
+			{/*Hero*/}
 
-				<div className="min-h-screen p-4 text-center sm:p-8 lg:p-12">
-					<h2 className="font-bold text-3xl text-white p-3 sm:p-6">Our App's Purpose</h2>
-					<div className="flex flex-col lg:flex-row lg:justify-between">
-						{/* Purpose 1 */}
-						<div className="container p-3 sm:p-6 lg:p-8 lg:flex">
-							<div className="rounded-lg border-2 border-white p-3 sm:p-6 lg:p-8">
-								<h2 className="text-2xl font-bold text-white">1. Track Your Habits and Goals</h2>
-								<p className="text-md text-white mt-2 sm:mt-3">
-									Stay accountable by tracking and managing your Habits, Daily goals, and To-Do list
-									with our web app.
-								</p>
-							</div>
-						</div>
-
-						{/* Purpose 2 */}
-						<div className="container p-3 sm:p-6 lg:p-8 lg:flex">
-							<div className="rounded-lg border-2 border-white p-3 sm:p-6 lg:p-8">
-								<h2 className="text-2xl font-bold text-white">2. Earn Rewards for Your Goals</h2>
-								<p className="text-md text-white mt-2 sm:mt-3">
-									Check off tasks to gain rewards and use them to tame mysterious creatures in
-									Habitkub.
-								</p>
-							</div>
-						</div>
-
-						{/* Purpose 3 */}
-						<div className="container p-3 sm:p-6 lg:p-8 lg:flex">
-							<div className="rounded-lg border-2 border-white p-3 sm:p-6 lg:p-8">
-								<h2 className="text-2xl font-bold text-white">3. Tame Mysterious Monsters</h2>
-								<p className="text-md text-white mt-2 sm:mt-3">
-									Tame monsters with the item you got from tasks.
-								</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+			<div className="bg-white w-full min-h-screen"></div>
 
 			{/*Footer*/}
 			<footer className="bg-gray-900 text-white py-3 sm:py-6 lg:py-2">
