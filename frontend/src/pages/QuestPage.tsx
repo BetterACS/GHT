@@ -51,7 +51,7 @@ export default function QuestPage() {
 		},
 	];
 	const [containers, setContainers] = useState<DNDType[]>(initialContainers);
-
+	
 	//temp
 	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 	const [currentContainerId, setCurrentContainerId] = useState<UniqueIdentifier>();

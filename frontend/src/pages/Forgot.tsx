@@ -7,6 +7,8 @@ import Config from '../../../backend/src/config.ts';
 import { Input, Button } from '@material-tailwind/react';
 import { IoIosMail } from 'react-icons/io';
 import { Card, IconButton, Typography } from '@material-tailwind/react';
+import withReactContent from 'sweetalert2-react-content';
+import Swal from 'sweetalert2';
 
 const Forgot = () => {
 	// Define state variables for form fields
@@ -22,7 +24,16 @@ const Forgot = () => {
 
 	const navigate = useNavigate();
 	// Handle form submission
-
+	const errorSweetAlert = (text: string) => {
+		const MySwal = withReactContent(Swal);
+				MySwal.fire({
+					title: 'Error occured!',
+					text: text,
+					icon: 'error',
+					confirmButtonText: 'Ok',
+				});
+		return;
+	}
 	useEffect(() => {
 		if (loaded) {
 			return;
@@ -32,16 +43,80 @@ const Forgot = () => {
 		setLoaded(true);
 	});
 
-	const handleSubmit = (e: any) => {
+	const handleSubmit = async (e: any) => {
 		e.preventDefault();
 		console.log('New password: ', newPassword);
 		console.log('Confirm new password: ', confirmNewPassword);
+		console.log('OTP: ', otp);
+		console.log('Email: ', email);
+		if (email == ''||email==null||otp == ''||otp==null||newPassword == ''||newPassword==null||confirmNewPassword == ''||confirmNewPassword==null) {
+			errorSweetAlert('Please fill in all the fields');
+			setError('Please fill in all the fields');
+			return;
+		}
+		try {
+			const results = await axios.post(`http://localhost:${Config.BACKEND_PORT}/forgot_password/change`, {
+				email: email,
+				OTP: otp,
+				password: newPassword,
+				confirm_password: confirmNewPassword
+			});
+			const result = results.data as returnInterface;
+			if (result.return==0){
+				//alert the user that the OTP has been sent
+				const MySwal = withReactContent(Swal);
+				MySwal.fire({
+					title: 'Success!',
+					text: 'Your password has been changed',
+					icon: 'success',
+					confirmButtonText: 'Ok',
+				});
+				navigate('/log_in');
+			}
+			else{
+				setError(result.message);
+				errorSweetAlert(result.message);
+				return;
+			}
+			
+		} catch (err) {
+			console.log(err)
+		}
 	};
 
-	const handleSendOTP = (e: any) => {
+	const handleSendOTP = async (e: any) => {
 		e.preventDefault();
-		console.log('Email: ', email);
-		console.log('OTP: ', otp);
+
+		if (email == ''||email==null) {
+			setError('Please enter your email');
+			errorSweetAlert("Please enter your email");
+			return;
+		}
+		try {
+			const results = await axios.post(`http://localhost:${Config.BACKEND_PORT}/forgot_password`, {
+				email: email
+			});
+			const result = results.data as returnInterface;
+			if (result.return==0){
+				//alert the user that the OTP has been sent
+				const MySwal = withReactContent(Swal);
+				MySwal.fire({
+					title: 'OTP has been sent!',
+					text: 'Please check out your email',
+					icon: 'success',
+					confirmButtonText: 'Ok',
+				});
+			}
+			else{
+				setError(result.message);
+				errorSweetAlert(result.message);
+				return;
+			}
+			
+		} catch (err) {
+			console.log(err)
+		}
+
 	};
 
 	return (
@@ -50,7 +125,7 @@ const Forgot = () => {
 				<h1>HABITKUB</h1>
 			</div>
 
-			<div>{error}</div>
+			{/* <div className='text-red-400'>{error}</div> */}
 
 			<Card color="transparent" shadow={false}>
 				<Typography variant="h4" color="blue-gray">
