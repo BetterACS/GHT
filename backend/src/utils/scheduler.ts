@@ -2,8 +2,6 @@
  * @fileoverview Scheduler class. Used to schedule tasks and provide code for time-based events.
  */
 import cron from 'node-cron';
-import Config from '../config.js';
-import { monsterModel } from '../database/models.js';
 import Controller from './deliver.js';
 import Logger from './logger.js';
 
@@ -27,12 +25,13 @@ export default class Scheduler {
 		const logger = Logger.instance().logger();
 		this.updateRandomMonster();
 		logger.info('[scheduler]:startMonsterSchedule - Updating random monster');
-		cron.schedule(`*/${Config.RESET_EVERY_N_SECONDS} * * * * *`, this.updateRandomMonster);
+		cron.schedule(`*/4 * * * * *`, this.updateRandomMonster);
 	}
 
-	private async updateRandomMonster() {
-		const randomMonster = await monsterModel.aggregate([{ $sample: { size: 1 } }]);
-		await Controller.instance().setCurrentMonster(randomMonster[0]);
+	public async updateRandomMonster() {
+		const seed = Math.floor(Math.random() * 1000000);
+
+		await Controller.instance().setCurrentMonster(seed);
 	}
 	///#endregion
 }
