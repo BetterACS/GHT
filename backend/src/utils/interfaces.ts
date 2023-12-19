@@ -62,6 +62,7 @@ interface userStoragesInterface {
 	email: string;
 	field: fieldInterface;
 	inventory: inventoryInterface;
+	image: string;
 }
 
 interface returnInterface {

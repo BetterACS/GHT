@@ -17,45 +17,92 @@ import Avatar from "react-avatar-edit";
 import { faPenToSquare, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FaCamera } from "react-icons/fa";
-import userProfile from "../assets/JackHumLek.jpg";
+import userProfile from "../assets/sample.txt";
 import axios from "axios";
 import authorization from "../utils/authorization";
 import { returnInterface } from "../../../backend/src/utils/interfaces";
 import Config from "../../../backend/src/config";
-
+import tokenAuth from "../utils/tokenAuth";
+import { useNavigate } from 'react-router-dom';
 export default function Profile() {
     const [activeTab, setActiveTab] = useState("profile");
     const [open, setOpen] = React.useState(false);
-    const [imgCrop, setImgCrop] = useState<boolean | null>(null);
-    const [storeImage, setStoreImage] = useState<Array<{ imgCrop: boolean | null }>>([]);
+    const [imgCrop, setImgCrop] = useState<string|null>(null);
+    const [storeImage, setStoreImage] = useState<Array<{ imgCrop: string | null }>>([]);
 
     const onClose = () => {
         setImgCrop(null);
     };
 
     const onCrop = (view: any): void => {
-        setImgCrop(view);
+        setImgCrop(view); 
     };
+    
+    const saveImage = async () => {
+        try{
+            if (imgCrop !== null) {
+                // Find the index of the existing image in the array
+                const existingImageIndex = storeImage.findIndex((item) => item.imgCrop !== null);
 
-    const saveImage = () => {
-        if (imgCrop !== null) {
-            // Find the index of the existing image in the array
-            const existingImageIndex = storeImage.findIndex((item) => item.imgCrop !== null);
+                // If an existing image is found, update it; otherwise, add a new one
+                if (existingImageIndex !== -1) {
+                    console.log("-1");
+                    const updatedStoreImage = [...storeImage];
+                    updatedStoreImage[existingImageIndex] = { imgCrop };
+                    setStoreImage(updatedStoreImage);
+                    await updateImageOnServer(imgCrop);
+                } 
 
-            // If an existing image is found, update it; otherwise, add a new one
-            if (existingImageIndex !== -1) {
-                const updatedStoreImage = [...storeImage];
-                updatedStoreImage[existingImageIndex] = { imgCrop };
-                setStoreImage(updatedStoreImage);
-            } else {
-                setStoreImage([{ imgCrop }]);
+                handleModalOpen();
             }
-
-            handleModalOpen();
+        }
+        catch (err){
+            console.log('Error saving image', err);
         }
     };
-
+    // image;
+    const updateImageOnServer = async (imgCrop: string) => {
+        console.log("Updating image on the server");
+        try {
+            const results = await axios.post(
+                `http://localhost:${Config.BACKEND_PORT}/user/no-sql`,
+                {
+                    email: email,
+                    image: imgCrop,
+                },
+                { headers: headers }
+            );
     
+            const result = results.data as returnInterface;
+            if (result.return === 0) {
+                console.log("Updated image on the server", result);
+            }
+        } catch (err) {
+            console.log('Error updating image on the server', err);
+            // Handle the error if needed, and possibly throw it
+            throw err;
+        }
+    };
+    const queryImage = async () => {
+        try {
+            const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/user/no-sql`, {
+                params: {
+                    email: email,
+                },
+                headers: headers,
+            });
+    
+            const result = results.data as returnInterface;
+            const image = result.data.image.toString();
+    
+            // Assuming setStoreImage returns a Promise
+            return image; // Now the function returns the image string
+        } catch (err) {
+            console.log('Error querying user', err);
+            // Handle the error if needed, and possibly throw it
+            throw err;
+        }
+    };
 
     const profileImagesShow = storeImage.map(item => item.imgCrop);
     
@@ -69,6 +116,7 @@ export default function Profile() {
         // Add your logic for handling the "forgot password" click event
         console.log('Forgot password clicked!');
     };
+    
     //variable for query user
     const [username, setUsername] = useState<string | null>(null);
     let headers = {
@@ -77,7 +125,14 @@ export default function Profile() {
 		email: `${localStorage.getItem('email')}`,
 	};
     const email = localStorage.getItem('email');
-
+    const [accessToken, setAccessToken] = useState<string>(localStorage.getItem('access_token') || '');
+    const [refreshToken, setRefreshToken] = useState<string>(localStorage.getItem('refresh_token') || '');
+    const updateAccessToken = async (newToken: string, newRefresh: string) => {
+		await setAccessToken(newToken);
+		await localStorage.setItem('access_token', newToken);
+		await setRefreshToken(newRefresh);
+		await localStorage.setItem('refresh_token', newRefresh);
+	};
     const userQuery = async () => {
 		try {
 			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/user`, {
@@ -87,7 +142,7 @@ export default function Profile() {
 				headers: headers,
 			});
 			const result = results.data as returnInterface;
-            console.log("result.data", result,"result.data[0].username", result.data[0].username);
+            
             setUsername(result.data[0].username);
 		} catch (error) {
 			console.error('Error to query user', error);
@@ -98,14 +153,65 @@ export default function Profile() {
       };
     
     const updateUsername = async () => {
-        
+        try {
+            
+			const results = await axios.put(`http://localhost:${Config.BACKEND_PORT}/user`, {
+				username: username,
+                email: email,	
+			},{ headers: headers });
+			const result = results.data as returnInterface;
+            authorization(result, ()=>{
+                console.log(result)
+            },updateAccessToken)
+		} catch (error) {
+			console.error('Error to query user', error);
+		}
+    }
+    //variable for password zone
+    const [new_password, setNewPassword] = useState<string>("");
+    const [old_password, setOldPassword] = useState<string>("");
+    const [confirm_password, setConfirmPassword] = useState<string>("");
+    const handleNewPasswordChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+        setNewPassword(event.target.value);
+      };
+    const handleOldPasswordChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+        setOldPassword(event.target.value);
+      };
+    const handleConfirmPasswordChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+        setConfirmPassword(event.target.value);
+      };
+    const updatePassword = async () => {
+        if (!old_password || !new_password || !confirm_password) {
+            alert('Please fill in all password fields');
+            return;
+        }
+        try {
+			const results = await axios.put(`http://localhost:${Config.BACKEND_PORT}/user/password`, {
+				old_password: old_password,
+                email: email,
+                new_password: new_password,
+                confirm_password: confirm_password,
+			},{ headers: headers });
+			const result = results.data as returnInterface;
+            authorization(result, ()=>{
+                console.log(result)
+            },updateAccessToken)
+		} catch (error) {
+			console.error('Error to query user', error);
+		}
     }
     useEffect(() => {
 		const load = async () =>{
 			await userQuery();
+            const image = await queryImage();
+            await setStoreImage([{ imgCrop: image }]);
 		}
 		load();
 	}, []);
+    const navigate = useNavigate();
+    useEffect(() => {
+		tokenAuth(navigate,'/profile',"/log_in");
+	}, [accessToken]);
     return (
         <>
             <div className="flex flex-row items-baseline">
@@ -174,7 +280,7 @@ export default function Profile() {
                             </div>
                             <p className="text-xs text-gray-600 ml-2 mt-2">Your name may appear here. You can change it at any time.</p>
 
-                            <Button className=" bg-green-500 my-4" onClick={()=>{console.log("green summit button")}}>
+                            <Button className=" bg-green-500 my-4" onClick={updateUsername}>
                                 <p className="b">updated profile</p>
                             </Button>
                         </div>
@@ -185,14 +291,14 @@ export default function Profile() {
                             <h1 className="text-2xl">Password</h1>
                             <div className=" w-1/2 sm:w-full lg:w-full mx-auto border-[1px] border-gray-300 mb-4 sm:mb-6 lg:mb-8"></div>
                             <div className="w-1/2">
-                                <Input label="Old password" value="test"/>
+                                <Input label="Old password" value={old_password} type="password" onChange={handleOldPasswordChange} required/>
                                 <div className="my-4"></div>
-                                <Input label="New password" value="test"/>
+                                <Input label="New password" value={new_password} type="password"  onChange={handleNewPasswordChange} required/>
                                 <div className="my-4"></div>
-                                <Input label="Confirm new password" value="test"/>
+                                <Input label="Confirm new password" value={confirm_password} type="password"  onChange={handleConfirmPasswordChange} required/>
                             </div>
                             <div className="flex gap-8 items-center mt-2">
-                                <Button className="bg-gray-200 border border-[1px] border-gray-600 text-black my-4" onClick={()=>console.log("gray update button")}>
+                                <Button className="bg-gray-200 border border-[1px] border-gray-600 text-black my-4" onClick={updatePassword}>
                                     Update password
                                 </Button>
                                 <p className="text-blue-600 cursor-pointer hover:text-blue-800 hover:underline transition"
