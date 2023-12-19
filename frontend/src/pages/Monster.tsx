@@ -52,7 +52,7 @@ const Monster = () => {
 	const [monsters, setMonsters] = useState<monsterInterface[]>([]);
 	const [items, setItems] = useState<any[]>([]);
 	const [monsterLoading, setMonsterLoading] = useState(true);
-	const [itemLoading, setItemLoading] = useState(false);
+	const [itemLoading, setItemLoading] = useState(true);
 	const navigate = useNavigate();
 	const [shake, setShake] = useState(false);
 	const [background, setBackground] = useState('/scene_1.png');
@@ -149,6 +149,9 @@ const Monster = () => {
 			console.log(newItems);
 
 			const itemRequests = newItems.map((item) => {
+				if (item.item_id == '-1') {
+					return null;
+				}
 				if (item.quantity > 0) {
 					return axios
 						.get(`http://localhost:${Config.BACKEND_PORT}/item`, {
