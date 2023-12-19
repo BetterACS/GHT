@@ -1,8 +1,8 @@
 import nodemailer from 'nodemailer';
-import { Resend } from 'resend';
+// import { Resend } from 'resend';
 import Config from '../config.js';
 import Logger from './logger.js';
-const resend = new Resend('re_3jJK8g1L_8KUh6kPsN1M46151Kj6jRDWG');
+// const resend = new Resend('re_3jJK8g1L_8KUh6kPsN1M46151Kj6jRDWG');
 
 const sendVerification = async (email: string, token: string): Promise<void> => {
 	const logger = Logger.instance().logger();
