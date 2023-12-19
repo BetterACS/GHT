@@ -41,7 +41,7 @@ const Analytics = () => {
 			let temp: any = [];
 			const counter_dict: any = {};
 			result.data.map(async (item: any) => {
-				if (item.status === 'Done') {
+				if (item.status === 'Done' || item.status==="archive") {
 					// temp.push({ date: item.last_update_date, count: 1 });
 					counter_dict[item.last_update_date] = (counter_dict[item.last_update_date] || 0) + 1;
 				}

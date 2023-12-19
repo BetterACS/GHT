@@ -38,6 +38,13 @@ const SignUp = () => {
 					setEmail('');
 					setPassword('');
 					setError(result.message);
+					const MySwal = withReactContent(Swal);
+					MySwal.fire({
+						title: 'Error!',
+						text: result.message,
+						icon: 'error',
+						confirmButtonText: 'Ok',
+					});
 					console.log(result.data.error);
 					return;
 				}
