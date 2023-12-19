@@ -148,7 +148,7 @@ export function ListWithBadge({ tags, handleButtonClick, handleButtonClickResetF
 }
 
 class SideBar {
-	public static profileMenu = ({ logoutFunction }: any) => {
+	public static profileMenu = ({ profileFunction, logoutFunction }: any) => {
 		return (
 			<Menu placement="bottom-start">
 				<MenuHandler>
@@ -164,6 +164,7 @@ class SideBar {
 					<MenuItem
 						placeholder=""
 						className="flex items-center gap-2 bg-white border-0 focus:bg-gray-200 outline-none focus:outline-none hover:outline-none active:outline-none"
+						onClick={profileFunction}
 					>
 						<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<path
@@ -254,6 +255,9 @@ class SideBar {
 									console.log('logout');
 									localStorage.clear();
 									navigate('/');
+								}}
+								profileFunction={() => {
+									navigate('/profile');
 								}}
 							/>
 

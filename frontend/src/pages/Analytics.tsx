@@ -12,8 +12,8 @@ import { useNavigate } from 'react-router-dom';
 
 const Analytics = () => {
 	const navigate = useNavigate();
-	const email = localStorage.getItem('email') || '';
 	const [values, setValues] = useState([{}]);
+	const email = localStorage.getItem('email') || '';
 	const [username, setUsername] = useState('');
 	const [accessToken, setAccessToken] = useState(localStorage.getItem('access_token'));
 	const [refreshToken, setRefreshToken] = useState(localStorage.getItem('refresh_token'));
@@ -39,7 +39,7 @@ const Analytics = () => {
 
 			const result = results.data as returnInterface;
 			let temp: any = [];
-			const counter_dict:any = {};
+			const counter_dict: any = {};
 			result.data.map(async (item: any) => {
 				if (item.status === 'Done') {
 					// temp.push({ date: item.last_update_date, count: 1 });
@@ -49,8 +49,8 @@ const Analytics = () => {
 			// หลักการทำงานคือเอายัดเข้า dict แล้ว loop dict แล้วยัดเข้า temp ซึ่งมันจะเขียนทับตัวเดิม
 			Object.entries(counter_dict).forEach(([key, value]) => {
 				temp.push({ date: key, count: value });
-			  });
-			
+			});
+
 			setValues(temp);
 		} catch (error) {}
 	};

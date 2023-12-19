@@ -919,6 +919,7 @@ export default function QuestPage() {
 				onSelectTag={selectTag}
 				onRemoveTag={removeTag}
 				onDeleteTag={deleteTag}
+				currentDueDate={findItemDate(currentItemId)}
 			/>
 
 			<div className="flex flex-row">

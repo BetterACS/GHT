@@ -13,8 +13,8 @@ import FocusTrap from 'focus-trap-react';
 import { SelectSingleEventHandler } from 'react-day-picker';
 import { usePopper } from 'react-popper';
 
-function DatePickerDialog({ onChangeDate }: any) {
-	const [selected, setSelected] = useState<Date | undefined>(new Date());
+function DatePickerDialog({ currentDate, onChangeDate }: any) {
+	const [selected, setSelected] = useState<Date | undefined>(new Date(currentDate));
 	const [inputValue, setInputValue] = useState<string>('');
 	const [isPopperOpen, setIsPopperOpen] = useState(false);
 
@@ -23,7 +23,7 @@ function DatePickerDialog({ onChangeDate }: any) {
 	const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null);
 
 	const popper = usePopper(popperRef.current, popperElement, {
-		placement: 'bottom-start',
+		placement: 'top',
 	});
 
 	const closePopper = () => {
@@ -104,7 +104,7 @@ function DatePickerDialog({ onChangeDate }: any) {
 							selected={selected}
 							onSelect={handleDaySelect}
 							showOutsideDays
-							className="border-0 z-50 h-20 "
+							className="border-0 z-50"
 							defaultMonth={new Date()}
 							classNames={{
 								caption: 'flex justify-center py-2 mb-4 relative items-center',
