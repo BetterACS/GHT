@@ -14,7 +14,9 @@ import { SelectSingleEventHandler } from 'react-day-picker';
 import { usePopper } from 'react-popper';
 
 function DatePickerDialog({ currentDate, onChangeDate }: any) {
-	const [selected, setSelected] = useState<Date | undefined>(new Date(currentDate));
+	const [selected, setSelected] = useState<Date | undefined>(
+		new Date(currentDate ? currentDate : format(new Date(), 'y-MM-dd'))
+	);
 	const [inputValue, setInputValue] = useState<string>('');
 	const [isPopperOpen, setIsPopperOpen] = useState(false);
 

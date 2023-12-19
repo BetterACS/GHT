@@ -48,11 +48,11 @@ class EditItemModal extends ModalBase {
 		currentDueDate,
 	}: EditItemModalProps) {
 		const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-		useEffect(() => {
-			if (currentDueDate != '' && currentDueDate != undefined) {
-				setDate(format(new Date(currentDueDate), 'yyyy-MM-dd'));
-			}
-		}, [currentDueDate]);
+		// useEffect(() => {
+		// 	if (currentDueDate != '' && currentDueDate != undefined) {
+		// 		setDate(format(new Date(currentDueDate), 'yyyy-MM-dd'));
+		// 	}
+		// }, [currentDueDate]);
 
 		return (
 			<EditItemModal.Modal
