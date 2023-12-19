@@ -17,6 +17,7 @@ import { returnInterface } from '../../../backend/src/utils/interfaces';
 import Config from '../../../backend/src/config';
 import { Menu, MenuHandler, MenuList, MenuItem } from '@material-tailwind/react';
 import { InformationTooltip } from './Info';
+import UserDeleteModal from './modals/UserLogoutModal';
 
 interface BarProps {
 	tags: TagType[];
@@ -239,6 +240,8 @@ class SideBar {
 		const [loading, setLoading] = useState(true);
 		const navigate = useNavigate();
 		const [storeImage, setStoreImage] = useState<Array<{ imgCrop: string | null }>>([]);
+		const [showModal, setShowModal] = useState(false);
+
 		const queryImage = async () => {
 			try {
 				const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/user/no-sql`, {
@@ -274,6 +277,14 @@ class SideBar {
 		}
 		return (
 			<div className="flex flex-row">
+				<UserDeleteModal.render
+					showModal={showModal}
+					setShowModal={setShowModal}
+					onLogout={() => {
+						localStorage.clear();
+						navigate('/');
+					}}
+				/>
 				{/* Sidebar */}
 				<div
 					className={clsx('bg-gray-100 min-h-screen h-auto overflow-y-auto transition-all duration-200', {
@@ -286,11 +297,7 @@ class SideBar {
 							{/* ใช้เป็น username */}
 							<this.profileMenu
 								profile={storeImage}
-								logoutFunction={() => {
-									console.log('logout');
-									localStorage.clear();
-									navigate('/');
-								}}
+								logoutFunction={() => setShowModal(true)}
 								profileFunction={() => {
 									navigate('/profile');
 								}}

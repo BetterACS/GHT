@@ -26,6 +26,8 @@ git clone https://github.com/BetterACS/GHT.git
 -   `MYSQL_DATABASE`: The name of the MySQL database.
 -   `ACCESS_TOKEN`: The access token for the JWT.
 -   `REFRESH_TOKEN`: The refresh token for the JWT.
+-   `EMAIL`: The email for sending code.
+-   `PASSWORD`: The password of the email.
 
 Example:
 
@@ -38,6 +40,8 @@ MYSQL_PORT = "3300"
 MYSQL_DATABASE = "ght"
 ACCESS_TOKEN = "aCcE$s#S"
 REFRESH_TOKEN = "r#E$fReSh"
+EMAIL = "Test@test.com"
+PASSWORD = "test"
 ```
 
 4. Install dependencies, run the following commands:
@@ -162,7 +166,7 @@ Additional monster sprite:
 
 Note: These are the default backgrounds. Made by Stable diffusion model.
 
-![monster](frontend/public/scene_1.png)
+
 ![monster](frontend/public/scene_2.png)
 ![monster](frontend/public/scene_3.png)
 ![monster](frontend/public/scene_4.png)

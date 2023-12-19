@@ -4,7 +4,7 @@ import { Tooltip } from '@material-tailwind/react';
 import { Typography } from '@material-tailwind/react';
 import clsx from 'clsx';
 
-const Item = ({ handleItemClick, item }: any) => {
+const Item = ({ handleItemClick, item, onZero }: any) => {
 	const [isClicked, setIsClicked] = useState(false);
 	const [num, setNum] = useState(item.quantity);
 
@@ -12,14 +12,8 @@ const Item = ({ handleItemClick, item }: any) => {
 
 	useEffect(() => {
 		if (num === 0) {
+			onZero();
 			setIsClicked(false);
-			// Find parent element by current element.
-			const wrapperElement = document.getElementById(item.item_id)?.parentElement;
-			wrapperElement?.classList.add('hidden');
-
-			const parentElement = wrapperElement?.parentElement;
-			// Remove wrapper element from parent element
-			parentElement?.removeChild(wrapperElement as Node);
 		}
 	}, [num]);
 

@@ -3,8 +3,8 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { UniqueIdentifier } from '@dnd-kit/core';
 import { TagType, DNDType, Item } from '../../utils/types';
 import TagDisplay from '../Tag';
-import Input from '../../components/Input';
-import Button from '../../components/Button';
+// import Input from '../../components/Input';
+import { Button, Input, Textarea } from '@material-tailwind/react';
 import { format } from 'date-fns';
 import DatePickerDialog from '../Date';
 
@@ -64,19 +64,21 @@ class EditItemModal extends ModalBase {
 				<div className="overlay flex flex-col w-full items-start gap-y-4">
 					<h1 className="text-gray-800 text-3xl font-bold">Edit Item</h1>
 					<Input
+						crossOrigin={'anonymous'}
+						label="Item Title"
 						type="text"
-						placeholder="Item Title"
 						name="itemname"
 						value={itemName}
 						onChange={(e) => setItemName(e.target.value)}
 					/>
-					<Input
-						type="text"
-						placeholder="Item Description"
+					<Textarea
+						// crossOrigin={'anonymous'}
+						label="Description"
 						name="itemDescription"
 						value={itemDescription}
 						onChange={(e) => setItemDescription(e.target.value)}
 					/>
+
 					<div className="flex flex-warp">
 						{/* {containers.map((container) => {
 							return <div key={container.id}></div>;
@@ -113,6 +115,8 @@ class EditItemModal extends ModalBase {
 					{/* <input type="date" value={date} onChange={(e) => setDate(e.target.value)} /> */}
 					<DatePickerDialog currentDate={currentDueDate} onChangeDate={setDate} />
 					<Button
+						placeholder={''}
+						// color="blue"
 						onClick={() => {
 							onEditItem(date);
 						}}
