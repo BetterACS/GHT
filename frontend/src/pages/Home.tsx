@@ -68,7 +68,7 @@ const Home = () => {
 					></path>
 				</svg>
 				<div className="flex flex-row">
-					<div className=" pt-44 pl-52 w-[560px] h-full">
+					<div className=" pt-44 pl-80 w-[680px] h-full">
 						<QuestContainer id="preview" title="Task">
 							<div className="flex flex-col gap-2 w-96">
 								<div id="test-quest-1">
