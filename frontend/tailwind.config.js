@@ -13,7 +13,7 @@ export default withMT({
     },
     fontSize: {
       "home-title": "2rem",
-      "home": "5rem",
+      "home": "7.2rem",
       sm: ['14px', '20px'],
       base: ['16px', '24px'],
       lg: ['20px', '28px'],

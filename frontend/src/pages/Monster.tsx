@@ -251,7 +251,11 @@ const Monster = () => {
 	};
 
 	if (itemLoading || monsterLoading) {
-		return <div>Loading...</div>;
+		return (
+			<div className="flex h-screen w-full">
+				<Spinner className="m-auto h-40 w-40" color="red"></Spinner>
+			</div>
+		);
 	}
 
 	return (
