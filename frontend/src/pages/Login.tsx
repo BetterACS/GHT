@@ -4,13 +4,15 @@ import { returnInterface } from '../../../backend/src/utils/interfaces.ts';
 import tokenAuth from '../utils/tokenAuth.ts';
 import axios from 'axios';
 import Config from '../../../backend/src/config.ts';
-
+import { Input, Button } from '@material-tailwind/react';
 const Login = () => {
 	// Define state variables for form fields
 	const [loaded, setLoaded] = useState(false);
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [error, setError] = useState('');
+
+	const [isError, setIsError] = useState(false);
 
 	const navigate = useNavigate();
 	// Handle form submission
@@ -20,11 +22,15 @@ const Login = () => {
 			return;
 		}
 
-		tokenAuth(navigate,'/quest','/log_in');
+		tokenAuth(navigate, '/quest', '/log_in');
 		setLoaded(true);
 	});
 	const handleSubmit = (e: any) => {
 		e.preventDefault();
+		if (email === '' || password === '') {
+			setError('Please enter email and password');
+			return;
+		}
 		// You can add your logic for handling the form submission here
 		// Typically, this is where you'd make an API request to register the user.
 		axios
@@ -60,34 +66,38 @@ const Login = () => {
 				<form className="mt-4 text-center" onSubmit={handleSubmit}>
 					{/* Email Input */}
 					<div className="mb-4">
-						<input
+						<Input
+							crossOrigin={'anonymous'}
+							label="Email"
 							type="email"
 							id="email"
 							name="email"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							className="border rounded-md p-2 w-64"
-							placeholder="Username"
-							required
+							error={error !== ''}
 						/>
 					</div>
 
 					{/* Password Input */}
 					<div className="mb-4">
-						<input
+						<Input
+							crossOrigin={'anonymous'}
+							label="Password"
 							type="password"
 							id="password"
 							name="password"
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							className="border rounded-md p-2 w-64"
-							placeholder="Password"
-							required
+							error={error !== ''}
 						/>
 					</div>
-
+					<a className="cursor-pointer text-gray-400 hover:text-gray-500" onClick={() => navigate('/forgot')}>
+						Forgot password
+					</a>
 					{/* Submit Button */}
-					<div className="text-center">
+					<div className="text-center pt-4">
 						<button
 							type="submit"
 							className="bg-gray-900 border-2 border-gray-500 text-white px-5 py-3 rounded-md mt-3 hover-bg-gray-900 transform hover:scale-105 transition-transform text-xs sm:text-sm"
