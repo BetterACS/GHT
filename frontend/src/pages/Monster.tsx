@@ -3,7 +3,6 @@ import axios from 'axios';
 import Config from '../../../backend/src/config';
 import { useNavigate } from 'react-router-dom';
 import { monsterInterface, returnInterface } from '../../../backend/src/utils/interfaces';
-import background from '../assets/sample_scene.png';
 import tokenAuth from '../utils/tokenAuth';
 import '../styles/Monster.css';
 import { Carousel } from '@trendyol-js/react-carousel';
@@ -14,6 +13,7 @@ import withReactContent from 'sweetalert2-react-content';
 import SideBar from '../components/SideBar';
 import { Typography } from '@material-tailwind/react';
 import Item from '../components/Item';
+import Scheduler from '../../../backend/src/utils/scheduler';
 
 function TooltipWithHelperIcon() {
 	return (
@@ -51,10 +51,11 @@ function TooltipWithHelperIcon() {
 const Monster = () => {
 	const [monsters, setMonsters] = useState<monsterInterface[]>([]);
 	const [items, setItems] = useState<any[]>([]);
-	const [loading, setLoading] = useState(true);
+	const [monsterLoading, setMonsterLoading] = useState(true);
 	const [itemLoading, setItemLoading] = useState(false);
 	const navigate = useNavigate();
 	const [shake, setShake] = useState(false);
+	const [background, setBackground] = useState('/scene_1.png');
 	const email = localStorage.getItem('email');
 
 	const headers = {
@@ -77,11 +78,56 @@ const Monster = () => {
 
 	const getMonsters = async () => {
 		try {
-			const response = await axios.get(`http://localhost:${Config.BACKEND_PORT}/monster`, { headers });
+			const response = await axios.get(`http://localhost:${Config.BACKEND_PORT}/monster`, {
+				params: { email: email },
+				headers: headers,
+			});
 			const result = response.data as returnInterface;
 			const monsterResult = result.data['monsters'] as monsterInterface[];
 
 			setMonsters(monsterResult);
+			const element = monsterResult[0].element.toLocaleLowerCase();
+			console.log('Element', element);
+
+			if (element === 'fire') {
+				const index = Math.floor(Math.random() * 2);
+				if (index === 0) {
+					setBackground('/scene_3.png');
+				} else {
+					setBackground('/scene_9.png');
+				}
+			} else if (element === 'earth' || element === 'ground' || element === 'rock') {
+				const index = Math.floor(Math.random() * 2);
+				if (index === 0) {
+					setBackground('/scene_8.png');
+				} else {
+					setBackground('/scene_2.png');
+				}
+			} else if (element === 'electric' || element === 'lightning') {
+				setBackground('/scene_6.png');
+			} else if (element === 'plant' || element === 'grass' || element === 'leaf' || element === 'poison') {
+				const index = Math.floor(Math.random() * 2);
+				if (index === 0) {
+					setBackground('/scene_6.png');
+				} else {
+					setBackground('/scene_2.png');
+				}
+			} else if (element === 'ice') {
+				const index = Math.floor(Math.random() * 2);
+				if (index === 0) {
+					setBackground('/scene_4.png');
+				} else {
+					setBackground('/scene_5.png');
+				}
+			} else if (element === 'wind') {
+				setBackground('/scene_6.png');
+			} else if (element === 'water') {
+				setBackground('/scene_7.png');
+			} else {
+				setBackground('/scene_1.png');
+			}
+
+			setMonsterLoading(false);
 		} catch (err) {
 			console.log(err);
 		}
@@ -126,7 +172,7 @@ const Monster = () => {
 			const validItems = fetchedItems.filter((item) => item !== null); // Filter out null values from failed requests
 
 			setItems(validItems);
-			setLoading(false);
+			setItemLoading(false);
 		} catch (err) {
 			console.log('Error fetching items:', err);
 		}
@@ -168,18 +214,31 @@ const Monster = () => {
 					}
 				});
 				await axios
-					.post(`http://localhost:${Config.BACKEND_PORT}/monster/tame/${item_id}`, {
-						email: localStorage.getItem('email'),
-					})
-					.then((response) => {
+					.post(
+						`http://localhost:${Config.BACKEND_PORT}/monster/tame/${item_id}`,
+						{
+							email: localStorage.getItem('email'),
+						},
+						{
+							headers: {
+								authorization: `Bearer ${localStorage.getItem('access_token')}`,
+								refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
+								email: `${localStorage.getItem('email')}`,
+							},
+						}
+					)
+					.then(async (response) => {
 						const result = response.data.progress;
+						const name = response.data.monster_name;
 						if (result >= 100) {
 							const MySwal = withReactContent(Swal);
 							MySwal.fire({
-								title: 'You have tamed the monster!',
+								title: `${name} has been tamed!`,
 								icon: 'success',
 								confirmButtonText: 'Ok',
 							});
+
+							await axios.post(`http://localhost:${Config.BACKEND_PORT}/monster/complete`);
 						}
 					})
 					.catch((err) => {
@@ -188,7 +247,7 @@ const Monster = () => {
 			});
 	};
 
-	if (loading) {
+	if (itemLoading || monsterLoading) {
 		return <div>Loading...</div>;
 	}
 

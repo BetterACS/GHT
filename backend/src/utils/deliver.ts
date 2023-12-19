@@ -1,7 +1,6 @@
-import { monsterInterface } from './interfaces.js';
 export default class Deliver {
 	private static INSTANCE: Deliver;
-	private static currentMonster: monsterInterface;
+	private static currentMonster: number;
 
 	private constructor() {}
 
@@ -12,11 +11,11 @@ export default class Deliver {
 		return Deliver.INSTANCE;
 	}
 
-	public getCurrentMonster(): monsterInterface {
+	public getCurrentMonster(): number {
 		return Deliver.currentMonster;
 	}
 
-	public setCurrentMonster(monster: monsterInterface) {
-		Deliver.currentMonster = monster;
+	public setCurrentMonster(seed: number) {
+		Deliver.currentMonster = seed;
 	}
 }

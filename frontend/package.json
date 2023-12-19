@@ -33,6 +33,7 @@
     "framer-motion": "^10.16.5",
     "install": "^0.13.0",
     "mysql2": "^3.6.2",
+    "node-cron": "^3.0.3",
     "react": "^18.2.0",
     "react-avatar-edit": "^1.2.0",
     "react-calendar-heatmap": "^1.9.0",
@@ -46,7 +47,8 @@
     "sweetalert2": "^11.6.13",
     "sweetalert2-react-content": "^5.0.7",
     "swiper": "^11.0.5",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.45",
