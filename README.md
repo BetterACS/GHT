@@ -149,3 +149,21 @@ Note: These are the default monsters. Made by Stable diffusion model.
 ![monster](assets/monsters/monster__36.png)
 ![monster](assets/monsters/monster__37.png)
 ![monster](assets/monsters/monster__38.png)
+
+Additional monster sprite:
+
+![monster](assets/monsters/monster__39.png)
+
+### Default Backgrounds
+
+Note: These are the default backgrounds. Made by Stable diffusion model.
+
+![monster](frontend/public/scene_1.png)
+![monster](frontend/public/scene_2.png)
+![monster](frontend/public/scene_3.png)
+![monster](frontend/public/scene_4.png)
+![monster](frontend/public/scene_5.png)
+![monster](frontend/public/scene_6.png)
+![monster](frontend/public/scene_7.png)
+![monster](frontend/public/scene_8.png)
+![monster](frontend/public/scene_9.png)
