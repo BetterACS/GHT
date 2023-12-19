@@ -937,9 +937,9 @@ export default function QuestPage() {
 				{/* Main Content */}
 				<div className="w-full flex flex-col items-center">
 					<header className="flex flex-col gap-1 mt-8 mb-4 text-2l font-bold tracking-[.25em]">
-						<h1>Quest</h1>
+						<h1 className='md:ml-0 ml-[50vw]'>Quest</h1>
 					</header>
-					<div className="xl:w-8/12 lg:w-10/12 md:w-11/12">
+					<div className="xl:w-9/12 lg:w-10/12 md:w-11/12 mx-auto w-[150vw]">
 						<div className="grid grid-cols-1 gap-6">
 							<DndContext
 								sensors={sensors}

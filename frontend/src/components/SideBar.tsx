@@ -242,7 +242,7 @@ class SideBar {
 			<div className="flex flex-row">
 				{/* Sidebar */}
 				<div
-					className={clsx('bg-gray-100 h-screen overflow-y-auto transition-all duration-200', {
+					className={clsx('bg-gray-100 min-h-screen h-auto overflow-y-auto transition-all duration-200', {
 						'w-80': isOpen, // Width when open
 						'w-0': !isOpen, // Width when closed
 					})}

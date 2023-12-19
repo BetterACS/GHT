@@ -58,7 +58,7 @@ class AddItemModal extends ModalBase {
 					{/* <DateMenu /> */}
 					<DatePickerDialog onChangeDate={setDate} />
 				</div>
-				<Button onClick={() => onAddItem(date)}>Add Item</Button>
+				<Button className="mt-2" onClick={() => onAddItem(date)}>Add Item</Button>
 			</AddItemModal.Modal>
 		);
 	}

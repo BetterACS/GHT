@@ -291,9 +291,8 @@ const Monster = () => {
 						) : (
 							<Carousel
 								show={6.5}
-								slide={3}
+								slide={1}
 								className="gap-2"
-								responsive
 								leftArrow={
 									<IconButton placeholder={'left'} className="mt-28 ml-8 bg-red-400 rounded-full">
 										<HiArrowCircleLeft size={24} />

@@ -89,10 +89,10 @@ const Inventory = () => {
 			<div className="flex flex-row">
 				<SideBar.noWorkingTags username={username} header={headers} currentPage="collection" />
 				<div className="w-full">
-					<h1 className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl mt-8">
+					<h1 className="text-center text-lg sm:text-xl md:text-3xl lg:text-4xl xl:text-6xl mt-8">
 						Monster Collection
 					</h1>
-					<div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-8 img-pixelated p-8 drop-shadow-xl">
+					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-8 img-pixelated p-4 drop-shadow-xl">
 						{monster.map((card: any) => (
 							<Card key={card.id} imageUrl={card.imageUrl} description={card.description} />
 						))}
