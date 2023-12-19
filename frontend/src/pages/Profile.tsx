@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UserCircleIcon, ShieldCheckIcon } from "@heroicons/react/24/solid";
 import {
     List,
@@ -18,6 +18,10 @@ import { faPenToSquare, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { FaCamera } from "react-icons/fa";
 import userProfile from "../assets/JackHumLek.jpg";
+import axios from "axios";
+import authorization from "../utils/authorization";
+import { returnInterface } from "../../../backend/src/utils/interfaces";
+import Config from "../../../backend/src/config";
 
 export default function Profile() {
     const [activeTab, setActiveTab] = useState("profile");
@@ -51,8 +55,10 @@ export default function Profile() {
         }
     };
 
-    const profileImagesShow = storeImage.map(item => item.imgCrop);
+    
 
+    const profileImagesShow = storeImage.map(item => item.imgCrop);
+    
     const handleModalOpen = () => setOpen(!open);
 
     const onEditItem = () => {
@@ -63,7 +69,43 @@ export default function Profile() {
         // Add your logic for handling the "forgot password" click event
         console.log('Forgot password clicked!');
     };
+    //variable for query user
+    const [username, setUsername] = useState<string | null>(null);
+    let headers = {
+		authorization: `Bearer ${localStorage.getItem('access_token')}`,
+		refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
+		email: `${localStorage.getItem('email')}`,
+	};
+    const email = localStorage.getItem('email');
 
+    const userQuery = async () => {
+		try {
+			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/user`, {
+				params: {
+					email: email,
+				},
+				headers: headers,
+			});
+			const result = results.data as returnInterface;
+            console.log("result.data", result,"result.data[0].username", result.data[0].username);
+            setUsername(result.data[0].username);
+		} catch (error) {
+			console.error('Error to query user', error);
+		}
+	};
+    const handleUsernameChange = (event: { target: { value: React.SetStateAction<string | null>; }; }) => {
+        setUsername(event.target.value);
+      };
+    
+    const updateUsername = async () => {
+        
+    }
+    useEffect(() => {
+		const load = async () =>{
+			await userQuery();
+		}
+		load();
+	}, []);
     return (
         <>
             <div className="flex flex-row items-baseline">
@@ -77,7 +119,7 @@ export default function Profile() {
                         </ListItem>
 
                         <ListItem onClick={() => setActiveTab("account")}>
-                            <ListItemPrefix>
+                            <ListItemPrefix >
                                 <ShieldCheckIcon className="w-5 h-10" />
                             </ListItemPrefix>
                             Password
@@ -122,17 +164,17 @@ export default function Profile() {
 
                             <div className="w-1/2 sm:w-full lg:w-full mx-auto border-[1px] border-gray-300 mt-8 mb-2 sm:mb-3 lg:mb-4"></div>
                             <div className="flex w-1/2">
-                                <Input label="Name" />
-                                <Button
+                                <Input label="Name" crossOrigin={undefined} value={username || ''} onChange={handleUsernameChange}/>
+                                {/* <Button
                                     className=" bg-orange-700 mx-1 border border-[1px] border-gray-400 text-xs rounded-md shadow-lg hover:shadow-xl px-25"
                                     onClick={onEditItem}
                                 >
                                     <FontAwesomeIcon icon={faPenToSquare} size="lg" />
-                                </Button>
+                                </Button> */}
                             </div>
                             <p className="text-xs text-gray-600 ml-2 mt-2">Your name may appear here. You can change it at any time.</p>
 
-                            <Button className=" bg-green-500 my-4">
+                            <Button className=" bg-green-500 my-4" onClick={()=>{console.log("green summit button")}}>
                                 <p className="b">updated profile</p>
                             </Button>
                         </div>
@@ -143,14 +185,14 @@ export default function Profile() {
                             <h1 className="text-2xl">Password</h1>
                             <div className=" w-1/2 sm:w-full lg:w-full mx-auto border-[1px] border-gray-300 mb-4 sm:mb-6 lg:mb-8"></div>
                             <div className="w-1/2">
-                                <Input label="Old password" />
+                                <Input label="Old password" value="test"/>
                                 <div className="my-4"></div>
-                                <Input label="New password" />
+                                <Input label="New password" value="test"/>
                                 <div className="my-4"></div>
-                                <Input label="Confirm new password" />
+                                <Input label="Confirm new password" value="test"/>
                             </div>
                             <div className="flex gap-8 items-center mt-2">
-                                <Button className="bg-gray-200 border border-[1px] border-gray-600 text-black my-4">
+                                <Button className="bg-gray-200 border border-[1px] border-gray-600 text-black my-4" onClick={()=>console.log("gray update button")}>
                                     Update password
                                 </Button>
                                 <p className="text-blue-600 cursor-pointer hover:text-blue-800 hover:underline transition"
