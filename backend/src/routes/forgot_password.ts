@@ -67,7 +67,8 @@ const forgotPassword = async (req: Request, res: Response): Promise<void> => {
 
 const middlewareCheckOTP = async (req: Request, res: Response, next: any): Promise<void> => {
 	const { OTP, email } = req.body;
-
+	console.log(OTP, ' ', email);
+	console.log(req.body);
 	const logger = Logger.instance().logger();
 	let returnJson: returnInterface = {
 		status: 'warning',

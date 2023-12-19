@@ -23,6 +23,7 @@ const userStoragesSchema = new Schema<userStoragesInterface>({
 	email: { type: String, required: true, unique: true },
 	inventory: { type: Object, default: {} },
 	field: { type: Object, default: {} },
+	image: { type: String, default: '' },
 });
 
 const userStoragesModel = mongoose.model<userStoragesInterface>('user_storages', userStoragesSchema);
