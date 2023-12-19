@@ -4,7 +4,7 @@ import { returnInterface } from '../../../backend/src/utils/interfaces.ts';
 import tokenAuth from '../utils/tokenAuth.ts';
 import axios from 'axios';
 import Config from '../../../backend/src/config.ts';
-import { Input, Button } from '@material-tailwind/react';
+import { Input, Button, Typography } from '@material-tailwind/react';
 const Login = () => {
 	// Define state variables for form fields
 	const [loaded, setLoaded] = useState(false);
@@ -60,7 +60,7 @@ const Login = () => {
 			<div className="mb-8 typewriter">
 				<h1>HABITKUB</h1>
 			</div>
-			<div className="bg-gray-100 p-8 rounded-md shadow-sm shadow-white">
+			<div className="bg-gray-100 p-8 rounded-md shadow-sm shadow-white w-96">
 				<h1 className="text-3xl font-bold text-center">Log In</h1>
 				{error && <div className="text-red-500">{error}</div>}
 				<form className="mt-4 text-center" onSubmit={handleSubmit}>
@@ -104,6 +104,13 @@ const Login = () => {
 						>
 							Log In
 						</button>
+
+						<Typography color="gray" className="mt-4 text-center font-normal">
+							Don't have an account?{' '}
+							<a className="font-medium text-gray-900" onClick={() => navigate('/sign_up')}>
+								Sign Up
+							</a>
+						</Typography>
 					</div>
 				</form>
 			</div>

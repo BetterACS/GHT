@@ -6,8 +6,7 @@ import tokenAuth from '../utils/tokenAuth.ts';
 import Config from '../../../backend/src/config.ts';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-
-import { Input, Button } from '@material-tailwind/react';
+import { Input, Button, Typography } from '@material-tailwind/react';
 
 const SignUp = () => {
 	// Define state variables for form fields
@@ -123,6 +122,13 @@ const SignUp = () => {
 						>
 							Sign Up
 						</button>
+
+						<Typography color="gray" className="mt-4 text-center font-normal">
+							Already have an account?{' '}
+							<a className="font-medium text-gray-900" onClick={() => navigate('/log_in')}>
+								Sign In
+							</a>
+						</Typography>
 					</div>
 				</form>
 			</div>
