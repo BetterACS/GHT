@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Quest from './pages/QuestPage';
 import Analytics from './pages/Analytics';
 import Inventory from './pages/Inventory';
+import Profile from './pages/Profile';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -21,6 +22,7 @@ function App() {
 					<Route path="/quest" element={<Quest />} />
 					<Route path="/analysis" element={<Analytics />} />
 					<Route path="/collection" element={<Inventory />} />
+					<Route path="/profile" element={<Profile />} />
 				</Routes>
 			</Router>
 		</>
