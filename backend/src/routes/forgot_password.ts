@@ -26,7 +26,7 @@ const forgotPassword = async (req: Request, res: Response): Promise<void> => {
 			logger.error('--------not exist this email in database---------');
 			returnJson = {
 				status: 'error',
-				message: 'not exist this email in database.',
+				message: 'user not exist this email in database.',
 				return: 3,
 				data: {},
 			};
@@ -182,7 +182,7 @@ const changePasswordUser = async (req: Request, res: Response): Promise<void> =>
 	} catch (error) {
 		returnJson = {
 			status: 'error',
-			message: "Error searching for the user. perhap email doesn't not exist",
+			message: 'database error',
 			return: 2,
 			data: { error: error },
 		};
