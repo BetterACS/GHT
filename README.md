@@ -74,6 +74,8 @@ npm run <server>
 
 You role-played as a young tamer who wants to become the best tamer in the world. You will be given a monster to tame. You can tame your monster by give it item (food).
 
+![Gameplay](assets/preview_1.png)
+
 Each time you complete a task, you will get a random item. You can view your items in the inventory.
 
 ### Default Items
