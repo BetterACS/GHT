@@ -237,7 +237,7 @@ export default function QuestPage() {
 											// Update the state to trigger re-render
 											setContainers([...newContainer]);
 										},
-										updateAccessToken
+										updateAccessToken,()=>{console.log(result_tag.message)}
 									);
 								}
 							}
@@ -444,8 +444,8 @@ export default function QuestPage() {
 					const new_id = Number(currentItemId.toString().replace('item-', ''));
 					if (currentContainerId === 'container-3'){
 						// if container done
-						console.log(currentItemId)
-						console.log(findDueDate(new_id))
+						//console.log(currentItemId)
+						//console.log(findDueDate(new_id))
 						try {
 							const results = axios.put(
 								`http://localhost:${Config.BACKEND_PORT}/quest`,
@@ -844,7 +844,7 @@ export default function QuestPage() {
 	};
 
 	const handleDragEnd = async (event: DragEndEvent) => {
-		console.log('drag move!', event.over);
+		//console.log('drag move!', event.over);
 		onDragEnd(event, findValueOfQuest, setContainers, setActiveId, containers);
 		const AfterContainer = findValueOfQuest(event.active.id, 'item');
 		if (typeof AfterContainer === 'undefined') {

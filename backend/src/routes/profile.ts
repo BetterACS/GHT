@@ -23,7 +23,7 @@ const getUser = async (request: Request, response: Response) => {
 				response.status(404).json(returnItem);
 			} else {
 				returnItem.status = 'success';
-				returnItem.message = 'user found';
+				returnItem.message = 'user founded';
 				returnItem.return = 0;
 				returnItem.data = result;
 				response.json(returnItem);
@@ -66,12 +66,12 @@ const setImg = async (request: Request, response: Response) => {
 			console.log(result);
 			if (result === null) {
 				returnItem.status = 'error';
-				returnItem.message = 'Imgae not found';
+				returnItem.message = 'Image not found';
 				returnItem.return = 2;
 				response.status(404).json(returnItem);
 			} else {
 				returnItem.status = 'success';
-				returnItem.message = 'Item found';
+				returnItem.message = 'image updated';
 				returnItem.return = 0;
 				returnItem.data = result;
 				response.json(returnItem);
