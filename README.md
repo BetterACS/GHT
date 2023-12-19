@@ -164,7 +164,7 @@ Additional monster sprite:
 
 Note: These are the default backgrounds. Made by Stable diffusion model.
 
-![monster](frontend/public/scene_1.png)
+
 ![monster](frontend/public/scene_2.png)
 ![monster](frontend/public/scene_3.png)
 ![monster](frontend/public/scene_4.png)
