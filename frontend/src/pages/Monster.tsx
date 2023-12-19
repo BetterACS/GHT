@@ -70,7 +70,7 @@ const Monster = () => {
 	};
 
 	useEffect(() => {
-		tokenAuth(navigate, '/monster');
+		tokenAuth(navigate, '/monster', '/log_in');
 		getMonsters();
 		getItems();
 	}, []);
@@ -96,28 +96,31 @@ const Monster = () => {
 				headers: headers,
 			});
 
-			// Filter out items with quantity greater than 0 and map to create item fetch requests
-			const itemRequests = response.data
-				.map((quantity: number, item_id: number) => {
-					if (quantity > 0) {
-						return axios
-							.get(`http://localhost:${Config.BACKEND_PORT}/item`, {
-								params: { id: item_id },
-								headers: headers,
-							})
-							.then((itemResponse) => ({
-								item_id: item_id.toString(),
-								quantity: quantity,
-								...itemResponse.data.data,
-							}))
-							.catch((err) => {
-								console.log(`Error fetching item with ID ${item_id}:`, err);
-								return null; // Return null for failed requests
-							});
-					}
-					return null;
-				})
-				.filter((quantity: number) => quantity !== null); // Filter out nulls which represent items with quantity 0 or less
+			const newItems = Object.entries(response.data).map(([key, value]) => ({
+				item_id: key as string,
+				quantity: value as number,
+			}));
+			console.log(newItems);
+
+			const itemRequests = newItems.map((item) => {
+				if (item.quantity > 0) {
+					return axios
+						.get(`http://localhost:${Config.BACKEND_PORT}/item`, {
+							params: { id: item.item_id },
+							headers: headers,
+						})
+						.then((itemResponse) => ({
+							item_id: item.item_id.toString(),
+							quantity: item.quantity,
+							...itemResponse.data.data,
+						}))
+						.catch((err) => {
+							console.log(`Error fetching item with ID ${item.item_id}:`, err);
+							return null; // Return null for failed requests
+						});
+				}
+				return null;
+			});
 
 			const fetchedItems = await Promise.all(itemRequests);
 			const validItems = fetchedItems.filter((item) => item !== null); // Filter out null values from failed requests

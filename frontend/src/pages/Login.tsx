@@ -20,7 +20,7 @@ const Login = () => {
 			return;
 		}
 
-		tokenAuth(navigate, '/quest');
+		tokenAuth(navigate,'/quest','/log_in');
 		setLoaded(true);
 	});
 	const handleSubmit = (e: any) => {

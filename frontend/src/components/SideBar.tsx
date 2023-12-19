@@ -19,31 +19,49 @@ import { TbLogout } from 'react-icons/tb';
 interface BarProps {
 	tags: TagType[];
 	username: string;
-	handleButtonClick: (tag_id: string) => void;
+	handleButtonClick: (tags: string[]) => void;
 	header: HeadersType;
 	handleButtonClickResetFilter: () => void;
 	showWorkingTags: boolean;
+	currentPage?: string;
 }
-//util funciton
-const countTag = async (tag_id: string, headers: HeadersType) => {
-	try {
-		const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/tag/count`, {
-			params: {
-				tag_id: tag_id,
-			},
-			headers: headers,
-		});
-		const result = results.data as returnInterface;
-		const total = result.data.total.toString();
-		return total as string;
-	} catch (error) {
-		console.error('Error to query user', error);
-	}
-};
-export function ListWithBadge({ tags, handleButtonClick, header }: BarProps) {
-	console.log('ListWithBadge rendered');
+import { Checkbox, ListItemPrefix, Typography } from '@material-tailwind/react';
+import { set } from 'date-fns';
 
+export function ListWithBadge({ tags, handleButtonClick, handleButtonClickResetFilter, header }: BarProps) {
 	const [tagCounts, setTagCounts] = useState<{ [key: string]: string | undefined }>({});
+	// State to store selected checkbox IDs
+	const [selectedTags, setSelectedTags] = useState<string[]>([]);
+	// Handle checkbox change
+	const handleCheckboxChange = (tagId: string) => {
+		const values = selectedTags.includes(tagId)
+			? selectedTags.filter((id) => id !== tagId)
+			: [...selectedTags, tagId];
+		setSelectedTags(values);
+		handleButtonClick(values);
+	};
+
+	const handleResetFilter = () => {
+		setSelectedTags([]);
+		handleButtonClick([]);
+		handleButtonClickResetFilter();
+	};
+
+	const countTag = async (tag_id: string, headers: HeadersType) => {
+		try {
+			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/tag/count`, {
+				params: {
+					tag_id: tag_id,
+				},
+				headers: headers,
+			});
+			const result = results.data as returnInterface;
+			const total = result.data.total.toString();
+			return total as string;
+		} catch (error) {
+			console.error('Error to query user', error);
+		}
+	};
 
 	useEffect(() => {
 		const fetchTagCounts = async () => {
@@ -63,27 +81,59 @@ export function ListWithBadge({ tags, handleButtonClick, header }: BarProps) {
 	}, [tags, header]);
 
 	return (
-		<Card placeholder={'working-tags'} className="w-full">
-			<List placeholder={'working-tags-list'}>
-				{tags.map((tag: TagType) => (
-					<ListItem
-						placeholder={'working-tags-list-item'}
-						key={tag.id}
-						onClick={() => handleButtonClick(tag.id.toString())}
-					>
-						{tag.name}
-						<ListItemSuffix placeholder={'working-tags-list-item-suffix'}>
-							<Chip
-								value={tagCounts[tag.id.toString()]}
-								variant="ghost"
-								size="sm"
-								className="rounded-full"
-							/>
-						</ListItemSuffix>
-					</ListItem>
-				))}
-			</List>
-		</Card>
+		<div className="px-8 pt-2">
+			<b className="px-8 text-lg">Working tags</b>
+
+			<IconButton placeholder="reset" className="bg-red-400 rounded-full w-8 h-8" onClick={handleResetFilter}>
+				<MdAdd color="white" size={24} />
+			</IconButton>
+			<Card placeholder="">
+				<List placeholder="">
+					{tags.map((tag: TagType) => (
+						<ListItem
+							className="p-0"
+							placeholder=""
+							key={tag.id}
+							// onClick={() => handleButtonClick(selectedTags)}
+						>
+							<label
+								htmlFor={`checkbox-tag-${tag.id}`}
+								className="flex w-full cursor-pointer items-center px-3 py-2"
+							>
+								<ListItemPrefix className="mr-3" placeholder="">
+									<Checkbox
+										key={`checkbox-tag-${tag.id}`}
+										id={`checkbox-tag-${tag.id}`}
+										ripple={false}
+										crossOrigin={'anonymous'}
+										className="hover:before:opacity-0"
+										checked={selectedTags.includes(tag.id.toString())}
+										onChange={() => {
+											handleCheckboxChange(tag.id.toString());
+										}}
+										containerProps={{
+											className: 'p-0',
+										}}
+									/>
+								</ListItemPrefix>
+								<Typography color="blue-gray" className="font-medium" placeholder="">
+									{tag.name}
+								</Typography>
+								<ListItemSuffix placeholder={'working-tags-list-item-suffix'}>
+									<Chip
+										value={tagCounts[tag.id.toString()] || '0'}
+										variant="ghost"
+										color={tag.color.split('-')[1] as any}
+										size="sm"
+										className="rounded-full"
+									/>
+								</ListItemSuffix>
+							</label>
+						</ListItem>
+					))}
+				</List>
+			</Card>
+		</div>
 	);
 }
 
@@ -92,9 +142,10 @@ class SideBar {
 		tags,
 		username,
 		handleButtonClick,
-		header,
 		handleButtonClickResetFilter,
+		header,
 		showWorkingTags,
+		currentPage,
 	}: BarProps) => {
 		const navigate = useNavigate();
 
@@ -133,10 +184,10 @@ class SideBar {
 					</div>
 					{/* Sidebar content goes here */}
 					<div className="w-96">
-						<ul className="px-8 flex flex-col gap-4">
+						<ul className="px-8 flex flex-col gap-2">
 							<Button
 								placeholder="quest-tab"
-								variant="outlined"
+								color={currentPage === 'quest' ? 'red' : 'white'}
 								className="flex items-center gap-3 text-lg"
 								onClick={() => navigate('/quest')}
 							>
@@ -145,7 +196,7 @@ class SideBar {
 							</Button>
 							<Button
 								placeholder="monster-tab"
-								variant="outlined"
+								color="white"
 								className="flex items-center gap-3 text-lg"
 								onClick={() => navigate('/monster')}
 							>
@@ -154,7 +205,7 @@ class SideBar {
 							</Button>
 							<Button
 								placeholder="item-tab"
-								variant="outlined"
+								color={currentPage === 'analysis' ? 'red' : 'white'}
 								className="flex items-center gap-3 text-lg"
 								onClick={() => navigate('/analysis')}
 							>
@@ -163,7 +214,7 @@ class SideBar {
 							</Button>
 							<Button
 								placeholder="item-tab"
-								variant="outlined"
+								color="white"
 								className="flex items-center gap-3 text-lg"
 								onClick={() => navigate('/collection')}
 							>
@@ -175,28 +226,14 @@ class SideBar {
 						{/*  working tags zone*/}
 
 						{showWorkingTags && (
-							<div>
-								<b className="px-8 text-lg">Working tags</b>
-
-								<IconButton
-									placeholder="reset"
-									className="bg-red-400 rounded-full w-8 h-8"
-									onClick={handleButtonClickResetFilter}
-								>
-									<MdAdd color="white" size={24} />
-								</IconButton>
-
-								<div className="px-8 pt-2">
-									<ListWithBadge
-										tags={tags}
-										username={username}
-										handleButtonClick={handleButtonClick}
-										header={header}
-										handleButtonClickResetFilter={handleButtonClickResetFilter}
-										showWorkingTags={showWorkingTags}
-									/>
-								</div>
-							</div>
+							<ListWithBadge
+								tags={tags}
+								username={username}
+								handleButtonClick={handleButtonClick}
+								header={header}
+								handleButtonClickResetFilter={handleButtonClickResetFilter}
+								showWorkingTags={showWorkingTags}
+							/>
 						)}
 						{/* working tags zone end */}
 					</div>
@@ -221,7 +258,7 @@ class SideBar {
 		);
 	};
 
-	public static noWorkingTags = ({ username, header }: any) => {
+	public static noWorkingTags = ({ username, header, currentPage }: any) => {
 		return this.full({
 			tags: [],
 			username,
@@ -229,6 +266,7 @@ class SideBar {
 			header,
 			handleButtonClickResetFilter: () => {},
 			showWorkingTags: false,
+			currentPage,
 		});
 	};
 

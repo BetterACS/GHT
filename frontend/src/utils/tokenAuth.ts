@@ -3,18 +3,10 @@ import { returnInterface } from '../../../backend/src/utils/interfaces';
 
 export default async function tokenAuth(
 	navigateFunction: any,
-	redirect: string = '/',
+	redirect: string,
+	fail_redirect: string,
 	tokenSuccessFunction = () => {},
-	tokenFailureFunction = () => {
-		localStorage.removeItem('access_token');
-		localStorage.removeItem('refresh_token');
-		localStorage.removeItem('email');
-		navigateFunction('/Log_in');
-	},
-	tokenNullFunction = () => {
-		// หน้า  home redirect ไปหน้า login
-		// navigateFunction('/Log_in');
-	}
+	tokenFailureFunction = () => {}
 ) {
 	const headers = {
 		authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -33,17 +25,17 @@ export default async function tokenAuth(
 				navigateFunction(redirect);
 				return;
 			// If the token is not present, return to the login page
-			case 1:
-				tokenNullFunction();
-				return;
-			// If the token is invalid, return to the login page
-			case 2:
-				tokenFailureFunction();
-				return;
 			case -1:
 				localStorage.setItem('access_token', result.data.accessToken);
 				localStorage.setItem('refresh_token', result.data.refreshToken);
 				navigateFunction(redirect);
+				return;
+			default:
+				tokenFailureFunction();
+				localStorage.removeItem('access_token');
+				localStorage.removeItem('refresh_token');
+				localStorage.removeItem('email');
+				navigateFunction(fail_redirect);
 				return;
 		}
 	} catch (error) {

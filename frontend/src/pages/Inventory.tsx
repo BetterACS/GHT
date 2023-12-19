@@ -7,11 +7,15 @@ import Image4 from '../assets/4.png';
 import '../styles/Inventory.css';
 import axios from 'axios';
 import { set } from 'date-fns';
+import tokenAuth from '../utils/tokenAuth';
+import { useNavigate } from 'react-router-dom';
 
 const Inventory = () => {
+	const navigate = useNavigate();
 	const [monster, setMonster] = React.useState<any>([]);
 	const [loading, setLoading] = React.useState(true);
 	useEffect(() => {
+		tokenAuth(navigate,'/collection', '/log_in');
 		fetchMonster();
 	}, []);
 
