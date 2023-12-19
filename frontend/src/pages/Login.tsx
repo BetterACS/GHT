@@ -56,12 +56,12 @@ const Login = () => {
 	};
 
 	return (
-		<div className="h-screen bg-gray-900 flex flex-col justify-center items-center">
-			<div className="text-white mb-8 typewriter">
+		<div className="h-screen flex flex-col justify-center items-center">
+			<div className="mb-8 typewriter">
 				<h1>HABITKUB</h1>
 			</div>
-			<div className="bg-gray-800 p-8 rounded-md shadow-sm shadow-white">
-				<h1 className="text-3xl font-bold text-white text-center">Log In</h1>
+			<div className="bg-gray-100 p-8 rounded-md shadow-sm shadow-white">
+				<h1 className="text-3xl font-bold text-center">Log In</h1>
 				{error && <div className="text-red-500">{error}</div>}
 				<form className="mt-4 text-center" onSubmit={handleSubmit}>
 					{/* Email Input */}
@@ -93,8 +93,8 @@ const Login = () => {
 							error={error !== ''}
 						/>
 					</div>
-					<a className="cursor-pointer text-gray-400 hover:text-gray-500" onClick={() => navigate('/forgot')}>
-						Forgot password
+					<a className="cursor-pointer text-gray-700 hover:text-red-500" onClick={() => navigate('/forgot')}>
+						Forgot password?
 					</a>
 					{/* Submit Button */}
 					<div className="text-center pt-4">
