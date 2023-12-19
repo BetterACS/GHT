@@ -314,6 +314,16 @@ const Monster = () => {
 								{items.map((item) => (
 									// Check if item quantity is > 0
 									<Item
+										onZero={() => {
+											// setItemLoading(true);
+											// items.map((item) => {
+											// 	if (item.item_id === item.item_id) {
+											// 		item.quantity = 0;
+											// 	}
+											// })
+											setItems(items.filter((item) => item.quantity > 0));
+											// getItems();
+										}}
 										key={item.item_id}
 										handleItemClick={handleItemClick}
 										item={item}

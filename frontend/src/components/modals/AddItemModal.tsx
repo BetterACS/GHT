@@ -1,7 +1,5 @@
 import ModalBase from './ModalBase';
 import { Dispatch, SetStateAction } from 'react';
-// import Input from '../../components/Input';
-import Button from '../../components/Button';
 
 interface AddItemModalProps {
 	showModal: boolean;
@@ -14,7 +12,7 @@ interface AddItemModalProps {
 }
 import React from 'react';
 import { format } from 'date-fns';
-import { Input, Textarea } from '@material-tailwind/react';
+import { Button, Input, Textarea } from '@material-tailwind/react';
 import DatePickerDialog from '../Date';
 
 class AddItemModal extends ModalBase {
@@ -58,7 +56,9 @@ class AddItemModal extends ModalBase {
 					{/* <DateMenu /> */}
 					<DatePickerDialog onChangeDate={setDate} />
 				</div>
-				<Button className="mt-2" onClick={() => onAddItem(date)}>Add Item</Button>
+				<Button className="mt-2" onClick={() => onAddItem(date)}>
+					Add Item
+				</Button>
 			</AddItemModal.Modal>
 		);
 	}

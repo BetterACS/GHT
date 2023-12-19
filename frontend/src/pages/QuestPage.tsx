@@ -5,10 +5,10 @@ import QuestContainer from '../components/QuestContainer';
 import { DNDType, TagType, Item, foodItemType } from '../utils/types';
 import { tagColorList } from '../utils/constants';
 import { useNavigate } from 'react-router-dom';
-import { Progress } from '@material-tailwind/react';
 import authorization from '../utils/authorization';
 import AddItemModal from '../components/modals/AddItemModal';
 import EditItemModal from '../components/modals/EditItemModal';
+import UserDeleteModal from '../components/modals/UserLogoutModal';
 // DnD
 import {
 	DndContext,
@@ -51,7 +51,7 @@ export default function QuestPage() {
 		},
 	];
 	const [containers, setContainers] = useState<DNDType[]>(initialContainers);
-	
+
 	//temp
 	const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
 	const [currentContainerId, setCurrentContainerId] = useState<UniqueIdentifier>();
@@ -97,9 +97,9 @@ export default function QuestPage() {
 		email: `${localStorage.getItem('email')}`,
 	};
 	useEffect(() => {
-		const load = async () =>{
+		const load = async () => {
 			await userQuery();
-		}
+		};
 		load();
 	}, []);
 
@@ -940,7 +940,7 @@ export default function QuestPage() {
 				{/* Main Content */}
 				<div className="w-full flex flex-col items-center">
 					<header className="flex flex-col gap-1 mt-8 mb-4 text-2l font-bold tracking-[.25em]">
-						<h1 className='md:ml-0 ml-[50vw]'>Quest</h1>
+						<h1 className="md:ml-0 ml-[50vw]">Quest</h1>
 					</header>
 					<div className="xl:w-9/12 lg:w-10/12 md:w-11/12 mx-auto w-[150vw]">
 						<div className="grid grid-cols-1 gap-6">
