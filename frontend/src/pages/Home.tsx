@@ -25,13 +25,13 @@ const Home = () => {
 	return (
 		<>
 			{/* Navbar */}
-			<nav className="bg-white h-16 text-white flex flex-wrap items-center fixed top-0 left-0 py-4 px-3 w-full z-10 sm:px-6 lg:px-8 ">
-				<div className="text-gray-900 text-home-title pl-52">Habitkub</div>
-				<div className="ml-auto mr-40 flex justify-center gap-2 items-center mt-0 w-1/2 sm:mt-0 sm:w-1/2 lg:w-auto">
-					<Button variant="outlined" onClick={() => navigate('/sign_up')}>
+			<nav className="bg-white h-16 text-white flex justify-around items-center fixed top-0 left-0 py-4 px-3 w-full z-10 sm:px-6 lg:px-8 ">
+				<div className="text-gray-900 text-home-title">Habitkub</div>
+				<div className="flex justify-center gap-2 items-center mt-0 sm:mt-0 sm:w-1/2 lg:w-auto">
+					<Button className="text-sm" variant="outlined" onClick={() => navigate('/sign_up')}>
 						Sign Up
 					</Button>
-					<Button variant="outlined" onClick={() => navigate('/log_in')}>
+					<Button className="text-sm" variant="outlined" onClick={() => navigate('/log_in')}>
 						Log in
 					</Button>
 					{/* <button className="bg-gray-400 border-2 border-gray-500 mr-2 text-white text-sm sm:mr-3 sm:text-base">
@@ -68,7 +68,7 @@ const Home = () => {
 					></path>
 				</svg>
 				<div className="flex flex-row">
-					<div className=" pt-44 pl-52 w-[560px] h-full">
+					<div className=" pt-44 pl-52 w-[560px] h-full hidden lg:inline">
 						<QuestContainer id="preview" title="Task">
 							<div className="flex flex-col gap-2 w-96">
 								<div id="test-quest-1">
@@ -76,7 +76,7 @@ const Home = () => {
 										title="Be better today"
 										description="Do something that makes you better today"
 										id="test-1"
-										onEditItem={() => {}}
+										onEditItem={() => { }}
 										tags={
 											[
 												{ id: 1, name: 'Mental', color: 'bg-red-400' },
@@ -85,7 +85,7 @@ const Home = () => {
 												{ id: 4, name: 'Self development', color: 'bg-purple-400' },
 											] as TagType[]
 										}
-										onDeleteItem={() => {}}
+										onDeleteItem={() => { }}
 										due_date={format(new Date(), 'dd-MM-yyyy')}
 										image_url="https://i.imgur.com/YumfIWI.png"
 										item_name={'Mammoth Ribeye'}
@@ -97,9 +97,9 @@ const Home = () => {
 										title="Rest and relax"
 										description="Just relax and take a break"
 										id="test-2"
-										onEditItem={() => {}}
+										onEditItem={() => { }}
 										tags={[{ id: 1, name: 'Relax', color: 'bg-green-400' }] as TagType[]}
-										onDeleteItem={() => {}}
+										onDeleteItem={() => { }}
 										due_date={format(new Date(), 'dd-MM-yyyy')}
 										image_url="https://i.imgur.com/audunLD.png"
 										item_name={'Glintscale Carp'}
@@ -113,7 +113,7 @@ const Home = () => {
 						<Typography
 							variant="h1"
 							placeholder=""
-							className="text-home"
+							className="md:text-6xl lg:text-6xl xl:text-home"
 							style={{ fontFamily: 'Poppins', fontWeight: '900', color: 'white' }}
 						>
 							Improve Your Day with an Enjoyable To-Do List
@@ -123,8 +123,8 @@ const Home = () => {
 			</div>
 
 			{/*Footer*/}
-			<footer className="bg-gray-900 text-white py-3 sm:py-6 lg:py-2">
-				{/* <div className="container mx-auto p-3 flex flex-wrap flex-col justify-around items-center sm:p-6 sm:flex-row lg:p-12 lg:flex-nowrap lg:flex-row">
+			{/*<footer className="bg-gray-900 text-white py-3 sm:py-6 lg:py-2">
+					<div className="container mx-auto p-3 flex flex-wrap flex-col justify-around items-center sm:p-6 sm:flex-row lg:p-12 lg:flex-nowrap lg:flex-row">
 					<div className="mb-2 text-center sm:mb-4 lg:w-1 lg:mb-0 lg:mr-6">
 						<h2 className="text-3xl font-bold">Habitkub</h2>
 					</div>
@@ -171,8 +171,8 @@ const Home = () => {
 				<div className="text-center text-md mt-2 sm:mt-4 lg:mt-2">
 					<div className="w-1/2 sm:w-1/8 lg:w-1/2 mx-auto border-t-2 border-gray-600 mb-2 sm:mb-3 lg:mb-2"></div>
 					<p>&copy; 2023 Habitkub. All rights reserved.</p>
-				</div> */}
-			</footer>
+				</div>
+			</footer>*/}
 		</>
 	);
 };
