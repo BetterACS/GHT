@@ -1,40 +1,69 @@
-import React, { useEffect } from 'react';
-import Image1 from '../assets/1.png';
-import Image2 from '../assets/2.png';
-import Image3 from '../assets/3.png';
-import Image4 from '../assets/4.png';
+import { useEffect, useState } from 'react';
 
 import '../styles/Inventory.css';
 import axios from 'axios';
-import { set } from 'date-fns';
 import tokenAuth from '../utils/tokenAuth';
 import { useNavigate } from 'react-router-dom';
+import SideBar from '../components/SideBar';
+import authorization from '../utils/authorization';
+import { returnInterface } from '../../../backend/src/utils/interfaces';
+import Config from '../../../backend/src/config';
 
 const Inventory = () => {
 	const navigate = useNavigate();
-	const [monster, setMonster] = React.useState<any>([]);
-	const [loading, setLoading] = React.useState(true);
+	const [monster, setMonster] = useState<any>([]);
+	const [loading, setLoading] = useState(true);
+	const [username, setUsername] = useState('');
+	const [accessToken, setAccessToken] = useState(localStorage.getItem('access_token'));
+	const [refreshToken, setRefreshToken] = useState(localStorage.getItem('refresh_token'));
+
+	const email = localStorage.getItem('email') || '';
+
+	let headers = {
+		authorization: `Bearer ${localStorage.getItem('access_token')}`,
+		refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
+		email: `${localStorage.getItem('email')}`,
+	};
+
+	const updateAccessToken = async (newToken: string, newRefresh: string) => {
+		await setAccessToken(newToken);
+		await localStorage.setItem('access_token', newToken);
+		await setRefreshToken(newRefresh);
+		await localStorage.setItem('refresh_token', newRefresh);
+		console.log('update access token', newToken);
+	};
+
 	useEffect(() => {
-		tokenAuth(navigate,'/collection', '/log_in');
+		tokenAuth(navigate, '/collection', '/log_in');
+		userQuery();
 		fetchMonster();
 	}, []);
+
+	const userQuery = async () => {
+		try {
+			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/user`, {
+				params: { email: email },
+				headers: headers,
+			});
+			const result = results.data as returnInterface;
+			authorization(
+				result,
+				async () => {
+					setUsername(result.data[0].username);
+				},
+				updateAccessToken
+			);
+		} catch (error) {
+			console.error('Error to query user', error);
+		}
+	};
 
 	const fetchMonster = async () => {
 		setLoading(true);
 		const response = await axios.get('http://localhost:5000/monster/user', {
-			params: {
-				email: `${localStorage.getItem('email')}`,
-			},
-			// headers: {
-			// 	authorization: `Bearer ${localStorage.getItem('access_token')}`,
-			// 	refreshToken: `Bearer ${localStorage.getItem('refresh_token')}`,
-			// 	email: `${localStorage.getItem('email')}`,
-			// },
+			params: { email: `${localStorage.getItem('email')}` },
 		});
 		const data = response.data.data['monsters'];
-		// setMonster([]);
-
-		// console.log(response.data);
 
 		data.map((mon: any) => {
 			if (mon.progress >= 100) {
@@ -57,18 +86,17 @@ const Inventory = () => {
 
 	return (
 		<>
-			<div>
-				<h1 className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl mt-8">Monster Collection</h1>
-				<div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-8 img-pixelated p-8 drop-shadow-xl">
-					{/* {monster.length === 0 ? (
-						<h1 className="text-center text-3xl sm:text-4xl md:text-5xl lg:text-6xl mt-8">
-							No Monster Collected
-						</h1>
-					) : null} */}
-
-					{monster.map((card: any) => (
-						<Card key={card.id} imageUrl={card.imageUrl} description={card.description} />
-					))}
+			<div className="flex flex-row">
+				<SideBar.noWorkingTags username={username} header={headers} currentPage="collection" />
+				<div className="w-full">
+					<h1 className="text-center text-lg sm:text-xl md:text-3xl lg:text-4xl xl:text-6xl mt-8">
+						Monster Collection
+					</h1>
+					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-8 img-pixelated p-4 drop-shadow-xl">
+						{monster.map((card: any) => (
+							<Card key={card.id} imageUrl={card.imageUrl} description={card.description} />
+						))}
+					</div>
 				</div>
 			</div>
 		</>

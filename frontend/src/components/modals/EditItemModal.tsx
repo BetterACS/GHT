@@ -1,11 +1,12 @@
 import ModalBase from './ModalBase';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { UniqueIdentifier } from '@dnd-kit/core';
 import { TagType, DNDType, Item } from '../../utils/types';
 import TagDisplay from '../Tag';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import { format } from 'date-fns';
+import DatePickerDialog from '../Date';
 
 interface EditItemModalProps {
 	showModal: boolean;
@@ -24,6 +25,7 @@ interface EditItemModalProps {
 	onSelectTag: (item: Item, tag: TagType) => Promise<void>;
 	onRemoveTag: (item: Item, tag: TagType) => Promise<void>;
 	onDeleteTag: (item: Item, tag: TagType) => Promise<void>;
+	currentDueDate: string;
 }
 class EditItemModal extends ModalBase {
 	public static render({
@@ -43,8 +45,14 @@ class EditItemModal extends ModalBase {
 		onSelectTag,
 		onRemoveTag,
 		onDeleteTag,
+		currentDueDate,
 	}: EditItemModalProps) {
-		const [date, setDate] = useState(format(new Date(), 'dd-MM-yyyy'));
+		const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+		// useEffect(() => {
+		// 	if (currentDueDate != '' && currentDueDate != undefined) {
+		// 		setDate(format(new Date(currentDueDate), 'yyyy-MM-dd'));
+		// 	}
+		// }, [currentDueDate]);
 
 		return (
 			<EditItemModal.Modal
@@ -102,7 +110,8 @@ class EditItemModal extends ModalBase {
 							}
 						})}
 					</div>
-					<input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+					{/* <input type="date" value={date} onChange={(e) => setDate(e.target.value)} /> */}
+					<DatePickerDialog currentDate={currentDueDate} onChangeDate={setDate} />
 					<Button
 						onClick={() => {
 							onEditItem(date);

@@ -45,7 +45,7 @@ const Quest = ({
 
 	return (
 		<div
-			className="w-full h-full relative"
+			className="w-full relative"
 			onMouseEnter={() => {
 				setIsHovered(true);
 			}}

@@ -11,7 +11,7 @@ import { HiArrowCircleLeft, HiArrowCircleRight } from 'react-icons/hi';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import SideBar from '../components/SideBar';
-import { Typography } from '@material-tailwind/react';
+import { Typography, Spinner } from '@material-tailwind/react';
 import Item from '../components/Item';
 import Scheduler from '../../../backend/src/utils/scheduler';
 
@@ -52,7 +52,7 @@ const Monster = () => {
 	const [monsters, setMonsters] = useState<monsterInterface[]>([]);
 	const [items, setItems] = useState<any[]>([]);
 	const [monsterLoading, setMonsterLoading] = useState(true);
-	const [itemLoading, setItemLoading] = useState(false);
+	const [itemLoading, setItemLoading] = useState(true);
 	const navigate = useNavigate();
 	const [shake, setShake] = useState(false);
 	const [background, setBackground] = useState('/scene_1.png');
@@ -149,6 +149,9 @@ const Monster = () => {
 			console.log(newItems);
 
 			const itemRequests = newItems.map((item) => {
+				if (item.item_id == '-1') {
+					return null;
+				}
 				if (item.quantity > 0) {
 					return axios
 						.get(`http://localhost:${Config.BACKEND_PORT}/item`, {
@@ -291,9 +294,8 @@ const Monster = () => {
 						) : (
 							<Carousel
 								show={6.5}
-								slide={3}
+								slide={1}
 								className="gap-2"
-								responsive
 								leftArrow={
 									<IconButton placeholder={'left'} className="mt-28 ml-8 bg-red-400 rounded-full">
 										<HiArrowCircleLeft size={24} />

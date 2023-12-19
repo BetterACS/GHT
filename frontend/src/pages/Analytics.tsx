@@ -3,32 +3,17 @@ import '../styles/Activity.css';
 import SideBar from '../components/SideBar';
 import clsx from 'clsx';
 import axios from 'axios';
-import { SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { returnInterface } from '../../../backend/src/utils/interfaces';
 import authorization from '../utils/authorization';
 import Config from '../../../backend/src/config';
 import tokenAuth from '../utils/tokenAuth';
 import { useNavigate } from 'react-router-dom';
 
-const SimpleQuestContainer = ({ name }: any) => {
-	return (
-		<div
-			className={clsx('m-4 w-full h-full p-4 bg-gray-50 rounded-xl flex flex-col gap-y-4 question-container')}
-			style={{ minHeight: '120px', minWidth: '360px' }}
-		>
-			<div className="flex items-center justify-between min-h-36">
-				<div className="flex flex-col gap-y-1">
-					<h1 className="text-gray-800 text-xl font-semibold">{name}</h1>
-				</div>
-			</div>
-		</div>
-	);
-};
-
 const Analytics = () => {
 	const navigate = useNavigate();
-	const email = localStorage.getItem('email') || '';
 	const [values, setValues] = useState([{}]);
+	const email = localStorage.getItem('email') || '';
 	const [username, setUsername] = useState('');
 	const [accessToken, setAccessToken] = useState(localStorage.getItem('access_token'));
 	const [refreshToken, setRefreshToken] = useState(localStorage.getItem('refresh_token'));
@@ -39,9 +24,8 @@ const Analytics = () => {
 	};
 
 	useEffect(() => {
-		tokenAuth(navigate,'/analysis', '/log_in');
+		tokenAuth(navigate, '/analysis', '/log_in');
 		fetchValues();
-		console.log(values);
 	}, []);
 
 	const fetchValues = async () => {
@@ -55,9 +39,8 @@ const Analytics = () => {
 
 			const result = results.data as returnInterface;
 			let temp: any = [];
-			const counter_dict:any = {};
+			const counter_dict: any = {};
 			result.data.map(async (item: any) => {
-				const id = 'item-' + item.quest_id;
 				if (item.status === 'Done') {
 					// temp.push({ date: item.last_update_date, count: 1 });
 					counter_dict[item.last_update_date] = (counter_dict[item.last_update_date] || 0) + 1;
@@ -66,10 +49,10 @@ const Analytics = () => {
 			// หลักการทำงานคือเอายัดเข้า dict แล้ว loop dict แล้วยัดเข้า temp ซึ่งมันจะเขียนทับตัวเดิม
 			Object.entries(counter_dict).forEach(([key, value]) => {
 				temp.push({ date: key, count: value });
-			  });
-			
+			});
+
 			setValues(temp);
-		} catch (error) {}
+		} catch (error) { }
 	};
 
 	const updateAccessToken = async (newToken: string, newRefresh: string) => {
@@ -112,7 +95,7 @@ const Analytics = () => {
 					<SimpleQuestContainer name={'Early'} />
 					<SimpleQuestContainer name={'No update'} />
 				</div> */}
-				<div className="pt-80 w-full px-28">
+				<div className="pt-56 w-[1000px] md:w-[100vw] xl:w-full xl:px-28 mx-auto overflow-x-auto">
 					<CalendarHeatmap
 						showWeekdayLabels
 						startDate={new Date('2023-01-01')}
