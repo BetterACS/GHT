@@ -103,7 +103,12 @@ const changePasswordUser = async (req: Request, res: Response): Promise<void> =>
 			return;
 		}
 		if (new_password != confirm_password) {
-			returnJson = { status: 'error', message: 'password and confirm_password not match', return: 1, data: {} };
+			returnJson = {
+				status: 'error',
+				message: 'new password and confirm password not match',
+				return: 1,
+				data: {},
+			};
 			return;
 		}
 		const sqlUpdate = 'UPDATE user SET password=? WHERE email=?';

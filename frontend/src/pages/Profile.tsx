@@ -25,13 +25,26 @@ import Config from '../../../backend/src/config';
 import tokenAuth from '../utils/tokenAuth';
 import { useNavigate } from 'react-router-dom';
 import SideBar from '../components/SideBar';
+import withReactContent from 'sweetalert2-react-content';
+import Swal from 'sweetalert2';
 
+
+const defaultError=(result:returnInterface)=>{
+	const MySwal = withReactContent(Swal);
+	MySwal.fire({
+		title: 'Error!',
+		text: result.message,
+		icon: 'error',
+		confirmButtonText: 'Ok',
+	});
+}
+const MySwal = withReactContent(Swal);
 export default function Profile() {
 	const [activeTab, setActiveTab] = useState('profile');
 	const [open, setOpen] = React.useState(false);
 	const [imgCrop, setImgCrop] = useState<string | null>(null);
 	const [storeImage, setStoreImage] = useState<Array<{ imgCrop: string | null }>>([]);
-
+	
 	const onClose = () => {
 		setImgCrop(null);
 	};
@@ -48,7 +61,7 @@ export default function Profile() {
 
 				// If an existing image is found, update it; otherwise, add a new one
 				if (existingImageIndex !== -1) {
-					console.log('-1');
+					// console.log('-1');
 					const updatedStoreImage = [...storeImage];
 					updatedStoreImage[existingImageIndex] = { imgCrop };
 					setStoreImage(updatedStoreImage);
@@ -77,6 +90,12 @@ export default function Profile() {
 			const result = results.data as returnInterface;
 			if (result.return === 0) {
 				console.log('Updated image on the server', result);
+				MySwal.fire({
+					title: 'Success!',
+					text: result.message,
+					icon: 'success',
+					confirmButtonText: 'Ok',
+				});
 			}
 		} catch (err) {
 			alert('Please crop your image smaller or reduce the quality of your image');
@@ -115,7 +134,8 @@ export default function Profile() {
 
 	const handleForgotPasswordClick = () => {
 		// Add your logic for handling the "forgot password" click event
-		console.log('Forgot password clicked!');
+		localStorage.clear();
+		navigate('/forgot');
 	};
 
 	//variable for query user
@@ -167,9 +187,15 @@ export default function Profile() {
 			authorization(
 				result,
 				() => {
-					console.log(result);
+					MySwal.fire({
+						title: 'Success!',
+						text: result.message,
+						icon: 'success',
+						confirmButtonText: 'Ok',
+					});
+					navigate('/profile')
 				},
-				updateAccessToken
+				updateAccessToken,defaultError
 			);
 		} catch (error) {
 			console.error('Error to query user', error);
@@ -190,7 +216,13 @@ export default function Profile() {
 	};
 	const updatePassword = async () => {
 		if (!old_password || !new_password || !confirm_password) {
-			alert('Please fill in all password fields');
+			
+			MySwal.fire({
+				title: 'Error occured!',
+				text: 'Please fill in all password fields',
+				icon: 'error',
+				confirmButtonText: 'Ok',
+			});
 			return;
 		}
 		try {
@@ -205,12 +237,19 @@ export default function Profile() {
 				{ headers: headers }
 			);
 			const result = results.data as returnInterface;
+			// console.log(result);
 			authorization(
 				result,
 				() => {
-					console.log(result);
+					MySwal.fire({
+						title: 'Success!',
+						text: result.message,
+						icon: 'success',
+						confirmButtonText: 'Ok',
+					});
+					navigate('/profile')
 				},
-				updateAccessToken
+				updateAccessToken,defaultError
 			);
 		} catch (error) {
 			console.error('Error to query user', error);

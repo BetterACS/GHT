@@ -90,7 +90,8 @@ const countTag = async (req: Request, res: Response): Promise<void> => {
 	try {
 		const database = Database.instance().mySQL();
 		connection = await database.promise().getConnection();
-		const sqlSearch = 'SELECT count(*) FROM contain WHERE tag_id = ?';
+		const sqlSearch =
+			'SELECT count(*) FROM contain inner join quest on quest.quest_id=contain.quest_id WHERE tag_id = ? and status!="archive"';
 		const [rows] = await connection.query(sqlSearch, [tag_id]);
 		const count = rows as CountResult[];
 		if (count.length === 0) {

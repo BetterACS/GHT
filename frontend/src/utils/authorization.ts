@@ -3,9 +3,7 @@ export default async function authorization(
 	result: returnInterface,
 	tokenSuccessFunction = () => {},
 	tokenCreateFunction = async (newToken: string, newRefresh: string) => {},
-	tokenFailureFunction = () => {
-		console.log(result.message);
-	}
+	tokenFailureFunction = (result: returnInterface) => {}
 ) {
 	try {
 		switch (result.return) {
@@ -19,7 +17,7 @@ export default async function authorization(
 				console.log('tokenCreateFunction มาทำที่ authorization');
 				return;
 			default:
-				tokenFailureFunction();
+				tokenFailureFunction(result);
 				return;
 		}
 	} catch (error) {
