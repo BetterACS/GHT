@@ -1,6 +1,8 @@
 /* @import url("https://fonts.googleapis.com/css?family=Roboto|Prompt");
  */
  @import url("https://fonts.googleapis.com/css?family=Overpass");
+ @import url("https://fonts.googleapis.com/css?family=Space%20Grotesk");
+  @import url("https://fonts.googleapis.com/css?family=Poppins");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
