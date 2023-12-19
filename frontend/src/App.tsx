@@ -7,6 +7,7 @@ import Quest from './pages/QuestPage';
 import Analytics from './pages/Analytics';
 import Inventory from './pages/Inventory';
 import Profile from './pages/Profile';
+import Forgot from './pages/Forgot';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
@@ -19,6 +20,7 @@ function App() {
 					<Route path="/monster" element={<Monster />} />
 					<Route path="/sign_up" element={<SignUp />} />
 					<Route path="/log_in" element={<Login />} />
+					<Route path="/forgot" element={<Forgot />} />
 					<Route path="/quest" element={<Quest />} />
 					<Route path="/analysis" element={<Analytics />} />
 					<Route path="/collection" element={<Inventory />} />

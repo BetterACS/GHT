@@ -4,6 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { returnInterface } from '../../../backend/src/utils/interfaces.ts';
 import tokenAuth from '../utils/tokenAuth.ts';
 import Config from '../../../backend/src/config.ts';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+import { Input, Button } from '@material-tailwind/react';
+
 const SignUp = () => {
 	// Define state variables for form fields
 	const [loaded, setLoaded] = useState(false);
@@ -18,7 +23,7 @@ const SignUp = () => {
 		if (loaded) {
 			return;
 		}
-		tokenAuth(navigate,'/quest',"/sign_up");
+		tokenAuth(navigate, '/quest', '/sign_up');
 		setLoaded(true);
 	});
 
@@ -33,27 +38,34 @@ const SignUp = () => {
 					setEmail('');
 					setPassword('');
 					setError(result.message);
-					console.log(result.data.error)
+					console.log(result.data.error);
 					return;
 				}
 				//ตรงนี้อยากให้มีขึ้นว่าสมัครสำเร็จ แล้วก็ให้ไป verify email
+				const MySwal = withReactContent(Swal);
+				MySwal.fire({
+					title: 'Sign up success!',
+					text: 'Please verify your email',
+					icon: 'success',
+					confirmButtonText: 'Ok',
+				});
 				navigate('/log_in');
 			})
 			.catch((err) => console.log(err));
 	};
 
 	return (
-		<div className="h-screen bg-gray-900 text-center flex flex-col justify-center items-center lg:flex-row lg:justify-around">
-			<div className="font-bold text-white typewriter">
+		<div className="h-screen text-center flex flex-col justify-center items-center lg:flex-row lg:justify-around">
+			<div className="font-bold typewriter">
 				<h1>HABITKUB</h1>
 			</div>
-			<div className="bg-gray-800 rounded-[1.0rem] md:rounded-[1.5rem] mt-5 w-2/3 lg:mt-0 lg:rounded-[2.5rem] lg:w-1/3">
-				<h1 className="text-3xl font-bold text-center text-white mt-8">SIGN UP</h1>
+			<div className="bg-gray-100 rounded-[1.0rem] md:rounded-[1.5rem] mt-5 w-2/3 lg:mt-0 lg:rounded-[2.5rem] lg:w-1/3">
+				<h1 className="text-3xl font-bold text-center mt-8">SIGN UP</h1>
 				{error && <div className="text-red-500">{error}</div>}
 				<form className="mt-4 text-center" onSubmit={handleSubmit}>
 					{/* Username Input */}
 					<div className="my-5 mx-8 sm:mx-10 lg:mx-12 xl:mx-14">
-						<input
+						<Input
 							type="text"
 							id="username"
 							name="username"
@@ -61,13 +73,14 @@ const SignUp = () => {
 							onChange={(e) => setUsername(e.target.value)}
 							className="border-2 shadow-sm shadow-white rounded-md p-2 w-full"
 							placeholder="Username"
+							label="Username"
 							required
 						/>
 					</div>
 
 					{/* Email Input */}
 					<div className="my-5 mx-8 sm:mx-10 lg:mx-12 xl:mx-14">
-						<input
+						<Input
 							type="email"
 							id="email"
 							name="email"
@@ -75,13 +88,14 @@ const SignUp = () => {
 							onChange={(e) => setEmail(e.target.value)}
 							className="border-2 shadow-sm shadow-white rounded-md p-2 w-full"
 							placeholder="Email"
+							label="Email"
 							required
 						/>
 					</div>
 
 					{/* Password Input */}
 					<div className="my-5 mx-8 sm:mx-10 lg:mx-12 xl:mx-14">
-						<input
+						<Input
 							type="password"
 							id="password"
 							name="password"
@@ -89,6 +103,7 @@ const SignUp = () => {
 							onChange={(e) => setPassword(e.target.value)}
 							className="border-2 shadow-sm shadow-white rounded-md p-2 w-full"
 							placeholder="Password"
+							label="Password"
 							required
 						/>
 					</div>
