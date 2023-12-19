@@ -26,6 +26,8 @@ git clone https://github.com/BetterACS/GHT.git
 -   `MYSQL_DATABASE`: The name of the MySQL database.
 -   `ACCESS_TOKEN`: The access token for the JWT.
 -   `REFRESH_TOKEN`: The refresh token for the JWT.
+-   `EMAIL`: The email for sending code.
+-   `PASSWORD`: The password of the email.
 
 Example:
 
@@ -38,6 +40,8 @@ MYSQL_PORT = "3300"
 MYSQL_DATABASE = "ght"
 ACCESS_TOKEN = "aCcE$s#S"
 REFRESH_TOKEN = "r#E$fReSh"
+EMAIL = "Test@test.com"
+PASSWORD = "test"
 ```
 
 4. Install dependencies, run the following commands:
