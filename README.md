@@ -2,6 +2,8 @@
 
 Are you tired of the same old to-do lists? Do you want to gamify your life? Then this is the app for you!
 
+![preview](assets/preview.png)
+
 ## Installation
 
 Note: This project requires both MongoDB and MySQL to be installed on your machine or you can use a cloud database service.
