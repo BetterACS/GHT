@@ -111,6 +111,7 @@ export default function QuestPage() {
 				refreshToken: `Bearer ${refreshToken}`,
 				email: `${localStorage.getItem('email')}`,
 			};
+			checkIfFinishMorethan3Days();
 			if (filter.length > 0) {
 				await filterByTag();
 			} else {
@@ -121,7 +122,45 @@ export default function QuestPage() {
 
 		Promise.all([fetchDataAndTags()]);
 	}, [accessToken, filter]); // Include 'email' in the dependency array if it's used inside the useEffect
-
+	const checkIfFinishMorethan3Days = async () => {
+		containers.map(async (container) => {
+			container.items.map(async (item) => {
+				const new_id = Number(item.id.toString().replace('item-', ''));
+				const currentTimestamp = Date.now();
+				const last_update_date = new Date(item.last_update_date).getTime();
+				const DAYS3 = 259200000
+				console.log(currentTimestamp - last_update_date,"> ", DAYS3)
+				if (container.id === 'container-3' && currentTimestamp - last_update_date > DAYS3) {
+					//ถ้าเกิน 3 วัน ให้เปลี่ยน status เป็น archive
+					try {
+						const results = axios.put(
+							`http://localhost:${Config.BACKEND_PORT}/quest`,
+							{
+								quest_id: new_id, //change
+								quest_name: findItemTitle(item.id),
+								description: findItemDescription(item.id),
+								due_date: findDueDate(item.id),
+								item_id: findFoodItemId(item.id),
+								email: email,
+								status: "archive",
+							},
+							{ headers: headers }
+						);
+						const result = (await results).data as returnInterface;
+						authorization(
+							result,
+							async () => {
+								result.message;
+							},
+							updateAccessToken
+						);
+					} catch (err) {
+						err;
+					}
+				}
+			});
+		})
+	};
 	const fetchData = async () => {
 		//get all quest from this email
 		try {
@@ -141,11 +180,12 @@ export default function QuestPage() {
 						result.data.map(async (item: any) => {
 							const id = 'item-' + item.quest_id;
 							const currentContainer =
-								item.status === 'Task'
-									? 'container-1'
-									: item.status === 'In Progress'
-									? 'container-2'
-									: 'container-3';
+							item.status === 'Task'
+							? 'container-1'
+							: item.status === 'In Progress'
+							? 'container-2'
+							: item.status === 'Done'
+							? 'container-3': 'not a container';
 							let newContainer = initialContainers;
 							for (const container of newContainer) {
 								if (container.id === currentContainer) {
@@ -189,6 +229,7 @@ export default function QuestPage() {
 													item_name: foodItem.item_name,
 													item_description: foodItem.description,
 													due_date: item.due_date,
+													last_update_date: item.last_update_date,
 													item_id: foodItem.item_id,
 												}))
 											);
@@ -288,6 +329,7 @@ export default function QuestPage() {
 										item_name: foodItem.item_name,
 										item_description: foodItem.description,
 										item_id: foodItem.item_id,
+										last_update_date: result.data.last_update_date,
 										tags: [],
 									});
 								},
@@ -324,11 +366,12 @@ export default function QuestPage() {
 						result.data.map(async (item: any) => {
 							const id = 'item-' + item.quest_id;
 							const currentContainer =
-								item.status === 'Task'
-									? 'container-1'
-									: item.status === 'In Progress'
-									? 'container-2'
-									: 'container-3';
+							item.status === 'Task'
+							? 'container-1'
+							: item.status === 'In Progress'
+							? 'container-2'
+							: item.status === 'Done'
+							? 'container-3': 'not a container';
 							let newContainer = initialContainers;
 							for (const container of newContainer) {
 								if (container.id === currentContainer) {
@@ -373,6 +416,7 @@ export default function QuestPage() {
 													item_name: foodItem.item_name,
 													item_description: foodItem.description,
 													item_id: foodItem.item_id,
+													last_update_date: item.last_update_date,
 												}))
 											);
 											//ถ้ามีบัคค่อยมาดูตรงนี้
@@ -395,30 +439,62 @@ export default function QuestPage() {
 		const updatedContainers = await Promise.all(
 			containers.map(async (container) => {
 				if (container.id === currentContainerId) {
-					const updatedItems = container.items.filter((item) => item.id !== currentItemId);
-
-					container.items = updatedItems;
+					
 
 					const new_id = Number(currentItemId.toString().replace('item-', ''));
+					if (currentContainerId === 'container-3'){
+						// if container done
+						console.log(currentItemId)
+						console.log(findDueDate(new_id))
+						try {
+							const results = axios.put(
+								`http://localhost:${Config.BACKEND_PORT}/quest`,
+								{
+									quest_id: new_id, //change
+									quest_name: findItemTitle(currentItemId),
+									description: findItemDescription(currentItemId),
+									due_date: findDueDate(currentItemId),
+									item_id: -1,
+									email: email,
+									status: "archive",
+								},
+								{ headers: headers }
+							);
 
-					try {
-						const results = await axios.delete(`http://localhost:${Config.BACKEND_PORT}/quest`, {
-							data: {
-								quest_id: new_id,
-							},
-							headers: headers,
-						});
-						const result = results.data as returnInterface;
-						authorization(
-							result,
-							async () => {
-								result.message;
-							},
-							updateAccessToken
-						);
-					} catch (err) {
-						err;
+							const result = (await results).data as returnInterface;
+							authorization(
+								result,
+								async () => {
+									result.message;
+								},
+								updateAccessToken
+							);
+						} catch (err) {
+							err;
+						}
 					}
+					else{
+						try {
+							const results = await axios.delete(`http://localhost:${Config.BACKEND_PORT}/quest`, {
+								data: {
+									quest_id: new_id,
+								},
+								headers: headers,
+							});
+							const result = results.data as returnInterface;
+							authorization(
+								result,
+								async () => {
+									result.message;
+								},
+								updateAccessToken
+							);
+						} catch (err) {
+							err;
+						}
+					}
+					const updatedItems = container.items.filter((item) => item.id !== currentItemId);
+					container.items = updatedItems;
 				}
 				return container;
 			})
@@ -533,14 +609,6 @@ export default function QuestPage() {
 		return item.title;
 	};
 
-	const findItemDate = (id: UniqueIdentifier | undefined) => {
-		const container = findValueOfQuest(id, 'item');
-		if (!container) return '';
-		const item = container.items.find((item) => item.id === id);
-		if (!item) return '';
-		return item.due_date;
-	};
-
 	const findItemTags = (id: UniqueIdentifier | undefined) => {
 		const container = findValueOfQuest(id, 'item');
 		if (!container) return [];
@@ -584,6 +652,7 @@ export default function QuestPage() {
 		if (!item) return '';
 		return item.due_date;
 	};
+	
 	const findFoodItemDescription = (id: UniqueIdentifier | undefined) => {
 		const container = findValueOfQuest(id, 'item');
 		if (!container) return '';
@@ -591,6 +660,7 @@ export default function QuestPage() {
 		if (!item) return '';
 		return item.item_description;
 	};
+	
 	const userQuery = async () => {
 		try {
 			const results = await axios.get(`http://localhost:${Config.BACKEND_PORT}/user`, {
@@ -815,21 +885,14 @@ export default function QuestPage() {
 					});
 					const currentTimestamp = Date.now();
 
-					const formattedDate = new Date(currentTimestamp)
-						.toLocaleDateString('en-GB', {
-							year: 'numeric',
-							month: '2-digit',
-							day: '2-digit',
-						})
-						.split('/');
-					formattedDate;
+					
 					const results = axios.put(
 						`http://localhost:${Config.BACKEND_PORT}/quest`,
 						{
 							quest_id: new_id, //change
 							quest_name: findItemTitle(event.active.id),
 							description: findItemDescription(event.active.id),
-							due_date: formattedDate[2] + '-' + formattedDate[1] + '-' + formattedDate[0],
+							due_date: findDueDate(event.active.id),
 							item_id: -1,
 							email: email,
 							status: AfterContainer.title,
@@ -868,7 +931,7 @@ export default function QuestPage() {
 							quest_id: new_id, //change
 							quest_name: findItemTitle(event.active.id),
 							description: findItemDescription(event.active.id),
-							due_date: findItemDate(event.active.id),
+							due_date: findDueDate(event.active.id),
 							item_id: item_id,
 							email: email,
 							status: AfterContainer.title,
@@ -923,7 +986,7 @@ export default function QuestPage() {
 				onSelectTag={selectTag}
 				onRemoveTag={removeTag}
 				onDeleteTag={deleteTag}
-				currentDueDate={findItemDate(currentItemId)}
+				currentDueDate={findDueDate(currentItemId)}
 			/>
 
 			<div className="flex flex-row">

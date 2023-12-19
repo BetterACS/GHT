@@ -115,6 +115,8 @@ const deleteQuest = async (req: Request, res: Response): Promise<void> => {
 
 const updateQuest = async (req: Request, res: Response): Promise<void> => {
 	const { quest_id, quest_name, description, due_date, item_id, email, status } = req.body;
+	console.log(req.body);
+	console.log(quest_id, quest_name, description, due_date, item_id, email, status);
 	const logger = Logger.instance().logger();
 	let connection;
 	try {

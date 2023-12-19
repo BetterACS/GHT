@@ -18,6 +18,7 @@ type Item = {
 	description: string;
 	image_url: string;
 	due_date: string;
+	last_update_date: string;
 	item_id: UniqueIdentifier;
 	item_name: string;
 	item_description: string;
