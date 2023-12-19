@@ -24,6 +24,8 @@ import { returnInterface } from '../../../backend/src/utils/interfaces';
 import Config from '../../../backend/src/config';
 import tokenAuth from '../utils/tokenAuth';
 import { useNavigate } from 'react-router-dom';
+import SideBar from '../components/SideBar';
+
 export default function Profile() {
 	const [activeTab, setActiveTab] = useState('profile');
 	const [open, setOpen] = React.useState(false);
@@ -227,8 +229,9 @@ export default function Profile() {
 		tokenAuth(navigate, '/profile', '/log_in');
 	}, [accessToken]);
 	return (
-		<>
-			<div className="flex flex-row items-baseline">
+		<div className="flex flex-row">
+			<SideBar.noWorkingTags username={username} header={headers} currentPage="profile" />
+			<div className="mx-auto flex flex-row items-baseline">
 				<Card placeholder="List" className="w-72 shadow-xl ml-4 mt-4">
 					<List>
 						<ListItem onClick={() => setActiveTab('profile')}>
@@ -371,6 +374,6 @@ export default function Profile() {
 					</DialogFooter>
 				</Dialog>
 			</div>
-		</>
+		</div>
 	);
 }
