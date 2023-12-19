@@ -2,6 +2,7 @@
  * @fileoverview Scheduler class. Used to schedule tasks and provide code for time-based events.
  */
 import cron from 'node-cron';
+import Config from '../config.js';
 import Controller from './deliver.js';
 import Logger from './logger.js';
 
@@ -25,7 +26,7 @@ export default class Scheduler {
 		const logger = Logger.instance().logger();
 		this.updateRandomMonster();
 		logger.info('[scheduler]:startMonsterSchedule - Updating random monster');
-		cron.schedule(`*/4 * * * * *`, this.updateRandomMonster);
+		cron.schedule(`*/${Config.RESET_EVERY_N_SECONDS} * * * * *`, this.updateRandomMonster);
 	}
 
 	public async updateRandomMonster() {
