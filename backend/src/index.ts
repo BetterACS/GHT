@@ -18,6 +18,7 @@ import habit_route from './routes/habit.js';
 import item_route from './routes/item.js';
 import login_route from './routes/login.js';
 import monster_route from './routes/monster.js';
+import profile from './routes/profile.js';
 import quest_route from './routes/quest.js';
 import register_route from './routes/register.js';
 import tag_route from './routes/tag.js';
@@ -47,6 +48,7 @@ app.use(filter_route);
 app.use(item_route);
 app.use(user);
 app.use(forgot_password);
+app.use(profile);
 const logger = Logger.instance().logger();
 
 // Start the Express.js server and log the listening message

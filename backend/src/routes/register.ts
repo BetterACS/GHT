@@ -1,11 +1,22 @@
 import bcrypt from 'bcrypt';
 import express, { Request, Response } from 'express';
+import fs from 'fs';
 import Database from '../database/database.js';
 import { userStoragesModel } from '../database/models.js';
 import generateUniqueToken from '../utils/generateUniqueToken.js';
 import { returnInterface, userInterface } from '../utils/interfaces.js';
 import Logger from '../utils/logger.js';
 import { sendVerification } from '../utils/sendVerification.js';
+
+const filePath = '../frontend/src/assets/sample.txt';
+let fileContentString: string;
+try {
+	const fileContent = fs.readFileSync(filePath, 'utf-8');
+	fileContentString = fileContent.toString();
+} catch (error) {
+	console.error('Error reading file:', error);
+}
+
 const router = express.Router();
 
 const storeUser = async (req: Request, res: Response): Promise<void> => {
@@ -60,7 +71,7 @@ const storeUser = async (req: Request, res: Response): Promise<void> => {
 		sendVerification(email, verificationToken);
 		await connection.query(sqlInsert, [email, username, hashedPassword, verificationToken, expirationTime]);
 
-		await userStoragesModel.create({ email: email, inventory: {}, field: {} });
+		await userStoragesModel.create({ email: email, inventory: {}, field: {}, image: fileContentString });
 
 		returnJson = { status: 'success', message: 'Register Successful', return: 0, data: {} };
 	} catch (error) {

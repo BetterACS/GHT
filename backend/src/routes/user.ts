@@ -46,6 +46,7 @@ const queryUser = async (req: Request, res: Response): Promise<void> => {
 const updateUser = async (req: Request, res: Response): Promise<void> => {
 	const logger = Logger.instance().logger();
 	const { email, username } = req.body;
+
 	let connection;
 
 	try {
@@ -80,10 +81,9 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
 
 const changePasswordUser = async (req: Request, res: Response): Promise<void> => {
 	const logger = Logger.instance().logger();
-	const { email, old_password, new_password } = req.body;
+	const { email, old_password, new_password, confirm_password } = req.body;
 	const hashedPassword: string = await bcrypt.hash(new_password, 10);
 	let connection;
-
 	try {
 		const database = Database.instance().mySQL();
 		connection = await database.promise().getConnection();
@@ -97,8 +97,13 @@ const changePasswordUser = async (req: Request, res: Response): Promise<void> =>
 			return;
 		}
 		if (!(await bcrypt.compare(old_password, user[0].password))) {
+			console.log(user[0].password);
 			logger.error('--------Incorrect old password---------');
 			returnJson = { status: 'error', message: 'Incorrect old password.', return: 4, data: {} };
+			return;
+		}
+		if (new_password != confirm_password) {
+			returnJson = { status: 'error', message: 'password and confirm_password not match', return: 1, data: {} };
 			return;
 		}
 		const sqlUpdate = 'UPDATE user SET password=? WHERE email=?';

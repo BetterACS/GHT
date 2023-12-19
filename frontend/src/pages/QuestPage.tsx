@@ -96,7 +96,10 @@ export default function QuestPage() {
 		email: `${localStorage.getItem('email')}`,
 	};
 	useEffect(() => {
-		userQuery();
+		const load = async () =>{
+			await userQuery();
+		}
+		load();
 	}, []);
 
 	useEffect(() => {
