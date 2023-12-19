@@ -35,15 +35,16 @@ const Login = () => {
 				if (result.return !== 0 || result.data === undefined) {
 					setEmail('');
 					setPassword('');
-					navigate('/Log_in');
+					navigate('/log_in');
 					setError(result.message);
+					return;
 				}
 
 				localStorage.setItem('access_token', result.data.accessToken);
 				localStorage.setItem('refresh_token', result.data.refreshToken);
 				localStorage.setItem('email', email);
 
-				navigate('/');
+				navigate('/quest');
 			})
 			.catch((err) => console.log(err));
 	};

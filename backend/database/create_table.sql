@@ -7,6 +7,11 @@ CREATE TABLE `user` (
   `username` varchar(16) NOT NULL,
   `password` varchar(60) NOT NULL,
   `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `verification_token` varchar(255) DEFAULT NULL,
+  `verification_token_expires` timestamp NULL DEFAULT NULL,
+  `reset_token` varchar(255) DEFAULT NULL,
+  `reset_token_expires` timestamp NULL DEFAULT NULL,
+  `is_verified` boolean DEFAULT false,
   PRIMARY KEY (`email`)
 );
 
@@ -23,7 +28,7 @@ CREATE TABLE `quest` (
   `email` varchar(255) NOT NULL,
   PRIMARY KEY (`quest_id`),
   KEY `email` (`email`),
-  CONSTRAINT `quest_ibfk_1` FOREIGN KEY (`email`) REFERENCES `user` (`email`)
+  CONSTRAINT `quest_ibfk_1` FOREIGN KEY (`email`) REFERENCES `user` (`email`) ON DELETE CASCADE ON UPDATE RESTRICT
 );
 
 DROP TABLE IF EXISTS `tag`;
@@ -34,7 +39,7 @@ CREATE TABLE `tag` (
   `email` varchar(255) NOT NULL,
   PRIMARY KEY (`tag_id`),
   KEY `email` (`email`),
-  CONSTRAINT `tag_ibfk_1` FOREIGN KEY (`email`) REFERENCES `user` (`email`)
+  CONSTRAINT `tag_ibfk_1` FOREIGN KEY (`email`) REFERENCES `user` (`email`) ON DELETE CASCADE ON UPDATE RESTRICT
 );
 
 DROP TABLE IF EXISTS `contain`;
