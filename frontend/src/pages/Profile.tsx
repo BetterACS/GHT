@@ -174,6 +174,15 @@ export default function Profile() {
 	};
 
 	const updateUsername = async () => {
+		if (username == "") {
+			MySwal.fire({
+				title: 'Error!',
+				text: "Please type your new username",
+				icon: 'error',
+				confirmButtonText: 'Ok',
+			});
+			return;
+		}
 		try {
 			const results = await axios.put(
 				`http://localhost:${Config.BACKEND_PORT}/user`,
@@ -247,6 +256,10 @@ export default function Profile() {
 						icon: 'success',
 						confirmButtonText: 'Ok',
 					});
+
+					setOldPassword('')
+					setNewPassword('')
+					setConfirmPassword('')
 					navigate('/profile')
 				},
 				updateAccessToken,defaultError
@@ -331,6 +344,7 @@ export default function Profile() {
 									crossOrigin={undefined}
 									value={username || ''}
 									onChange={handleUsernameChange}
+									required
 								/>
 								{/* <Button
                                     className=" bg-orange-700 mx-1 border border-[1px] border-gray-400 text-xs rounded-md shadow-lg hover:shadow-xl px-25"
